@@ -19,8 +19,8 @@ const paginateFor = (current, total) => {
     current_page: current,
     pages: total,
     parts,
-    previous: current > 1 ? {is_link: true, url: `?page=${current - 1}`} : null,
-    next: current < total ? {is_link: true, url: `?page=${current + 1}`} : null,
+    previous: current > 1 ? {is_link: true, url: `?page=${current - 1}`} : {is_link: false},
+    next: current < total ? {is_link: true, url: `?page=${current + 1}`} : {is_link: false},
   };
 };
 
@@ -29,13 +29,13 @@ export default async ({engine}) => {
   for (const [current, total] of [[1, 12], [5, 12], [12, 12], [2, 3]]) {
     const paginate = paginateFor(current, total);
     const shared = await engine.parseAndRender(`{% render 'pagination', paginate: paginate %}`, {paginate});
-    const legacy = await engine.parseAndRender(
-      `{% render 'pagination', paginate: paginate, anchor: '#comments' %}`,
+    const withAnchor = await engine.parseAndRender(
+      `{% render 'pagination', paginate: paginate, anchor: '#Comments-123' %}`,
       {paginate},
     );
     body += `<section class="case"><h3>Page ${current} of ${total}</h3><div class="row">
-      <div><h4>Shared (plt-pagination)</h4>${shared}</div>
-      <div><h4>Legacy (anchor set)</h4>${legacy}</div></div></section>`;
+      <div><h4>Shared (plt-pagination compact)</h4>${shared}</div>
+      <div><h4>With anchor (#Comments-123)</h4>${withAnchor}</div></div></section>`;
   }
 
   return body;

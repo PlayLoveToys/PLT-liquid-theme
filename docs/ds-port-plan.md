@@ -65,8 +65,8 @@ Se registran como baseline del validador.
 
 ### Fase 1: Tooling y tokens (sin cambio visual)
 **Hecho (2026-11-12), sin tocar `layout/` ni ningún snippet/section existente:**
-- [x] `package.json` con `@playlovetoys/platform` fijado a `PlayLoveToys/PLT-design-system#b0ba294`
-  (HEAD del DS al momento; `plt-frontend-liquid` sigue en `648b67b`), `tailwindcss`/`@tailwindcss/cli` 4,
+- [x] `package.json` con `@playlovetoys/platform` fijado a `PlayLoveToys/PLT-design-system#a2c759b`
+  (pin subido en corte 2a; antes `b0ba294`), `tailwindcss`/`@tailwindcss/cli` 4,
   `daisyui` 5 (dev). Scripts `build:css`, `watch:css`, `sync:plt`, `check:plt`, `check:theme-css`, `test:templates`.
 - [x] `scripts/` copiados de `plt-frontend-liquid`; `.gitignore` y `.shopifyignore` (excluye `node_modules`,
   `docs`, `scripts`, `styles`, `package*.json` de las operaciones de Shopify CLI).
@@ -111,28 +111,18 @@ look del DS es esperado; lo que se descarta son roturas (layout, texto sin tradu
 bundle incrustados, porque el panel del navegador lo carga como `data:`). Casos en
 `tools/snippet-harness/cases/`.
 
-#### Corte 2a: paginación — **bloqueado upstream, no migrado** (2026-11-12)
-Se migró `pagination.liquid` a `<plt-pagination>` y se revisó en el harness. Se **revirtió** por dos motivos:
-- **Layout roto para paginación numérica.** El CSS del DS (`.plt-pagination .d-btn { flex: 1 1 14rem }`, pensado
-  para paginación de documentación con títulos largos) hace que cada número crezca a 14 rem: se apila en
-  móvil y forma una cuadrícula en escritorio. Falta una variante compacta (p. ej. `plt-pagination--compact`
-  o un atributo) para números.
-- **Sin soporte de `anchor`.** El adaptador no puede añadir un fragmento a sus enlaces (`main-article` lo usa
-  para saltar a `#Comments-<id>`).
+#### Corte 2a: paginación → `plt-pagination` compact + `anchor` — **hecho** (2026-11-13)
+Desbloqueado por [DS#1](https://github.com/PlayLoveToys/PLT-design-system/issues/1) cerrado vía
+[PLT-design-system#2](https://github.com/PlayLoveToys/PLT-design-system/pull/2) (`a2c759b` en `main`):
 
-Pedido al DS en [PlayLoveToys/PLT-design-system#1](https://github.com/PlayLoveToys/PLT-design-system/issues/1)
-(publicado 2026-11-12; texto en [`docs/upstream/ds-issue-numeric-pagination.md`](upstream/ds-issue-numeric-pagination.md)): variante
-compacta de paginación numérica y parámetro `anchor` en `plt-pagination.liquid`. Al subir el pin, reaplicar:
-wrapper `<div class="flex justify-center my-8">`, variables con `assign` antes del `render` (liquidjs no
-evalúa filtros en argumentos de `render`), y conservar el markup Bulma solo mientras falte `anchor`.
-Fuera del snippet compartido hay paginaciones inline que también migrar: `main-account`, `main-addresses`,
-`blog-mansory`.
+1. Pin `@playlovetoys/platform` → `a2c759b`; `sync:plt` + `build:css` (entra `.plt-pagination--compact`).
+2. `snippets/pagination.liquid`: wrapper `flex justify-center my-8`, `compact: true`, propaga `anchor`,
+   labels vía `assign` + `render 'plt-pagination'` (liquidjs no evalúa filtros en args de `render`).
+3. Inlines → snippet compartido: `main-account`, `main-addresses` (`main-blog-mansory` ya lo usaba).
+4. Harness `pagination.mjs`: compact + caso `anchor: '#Comments-123'`.
 
-**Análisis previo al enlace** (sigue siendo válido como contexto): `theme.css` no tiene selectores de
-elemento globales sin capa, 0 colisiones de variables con el CSS legacy (246 variables propias) y las
-reglas del DS viven en capas. Con legacy **sin** capa, el CSS legacy ganaba siempre en conflicto — eso
-protege a la tienda pero **rompe los componentes del DS**. Por eso el enlace real fue con opción A en 2b
-(ver abajo), no “a secas”.
+**Gates (2026-11-13):** `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline;
+`shopify theme check` ≤ baseline (6 err / 362 warn).
 
 #### Corte 2b: cantidad, orden y filtros — **bloqueado por la capa de CSS legacy** (2026-11-12)
 Caso `controls` del harness (`plt-quantity-selector`, `plt-sort-select`, `plt-filter-bar`), con el CSS real:
@@ -203,13 +193,12 @@ breadcrumb / price.
 - LCP / CSS bloqueante por los `@import` en capa legacy.
 - Empates de especificidad `component-*.css` (sin capa) vs Bulma en capa `legacy`.
 
-Fuera de 2c (siguen bloqueados): reaplicar 2a al subir pin DS; cablear 2b WC (eventos `plt:*` + Section
+Fuera de 2c (en aquel momento): ~~reaplicar 2a~~ → hecho; cablear 2b WC (eventos `plt:*` + Section
 Rendering); capturas Fase 0; Fase 3 shell.
 
 #### Corte 2d: `card-product` → markup ProductCard (estático) — **hecho** (2026-11-12)
-Con 2a aún bloqueado ([DS#1](https://github.com/PlayLoveToys/PLT-design-system/issues/1) abierto; pin
-`@playlovetoys/platform` sigue en `b0ba294`, sin variante compacta ni `anchor`), el siguiente corte viable
-sin WC ni shell es la card de producto **solo markup**:
+Con 2a aún bloqueado en ese momento ([DS#1](https://github.com/PlayLoveToys/PLT-design-system/issues/1);
+pin en `b0ba294`), el siguiente corte viable sin WC ni shell fue la card de producto **solo markup**:
 
 1. Harness `product-card` (`LEGACY_LAYER=import`) con regular / sale / sold-out / rating / placeholder +
    referencia del renderer DS.
@@ -219,8 +208,8 @@ sin WC ni shell es la card de producto **solo markup**:
    `plt-quantity-selector` ni quick-add WC.
 3. Higiene: borrado `snippets/card-product-new.liquid` (sin referencias).
 
-**Fuera de 2d (siguen pendientes / bloqueados):**
-- Reaplicar 2a (`plt-pagination`) cuando DS#1 aterrice y se suba el pin.
+**Fuera de 2d (en aquel momento):**
+- ~~Reaplicar 2a (`plt-pagination`)~~ → corte 2a (2026-11-13).
 - 2b WC: cantidad / sort / filtros (eventos `plt:*` + Section Rendering / cajón Alpine).
 - ~~Badges Dawn residuales en `article-card` / `main-search`~~ → corte 2e.
 - Capturas Fase 0 y Fase 3 shell (requieren tienda).
@@ -270,15 +259,16 @@ completa → EditorialCard.
 - Badges Bulma en grids de colección (`b-tag-*` / `b-badge-*` en `main-collection*`) viven dentro del
   shell Bulma de la card → Fase 4 (colección), no un leftover aislado.
 
-**Fuera de 2f (bloqueados):** 2a (`plt-pagination` + DS#1); 2b WC (cantidad / sort / filtros + JS);
-Fase 0 capturas; Fase 3 shell; Fase 5 retirar Bulma/Alpine; Fase 6 CI gates formales.
+**Fuera de 2f (bloqueados entonces):** ~~2a (`plt-pagination` + DS#1)~~ → hecho; 2b WC
+(cantidad / sort / filtros + JS); Fase 0 capturas; Fase 3 shell; Fase 5 retirar Bulma/Alpine;
+Fase 6 CI gates formales.
 
 **Gates (2026-11-12):** `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline (40/42);
 `shopify theme check` = **6 errores / 362 avisos** (sin regresión).
 
-### Estado sesión (2026-11-12)
+### Estado sesión (2026-11-13)
 
-Concluido lo alcanzable de Fase 2 Liquid-only en esta sesión y las previas del port:
+Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 
 | Hecho | Evidencia |
 |---|---|
@@ -287,11 +277,11 @@ Concluido lo alcanzable de Fase 2 Liquid-only en esta sesión y las previas del 
 | 2c divider / breadcrumb / price | PR #2 |
 | 2d `card-product` markup ProductCard | PR #3 |
 | 2e badges article-card / main-search | PR #4 |
-| 2f gift_card badge + `snippets/button` + higiene orphans | PR de `port/ds-fase-2f` |
+| 2f gift_card badge + `snippets/button` + higiene orphans | PR #5 |
+| 2a `plt-pagination` compact + `anchor` (pin `a2c759b`) | PR de `port/ds-fase-2a` |
 
 | Bloqueado | Por qué | Para desbloquear |
 |---|---|---|
-| **2a pagination** | Layout numérico roto (`flex: 1 1 14rem`) y sin `anchor` | Cerrar [DS#1](https://github.com/PlayLoveToys/PLT-design-system/issues/1) (compact + `anchor`), subir pin `@playlovetoys/platform`, reaplicar `plt-pagination` |
 | **2b WC** cantidad / sort / filtros | Acoplado a `quantity-input` + `product-form` / Alpine `facets` drawer | Plan JS: eventos `plt:*` + Section Rendering; reemplazar cajón Alpine |
 | **Fase 0 capturas** | Sin `shopify theme dev` / tienda | Credenciales merchant + handles fixture |
 | **Fase 3 shell** | Header/footer/cart/predictive search compartidos; riesgo visual alto | Tienda + capturas; decisión `cart-notification` → `plt-cart-drawer` |
@@ -300,8 +290,8 @@ Concluido lo alcanzable de Fase 2 Liquid-only en esta sesión y las previas del 
 | **Fase 6 CI gates** | Formalizar budgets/diff visual | Tras baseline visual real (Fase 0) |
 | **Inputs/alerts / botones globales** | Sin corte Liquid acotado | Por template en Fase 4 o snippet nuevo si se extrae |
 
-**Siguiente cuando desbloquee (prioridad):** DS#1 → reaplicar 2a; en paralelo plan JS 2b; con tienda,
-Fase 0 capturas y checklist visual del layout (fondo `html`, LCP `@import` legacy).
+**Siguiente (prioridad):** plan JS 2b; con tienda, Fase 0 capturas y checklist visual del layout
+(fondo `html`, LCP `@import` legacy).
 
 ### Fase 3: Shell
 Header (excepción documentada: se conserva, con `mega-menu.css`), footer + newsletter, carrito
