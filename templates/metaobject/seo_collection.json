@@ -1,0 +1,356 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "custom_section_zXm7cT": {
+      "type": "custom_section",
+      "blocks": {
+        "breadcrumb_BffdbQ": {
+          "type": "breadcrumb",
+          "settings": {
+            "home_text": "",
+            "show_home_icon": true,
+            "separator_style": "arrow",
+            "font_size": 18,
+            "font_weight": "500",
+            "background_color": "#f4f4f4",
+            "link_color": "#231f20",
+            "link_hover_color": "#f4436c",
+            "link_hover_background": "rgba(0,0,0,0)",
+            "current_color": "#231f20",
+            "current_background": "#f4f4f4",
+            "separator_color": "#533278",
+            "focus_color": "#0c7489",
+            "padding_top": 4,
+            "padding_bottom": 10,
+            "item_spacing": 4,
+            "border_radius": 6
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "breadcrumb_BffdbQ"
+      ],
+      "name": "Breadcrumb",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "background_color": "#ffffff",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "content_padding_top": 0,
+        "content_padding_bottom": 0,
+        "content_padding_left": 0,
+        "content_padding_right": 0,
+        "custom_class": "custom-section-class"
+      }
+    },
+    "a_matrix_GryRBr": {
+      "type": "a-matrix",
+      "blocks": {
+        "b_card_collections_grid_89GRAi": {
+          "type": "b-card-collections-grid",
+          "name": "b-card-collections-grid",
+          "settings": {
+            "main_collection": "sex-toys-for-men",
+            "collections_card_title": "Male Sex Toys",
+            "priority_desktop": true,
+            "priority_mobile": true,
+            "collection_1": "male-masturbators-strokers",
+            "collection_1_title": "Masturbators",
+            "collection_2": "penis-ring-cock-ring-sex-toys-for-men",
+            "collection_2_title": "Cock Rings",
+            "collection_3": "pump",
+            "collection_3_title": "Penis Pumps",
+            "collection_4": "prostate-massage",
+            "collection_4_title": "P-Spot",
+            "collection_5": "",
+            "collection_5_title": "",
+            "collection_6": "",
+            "collection_6_title": "",
+            "cta_text": "Shop Male Sex Toys",
+            "cta_url": ""
+          },
+          "blocks": {}
+        },
+        "b_card_collections_grid_gfbHYa": {
+          "type": "b-card-collections-grid",
+          "name": "b-card-collections-grid",
+          "settings": {
+            "main_collection": "sex-toys-for-men",
+            "collections_card_title": "Collections For Him",
+            "priority_desktop": true,
+            "priority_mobile": true,
+            "collection_1": "lubricant",
+            "collection_1_title": "",
+            "collection_2": "strap-ons",
+            "collection_2_title": "",
+            "collection_3": "sex-toy-cleaner",
+            "collection_3_title": "",
+            "collection_4": "shaving-hair-removal",
+            "collection_4_title": "Hair  Removal",
+            "collection_5": "",
+            "collection_5_title": "",
+            "collection_6": "",
+            "collection_6_title": "",
+            "cta_text": "Shop For Him",
+            "cta_url": ""
+          },
+          "blocks": {}
+        },
+        "b_card_products_grid_AKDUc4": {
+          "type": "b-card-products-grid",
+          "name": "b-card-products-grid",
+          "settings": {
+            "product_list": [
+              "tenga-spinner-dx-collection",
+              "feel-stroker-generic-mouth",
+              "feelreagan-foxx-stroker-cpb",
+              "fun-factory-cobra-libre-sex-toy-for-men-masturbator"
+            ],
+            "collection": "sex-toys-for-men",
+            "products_card_title": "Best Male Sex Toys",
+            "cta_text": "View All",
+            "cta_url": "",
+            "priority": false
+          },
+          "blocks": {}
+        },
+        "b_card_article_xmeae8": {
+          "type": "b-card-article",
+          "name": "b-Card Article",
+          "settings": {
+            "article": "sex-toys-artisans/kiiroo-pleasure-intimate-experience",
+            "priority": false,
+            "show_excerpt": true,
+            "truncatewords": 9
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "b_card_collections_grid_89GRAi",
+        "b_card_collections_grid_gfbHYa",
+        "b_card_products_grid_AKDUc4",
+        "b_card_article_xmeae8"
+      ],
+      "name": "a-matrix",
+      "settings": {}
+    },
+    "a_logo_motto_tQQ4FN": {
+      "type": "a-logo-motto",
+      "name": "AA Logo Motto",
+      "settings": {
+        "logo": "shopify://shop_images/Logo-PlayLoveToys-3by2-800x534.png",
+        "motto_title": "Embrace Your Sexual Wellness",
+        "motto": "We aim to promote a philosophy centred on encouraging the public to prioritize their overall sexual health and happiness. Our dedication is to establish a safe, inclusive, and empowering environment for everyone."
+      }
+    },
+    "featured_collection1": {
+      "type": "featured-collection",
+      "name": "Best Toys",
+      "settings": {
+        "collection": "sex-toys-for-men",
+        "products_to_show": 8,
+        "title": "Best {{ metaobject.keyword_1.value }}",
+        "heading_size": "h1",
+        "description": "{{ metaobject.collection_description | metafield_tag }}",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": false,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "scheme-3",
+        "image_ratio": "square",
+        "image_shape": "default",
+        "show_secondary_image": false,
+        "show_vendor": true,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_tablet": "3",
+        "columns_mobile": "1",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 52
+      }
+    },
+    "custom_section_HmcFRj": {
+      "type": "custom_section",
+      "name": "Motto",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 0,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "background_color": "#ffffff",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "content_padding_top": 0,
+        "content_padding_bottom": 0,
+        "content_padding_left": 0,
+        "content_padding_right": 0,
+        "custom_class": "custom-section-class"
+      }
+    },
+    "featured_collection2": {
+      "type": "featured-collection",
+      "name": "New Arrivals",
+      "settings": {
+        "collection": "sex-toys-new-arrival",
+        "products_to_show": 6,
+        "title": "Sex Shop: New Arrival",
+        "heading_size": "h1",
+        "description": "{{ section.settings.collection.description }}",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "",
+        "image_ratio": "square",
+        "image_shape": "default",
+        "show_secondary_image": false,
+        "show_vendor": true,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_tablet": "3",
+        "columns_mobile": "1",
+        "swipe_on_mobile": false,
+        "padding_top": 36,
+        "padding_bottom": 52
+      }
+    },
+    "custom_section_UKfxB3": {
+      "type": "custom_section",
+      "blocks": {
+        "blog_post_display_7JE86K": {
+          "type": "blog_post_display",
+          "name": "Blog Post Display",
+          "settings": {
+            "article": "",
+            "article_handle": "{{ metaobject.after_page_article_handle.value }}",
+            "show_image": true,
+            "show_meta": false,
+            "show_date": false,
+            "show_author": false,
+            "show_content": true,
+            "show_button": false,
+            "button_text": "Read more",
+            "date_format": "%B %d, %Y",
+            "width": 100,
+            "padding": 24,
+            "spacing": 20,
+            "border_radius": 8,
+            "image_aspect_ratio": "16/9",
+            "image_border_radius": 8,
+            "background_color": "#ffffff",
+            "title_color": "#000000",
+            "title_hover_color": "#555555",
+            "meta_color": "#777777",
+            "content_color": "#333333",
+            "button_color": "#000000",
+            "button_hover_color": "#555555",
+            "title_font_size": 28,
+            "title_font_weight": 700,
+            "meta_font_size": 14,
+            "content_font_size": 16,
+            "button_font_size": 16
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "blog_post_display_7JE86K"
+      ],
+      "name": "After Page Article",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "background_color": "#ffffff",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "content_padding_top": 0,
+        "content_padding_bottom": 0,
+        "content_padding_left": 0,
+        "content_padding_right": 0,
+        "custom_class": "custom-section-class"
+      }
+    }
+  },
+  "order": [
+    "custom_section_zXm7cT",
+    "a_matrix_GryRBr",
+    "a_logo_motto_tQQ4FN",
+    "featured_collection1",
+    "custom_section_HmcFRj",
+    "featured_collection2",
+    "custom_section_UKfxB3"
+  ]
+}

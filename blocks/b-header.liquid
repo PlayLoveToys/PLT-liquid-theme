@@ -1,0 +1,90 @@
+{%- liquid
+  assign title_tag = block.settings.title_tag
+  assign subtitle_tag = block.settings.subtitle_tag
+-%}
+
+{% unless block.settings.title_text == blank %}
+  <{{ title_tag }} class="b-title">{{- block.settings.title_text -}}</{{ title_tag }}>
+{% endunless %}
+{% unless block.settings.subtitle_text == blank %}
+  <{{ subtitle_tag }} class="b-subtitle">{{ block.settings.subtitle_text }}</{{ subtitle_tag }}>
+{% endunless %}
+
+{% schema %}
+{
+  "name": "b-title",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title_text",
+      "label": "Title",
+      "default": "title"
+    },
+    {
+      "type": "select",
+      "id": "title_tag",
+      "label": "Title Tag",
+      "options": [
+        {
+          "value": "h1",
+          "label": "h1"
+        },
+        {
+          "value": "h2",
+          "label": "h2"
+        },
+        {
+          "value": "h3",
+          "label": "h3"
+        },
+        {
+          "value": "h4",
+          "label": "h4"
+        },
+        {
+          "value": "h5",
+          "label": "h5"
+        }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "text",
+      "id": "subtitle_text",
+      "label": "Subtitle",
+      "default": "subtitle"
+    },
+    {
+      "type": "select",
+      "id": "subtitle_tag",
+      "label": "Subtitle Tag",
+      "options": [
+        {
+          "value": "h2",
+          "label": "h2"
+        },
+        {
+          "value": "h3",
+          "label": "h3"
+        },
+        {
+          "value": "h4",
+          "label": "h4"
+        },
+        {
+          "value": "h5",
+          "label": "h5"
+        }
+      ],
+      "default": "h3"
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "b-title",
+      "category": "b-Layout"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,52 @@
+{%- liquid
+  comment
+    We need to apply marks to the text - we'll define those here
+    We also need to deal with markdefs - these will also need to be defined here
+  endcomment
+
+  assign tags = ""
+  assign closing_tags = ""
+
+  for mark in span.marks
+    case mark
+      when "em"
+        assign tags = tags | append: "<em>"
+        assign closing_tags = closing_tags | append: "</em>"
+      when "strong"
+        assign tags = tags | append: "<strong>"
+        assign closing_tags = closing_tags | append: "</strong>"
+      when "code"
+        assign tags = tags | append: "<code>"
+        assign closing_tags = closing_tags | append: "</code>"
+      when "underline"
+        assign tags = tags | append: '<span style="text-decoration:underline">'
+        assign closing_tags = closing_tags | append: "</span>"
+      when "strike-through"
+        assign tags = tags | append: "<del>"
+        assign closing_tags = closing_tags | append: "</del>"
+      else
+        assign current_mark = markDefs | where: "_key", mark | first
+        if current_mark
+          if current_mark._type == "link"
+            assign tags = tags | append: '<a href="' | append: current_mark.href | append: '">'
+            assign closing_tags = closing_tags | append: "</a>"
+          else
+            comment
+              We don't know what to do with this mark - so we'll just ignore it unless errors are true
+              in which case we'll highlight the problem with some styling
+            endcomment
+            if errors != false
+              echo '<script type="text/javascript">console.warn("Unknown mark type: {type}")</script>' | replace: "{type}", current_mark._type
+            endif
+          endif
+          comment
+            More custom marks can be defined here
+          endcomment
+        endif
+    endcase
+  endfor
+
+  assign text = span.text | escape | newline_to_br
+
+  echo tags | append: text | append: closing_tags
+-%}

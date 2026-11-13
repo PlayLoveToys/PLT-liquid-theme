@@ -1,0 +1,606 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "custom_section_7wjqxz": {
+      "type": "custom_section",
+      "blocks": {
+        "breadcrumb_Twxkej": {
+          "type": "breadcrumb",
+          "settings": {
+            "home_text": "",
+            "show_home_icon": true,
+            "separator_style": "arrow",
+            "font_size": 18,
+            "font_weight": "500",
+            "background_color": "#f4f4f4",
+            "link_color": "#533278",
+            "link_hover_color": "#f4436c",
+            "link_hover_background": "#f4f4f4",
+            "current_color": "#533278",
+            "current_background": "#f4f4f4",
+            "separator_color": "#533278",
+            "focus_color": "#0c7489",
+            "padding_top": 4,
+            "padding_bottom": 10,
+            "item_spacing": 4,
+            "border_radius": 6
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "breadcrumb_Twxkej"
+      ],
+      "name": "Breadcrumb",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "background_color": "#ffffff",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "content_padding_top": 0,
+        "content_padding_bottom": 0,
+        "content_padding_left": 0,
+        "content_padding_right": 0,
+        "custom_class": "custom-section-class"
+      }
+    },
+    "custom_section_wqaQt9": {
+      "type": "custom_section",
+      "blocks": {
+        "flexible_content_q3EQYU": {
+          "type": "flexible-content",
+          "name": "Flex Content",
+          "settings": {
+            "title": "Adult Store and Novelties Collections",
+            "title_tag": "h1",
+            "subtitle": "",
+            "subtitle_tag": "h2",
+            "description": "",
+            "image_position": "right",
+            "primary_button_text": "Comprar ahora",
+            "primary_button_link": "",
+            "secondary_button_text": "Más información",
+            "secondary_button_link": "",
+            "layout_direction": "row",
+            "vertical_alignment": "center",
+            "spacing": 30,
+            "layout_direction_mobile": "column",
+            "spacing_mobile": 20,
+            "title_size": 40,
+            "title_weight": 700,
+            "title_spacing": 15,
+            "subtitle_size": 24,
+            "subtitle_weight": 600,
+            "subtitle_spacing": 15,
+            "text_size": 16,
+            "text_spacing": 20,
+            "title_size_mobile": 28,
+            "title_spacing_mobile": 10,
+            "subtitle_size_mobile": 20,
+            "subtitle_spacing_mobile": 10,
+            "text_size_mobile": 14,
+            "text_spacing_mobile": 15,
+            "button_text_size": 16,
+            "button_border_radius": 4,
+            "button_text_size_mobile": 14,
+            "image_max_width": 600,
+            "image_border_radius": 8,
+            "background_color": "#f4f4f4",
+            "title_color": "#333333",
+            "subtitle_color": "#555555",
+            "text_color": "#666666",
+            "primary_button_color": "#000000",
+            "primary_button_text_color": "#ffffff",
+            "primary_button_hover_color": "#333333",
+            "secondary_button_color": "#ffffff",
+            "secondary_button_text_color": "#000000",
+            "secondary_button_hover_color": "#f5f5f5",
+            "padding_top": 60,
+            "padding_right": 60,
+            "padding_bottom": 60,
+            "padding_left": 60,
+            "padding_top_mobile": 30,
+            "padding_right_mobile": 20,
+            "padding_bottom_mobile": 30,
+            "padding_left_mobile": 20,
+            "border_radius": 0
+          },
+          "blocks": {}
+        },
+        "masonry_collections_N7QiyE": {
+          "type": "masonry-collections",
+          "name": "Masonry Collections",
+          "settings": {
+            "collection_list": [
+              "sex-toys-for-couples",
+              "sex-toys-for-men",
+              "sex-toys-for-women",
+              "gift-sets",
+              "lubricant",
+              "pheromones"
+            ],
+            "columns_desktop": 6,
+            "columns_tablet": 2,
+            "columns_mobile": "1",
+            "gap": 20,
+            "padding": 0,
+            "margin": 20,
+            "border_radius": 8,
+            "enable_shadow": true,
+            "border_width": 1,
+            "section_bg_color": "#f4f4f4",
+            "card_bg_color": "#ffffff",
+            "border_color": "#c6c6c6",
+            "title_size": 24,
+            "title_weight": "600",
+            "title_color": "#333333",
+            "enable_title_shadow": true,
+            "overlay_color": "#000000",
+            "overlay_opacity": 0,
+            "rotation_speed": 3
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "flexible_content_q3EQYU",
+        "masonry_collections_N7QiyE"
+      ],
+      "custom_css": [
+        ".custom-section-class {max-width: 1600px !important; width: 100%; margin: 0 auto; padding: 0 20px; /* Para espaciado en pantallas pequeñas */}"
+      ],
+      "name": "custom section",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "full-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "image",
+        "background_color": "#ffffff",
+        "video_position": "cover",
+        "background_image_position": "fit",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#533278",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "content_padding_top": 0,
+        "content_padding_bottom": 0,
+        "content_padding_left": 0,
+        "content_padding_right": 0,
+        "custom_class": "custom-section-class"
+      }
+    },
+    "main": {
+      "type": "main-404",
+      "settings": {}
+    },
+    "collection_list_FCJaMT": {
+      "type": "collection-list",
+      "blocks": {
+        "featured_collection_CbCmqH": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "clitoral-stimulators"
+          }
+        },
+        "featured_collection_DGe6B7": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "dildos-dongs"
+          }
+        },
+        "featured_collection_E89kxy": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "g-spot-stimulation"
+          }
+        },
+        "featured_collection_dxCqKN": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "menstrual-cup"
+          }
+        },
+        "featured_collection_9qBR9t": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "wand-vibrators"
+          }
+        }
+      },
+      "block_order": [
+        "featured_collection_CbCmqH",
+        "featured_collection_DGe6B7",
+        "featured_collection_E89kxy",
+        "featured_collection_dxCqKN",
+        "featured_collection_9qBR9t"
+      ],
+      "name": "Women Collections",
+      "settings": {
+        "title": "Women Collections",
+        "heading_size": "h1",
+        "show_secondary_image": false,
+        "image_ratio": "square",
+        "columns_desktop": 5,
+        "color_scheme": "",
+        "show_view_all": false,
+        "columns_mobile": "1",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "collection_list_grQGBK": {
+      "type": "collection-list",
+      "blocks": {
+        "featured_collection_qJVgEx": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "male-masturbators-strokers"
+          }
+        },
+        "featured_collection_PbxKYD": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "penis-ring-cock-ring-sex-toys-for-men"
+          }
+        },
+        "featured_collection_wE9YrP": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "pump"
+          }
+        },
+        "featured_collection_9iLQne": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "prostate-massage"
+          }
+        }
+      },
+      "block_order": [
+        "featured_collection_qJVgEx",
+        "featured_collection_PbxKYD",
+        "featured_collection_wE9YrP",
+        "featured_collection_9iLQne"
+      ],
+      "name": "Men Collections",
+      "settings": {
+        "title": "Men Collections",
+        "heading_size": "h1",
+        "show_secondary_image": false,
+        "image_ratio": "square",
+        "columns_desktop": 4,
+        "color_scheme": "",
+        "show_view_all": false,
+        "columns_mobile": "1",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "multicolumn_ANCJWk": {
+      "type": "multicolumn",
+      "blocks": {
+        "column_bhwMGp": {
+          "type": "column",
+          "settings": {
+            "image_source": "shopify",
+            "image": "shopify://shop_images/kiiroo.webp",
+            "cloudinary_src": "",
+            "title": "",
+            "text": "",
+            "link_label": "",
+            "link": "shopify://collections/kiiroo-sex-toys-for-men-strokers"
+          }
+        },
+        "column_JNNwyR": {
+          "type": "column",
+          "settings": {
+            "image_source": "shopify",
+            "image": "shopify://shop_images/Womanizer_logo.png",
+            "cloudinary_src": "",
+            "title": "",
+            "text": "",
+            "link_label": "",
+            "link": "shopify://collections/womanizer"
+          }
+        },
+        "column_GRLCpN": {
+          "type": "column",
+          "settings": {
+            "image_source": "shopify",
+            "image": "shopify://shop_images/dorcel.webp",
+            "cloudinary_src": "",
+            "title": "",
+            "text": "",
+            "link_label": "",
+            "link": "shopify://collections/dorcel"
+          }
+        },
+        "column_d7hnk9": {
+          "type": "column",
+          "settings": {
+            "image_source": "shopify",
+            "image": "shopify://shop_images/satisfyer_b3a89b80-25b3-4ec5-8a57-a3b1ca9b27e1.webp",
+            "cloudinary_src": "",
+            "title": "",
+            "text": "",
+            "link_label": "",
+            "link": "shopify://collections/satisfyer"
+          }
+        },
+        "column_KTCQqf": {
+          "type": "column",
+          "settings": {
+            "image_source": "shopify",
+            "image": "shopify://shop_images/b-vibe-Photoroom_1.webp",
+            "cloudinary_src": "",
+            "title": "",
+            "text": "",
+            "link_label": "",
+            "link": "shopify://collections/b-vibe"
+          }
+        },
+        "column_EwQ6yz": {
+          "type": "column",
+          "settings": {
+            "image_source": "shopify",
+            "image": "shopify://shop_images/love-to-love.webp",
+            "cloudinary_src": "",
+            "title": "",
+            "text": "",
+            "link_label": "",
+            "link": "shopify://collections/sex-toys-love-to-love-toys"
+          }
+        },
+        "column_BEkqN3": {
+          "type": "column",
+          "settings": {
+            "image_source": "shopify",
+            "image": "shopify://shop_images/tenga_logo_9b39df2f-48d0-4861-9228-aa7b025da25b.png",
+            "cloudinary_src": "",
+            "title": "",
+            "text": "",
+            "link_label": "",
+            "link": "shopify://collections/tenga"
+          }
+        },
+        "column_rUVpNT": {
+          "type": "column",
+          "settings": {
+            "image_source": "shopify",
+            "image": "shopify://shop_images/jo-lubricants.avif",
+            "cloudinary_src": "",
+            "title": "",
+            "text": "",
+            "link_label": "",
+            "link": "shopify://collections/jo-lubricants"
+          }
+        },
+        "column_63ebTM": {
+          "type": "column",
+          "settings": {
+            "image_source": "shopify",
+            "image": "shopify://shop_images/je-joue_d4c59e83-0441-490c-8cc3-e4cdf3fb1d4b.webp",
+            "cloudinary_src": "",
+            "title": "",
+            "text": "",
+            "link_label": "",
+            "link": "shopify://collections/je-joue-sex-toys-collection"
+          }
+        },
+        "column_gEVK6M": {
+          "type": "column",
+          "settings": {
+            "image_source": "shopify",
+            "image": "shopify://shop_images/emojibator.avif",
+            "cloudinary_src": "",
+            "title": "",
+            "text": "",
+            "link_label": "",
+            "link": "shopify://collections/emojibator"
+          }
+        },
+        "column_67tTN3": {
+          "type": "column",
+          "settings": {
+            "image_source": "shopify",
+            "image": "shopify://shop_images/LELO_Logo.png",
+            "cloudinary_src": "",
+            "title": "",
+            "text": "",
+            "link_label": "",
+            "link": "shopify://collections/shop-by-brand-lelo"
+          }
+        },
+        "column_f4kPhC": {
+          "type": "column",
+          "settings": {
+            "image_source": "shopify",
+            "image": "shopify://shop_images/We-Vibe_logo_2018.png",
+            "cloudinary_src": "",
+            "title": "",
+            "text": "",
+            "link_label": "",
+            "link": "shopify://collections/we-vibe"
+          }
+        }
+      },
+      "block_order": [
+        "column_bhwMGp",
+        "column_JNNwyR",
+        "column_GRLCpN",
+        "column_d7hnk9",
+        "column_KTCQqf",
+        "column_EwQ6yz",
+        "column_BEkqN3",
+        "column_rUVpNT",
+        "column_63ebTM",
+        "column_gEVK6M",
+        "column_67tTN3",
+        "column_f4kPhC"
+      ],
+      "name": "Brands",
+      "settings": {
+        "title": "",
+        "heading_size": "hxxl",
+        "image_width": "full",
+        "image_ratio": "adapt",
+        "button_label": "",
+        "button_link": "",
+        "columns_desktop": 6,
+        "column_alignment": "center",
+        "background_style": "none",
+        "color_scheme": "scheme-3",
+        "columns_mobile": "1",
+        "swipe_on_mobile": false,
+        "padding_top": 24,
+        "padding_bottom": 56
+      }
+    },
+    "collection_list_pjPpBm": {
+      "type": "collection-list",
+      "blocks": {
+        "featured_collection_kX4EXY": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "pleasure-enhancers"
+          }
+        },
+        "featured_collection_rpc6wR": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "erotic-games"
+          }
+        },
+        "featured_collection_8ycfWi": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "playful-kinky-sex-toys"
+          }
+        },
+        "featured_collection_cbHcJV": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "sex-toy-cleaner"
+          }
+        },
+        "featured_collection_e8jBGi": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "shaving-hair-removal"
+          }
+        },
+        "featured_collection_NKqdif": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "massage-relaxation"
+          }
+        }
+      },
+      "block_order": [
+        "featured_collection_kX4EXY",
+        "featured_collection_rpc6wR",
+        "featured_collection_8ycfWi",
+        "featured_collection_cbHcJV",
+        "featured_collection_e8jBGi",
+        "featured_collection_NKqdif"
+      ],
+      "name": "t:sections.collection-list.presets.name",
+      "settings": {
+        "title": "Collections",
+        "heading_size": "h1",
+        "show_secondary_image": false,
+        "image_ratio": "square",
+        "columns_desktop": 6,
+        "color_scheme": "",
+        "show_view_all": false,
+        "columns_mobile": "2",
+        "swipe_on_mobile": false,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "featured_collection_fiV6Ui": {
+      "type": "featured-collection",
+      "name": "t:sections.featured-collection.presets.name",
+      "settings": {
+        "collection": "sex-toys-new-arrival",
+        "products_to_show": 10,
+        "title": "New Arrivals",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 5,
+        "enable_desktop_slider": false,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "",
+        "image_ratio": "square",
+        "image_shape": "default",
+        "show_secondary_image": false,
+        "show_vendor": true,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_tablet": "4",
+        "columns_mobile": "1",
+        "swipe_on_mobile": false,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    }
+  },
+  "order": [
+    "custom_section_7wjqxz",
+    "custom_section_wqaQt9",
+    "main",
+    "collection_list_FCJaMT",
+    "collection_list_grQGBK",
+    "multicolumn_ANCJWk",
+    "collection_list_pjPpBm",
+    "featured_collection_fiV6Ui"
+  ]
+}

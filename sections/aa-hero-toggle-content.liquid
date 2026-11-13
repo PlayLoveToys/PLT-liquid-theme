@@ -1,0 +1,188 @@
+{% liquid
+  assign section_id = section.id
+  assign title_htag = section.settings.title_htag
+  assign subtitle_htag = section.settings.subtitle_htag
+  assign image = section.settings.hero_image
+
+  assign icon_fold_svg = 'm356-160-56-56 180-180 180 180-56 56-124-124-124 124Zm124-404L300-744l56-56 124 124 124-124 56 56-180 180Z'
+  assign icon_unfold_svg = 'M480-120 300-300l58-58 122 122 122-122 58 58-180 180ZM358-598l-58-58 180-180 180 180-58 58-122-122-122 122Z'
+
+  if image
+    assign has_image = true
+  else
+    assign has_image = false
+  endif
+
+  if section.settings.expandable_content
+    assign has_content = true
+  else
+    assign has_content = false
+  endif
+%}
+
+<!-- Hero section with toggle functionality -->
+<section class="b-section">
+  <div
+    x-data="
+      {
+        has_image: {{ has_image }},
+        has_content: {{ has_content }},
+        showContent: {% if section.settings.initial_expanded %}true{% else %}false{% endif %},
+        fold_svg: '{{ icon_fold_svg }}',
+        unfold_svg: '{{ icon_unfold_svg }}',
+      }
+    "
+  >
+    <div class="b-page-width b-container">
+      <div class="b-box">
+        <div class="b-columns">
+          <!-- Left column - Image -->
+          {% if has_image %}
+            <div class="b-column b-is-3-tablet b-is-4-desktop b-is-align-content-center">
+              <div class="b-image b-is-fullwidth">
+                {{
+                  image
+                  | image_url: width: 1200
+                  | image_tag:
+                    widths: '300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200',
+                    preload: true,
+                    loading: 'eager'
+                }}
+              </div>
+            </div>
+          {% endif %}
+          <!-- Right column - Content -->
+          <div class="b-column b-is-align-content-space-evenly b-px-6-tablet b-mx-6-tablet">
+            <div class="b-block">
+              <{{ title_htag }} class="b-title b-is-size-1-desktop b-is-size-4">
+                {{- section.settings.this_title -}}
+              </{{ title_htag }}>
+            </div>
+            <div class="b-block">
+              <{{ subtitle_htag }} class="b-subtitle b-mt-6 b-is-size-3-desktop b-is-size-5">
+                {{- section.settings.this_subtitle -}}
+              </{{ subtitle_htag }}>
+            </div>
+            {% if section.settings.button_text and section.settings.button_url %}
+              <div class="b-block">
+                <a
+                  href="{{ section.settings.button_url }}"
+                  class="b-button b-is-large b-is-primary"
+                >
+                  <strong>{{ section.settings.button_text }}</strong>
+                </a>
+              </div>
+            {% endif %}
+            <!-- Toggle button -->
+            {% if has_content %}
+              <a
+                href="#"
+                class="b-icon-text b-is-size-3-desktop b-is-size-5 b-block b-mt-6"
+                @click.prevent="showContent = !showContent"
+                :aria-expanded="showContent.toString()"
+              >
+                <div id="content-{{- section_id -}}">
+                  <span class="b-icon b-has-text-info">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                      <path x-bind:d="showContent ? fold_svg : unfold_svg"/>
+                    </svg></span
+                  ><span>Learn More</span>
+                </div>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+        <template x-if="true">
+          <div :class="{ 'visually-hidden': !showContent}" x-transition>
+            <!-- Expandable content -->
+            <div class="b-notification b-has-background-link-light">
+              <button class="b-delete b-is-large" @click="showContent = false"></button>
+              <div class="b-content b-my-6 b-is-normal">
+                {{ section.settings.expandable_content }}
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero-Content-collapsable",
+
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero Image"
+    },
+    {
+      "type": "text",
+      "id": "this_title",
+      "label": "Main Title",
+      "default": "Lorem Ipsum"
+    },
+    {
+      "type": "select",
+      "id": "title_htag",
+      "label": "Title H-tag",
+      "default": "h1",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "this_subtitle",
+      "label": "Subtitle",
+      "default": "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet"
+    },
+    {
+      "type": "select",
+      "id": "subtitle_htag",
+      "label": "SubTitle H-tag",
+      "default": "h2",
+      "options": [
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Comenzar"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button Link"
+    },
+    {
+      "type": "richtext",
+      "id": "expandable_content",
+      "label": "Additional Content",
+      "default": "<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "initial_expanded",
+      "label": "Show content expanded initially",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero-Content-collapsable",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,214 @@
+{%- if card_product and card_product != empty -%}
+  {% assign product = card_product %}
+
+  <style>
+    /* ==========================================================
+   b-carousel — PlayLoveToys / b-bulma-alpine component
+   Scroll-snap horizontal, mobile-first, ultra minimal
+   ========================================================== */
+
+    .b-carousel {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 1rem;
+      padding-bottom: 0.25rem; /* espacio para evitar corte del shadow */
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+
+      /* Ocultar scrollbar en Chrome/Safari */
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* Cards dentro del carrusel */
+      > .b-carousel-item {
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+
+        /* Permite usar cualquier card interna sin romper layout */
+        width: auto;
+
+        /* Clamp de anchura para mobile (estilo tienda) */
+        max-width: 80vw;
+      }
+    }
+
+    /* Desktop: cards ligeramente más grandes */
+    @media screen and (min-width: 1024px) {
+      .b-carousel > .b-carousel-item {
+        max-width: 320px;
+      }
+    }
+
+    /* Opcional: flechas flotantes */
+    .b-carousel-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
+      cursor: pointer;
+    }
+
+    .b-carousel-nav.is-left {
+      left: 0.25rem;
+    }
+
+    .b-carousel-nav.is-right {
+      right: 0.25rem;
+    }
+  </style>
+
+  <div
+    class="card-wrapper product-card-wrapper"
+    x-data="
+      productCard({
+        productUrl: '{{ product.url }}',
+        sectionId: '{{ section.id }}',
+        productId: '{{ product.id }}'
+      })
+    "
+  >
+    <!-- CARD -->
+    <div class="b-box b-p-2 b-align-items-stretch-tablet">
+      <div class="b-columns b-is-mobile b-row-to-col-tablet">
+        <div class="b-column b-is-half-mobile b-is-full-tablet b-card-image-wrapper">
+          <figure class="b-image">
+            <a href="{{ product.url }}">
+              {{
+                product.featured_media
+                | image_url: width: 600, pad_color: '000'
+                | image_tag:
+                  widths: '100,150,200,250,300, 350, 400, 450, 500, 550, 600',
+                  preload: false,
+                  loading: 'lazy',
+                  style: 'object-fit: contain;',
+                  class: 'b-has-rounded-corners'
+              }}
+            </a>
+          </figure>
+          <div class="b-tags b-has-addons b-my-3">
+            {%- if product.available == false -%}
+              <span class="b-tag b-has-background-gray b-is-size-6">
+                <i class="b-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+
+                    height="1em"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="m2 2 20 20"/><path d="M8.35 2.69A10 10 0 0 1 21.3 15.65"/><path d="M19.08 19.08A10 10 0 1 1 4.92 4.92"/>
+                  </svg></i
+                ><span>
+                  {{- 'products.product.sold_out' | t -}}
+                </span>
+              </span>
+            {%- else -%}
+              {% if product.compare_at_price > product.price %}
+                <span class="b-tag b-has-background-danger-light b-is-size-6">
+                  <i class="b-icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="1em"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="M9 9h.01"/><path d="M15 15h.01"/>
+                    </svg>
+                  </i>
+                  <span>
+                    {{- 'products.product.on_sale' | t -}}
+                  </span></span
+                >
+              {% endif %}
+              {% if product.price >= 7500 -%}
+                <span class="b-tag b-is-size-6 b-has-background-info-light">
+                  <span class="b-icon-text">
+                    <i class="b-icon">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        transform="scale(-1,1)"
+                        height="1em"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>
+                      </svg>
+                    </i>
+                    <span>Free</span>
+                  </span>
+                </span>
+              {%- endif -%}
+            {%- endif -%}
+          </div>
+        </div>
+        <!-- MOBILE -->
+        <div class="b-column b-is-half-mobile b-card-content-wrapper">
+          <div class="b-block">
+            <p class="b-title b-is-6 b-mb-2 b-has-text-primary b-is-family-secondary">
+              <a href="{{ product.url }}" class="full-unstyled-link">
+                {{ product.title | escape }}
+              </a>
+            </p>
+            <p class="b-subtitle b-is-uppercase b-is-6 b-mb-2 b-has-text-black b-is-family-secondary">
+              <a href="{{ product.url }}" class="full-unstyled-link">
+                {{ product.vendor | escape }}
+              </a>
+            </p>
+            <p class="b-is-size-6">
+              {{ product.type | default: '' }}
+            </p>
+          </div>
+          <div class="b-block">
+            <p class="b-title b-is-size-4 b-has-text-primary">
+              {% render 'price', product: product, price_class: '', show_compare_at_price: true %}
+            </p>
+            {%- if product.available == false -%}
+              <button
+                disabled
+                class="b-button b-has-background-gray b-is-fullwidth b-is-rounded"
+              >
+                Out of stock
+              </button>
+            {%- else -%}
+              <button class="b-button b-is-danger b-is-inverted b-is-fullwidth b-is-small b-is-rounded b-is-focused">
+                <span class="b-icon">
+                  <i>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="1em"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.103 6.034h17.794"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/>
+                    </svg>
+                  </i>
+                </span>
+
+                <span> Add To Bag</span>
+              </button>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END CARD -->
+  </div>
+{%- endif -%}

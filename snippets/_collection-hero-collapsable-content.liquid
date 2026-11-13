@@ -1,0 +1,122 @@
+{% liquid
+  assign section_id = section.id
+  assign image = collection.featured_image
+  assign content = header_content
+  assign subtitle_htag = subtitle_htag | default: 'p'
+  assign icon_fold_svg = 'm356-160-56-56 180-180 180 180-56 56-124-124-124 124Zm124-404L300-744l56-56 124 124 124-124 56 56-180 180Z'
+  assign icon_unfold_svg = 'M480-120 300-300l58-58 122 122 122-122 58 58-180 180ZM358-598l-58-58 180-180 180 180-58 58-122-122-122 122Z'
+
+  if image
+    assign has_image = true
+  else
+    assign has_image = false
+  endif
+
+  capture sanity_locale
+    render '_filter-locale'
+  endcapture
+  assign sanity_locale = sanity_locale | strip
+
+  capture localized_h1
+    render '_sanity-value', items: content.h1, key_prefix: 'h1', locale: sanity_locale
+  endcapture
+  assign localized_h1 = localized_h1 | strip
+
+  capture localized_subtitle
+    render '_sanity-value', items: content.subtitle, key_prefix: 'sub', locale: sanity_locale
+  endcapture
+  assign localized_subtitle = localized_subtitle | strip
+
+  capture localized_intro
+    render '_sanity-value', items: content.intro, key_prefix: 'intro', locale: sanity_locale
+  endcapture
+  assign localized_intro = localized_intro | strip
+
+  if localized_intro != blank
+    assign has_content = true
+  else
+    assign has_content = false
+  endif
+%}
+
+<!-- Hero section with toggle functionality -->
+<section class="b-section">
+  <div
+    x-data="
+      {
+        has_image: {{ has_image }},
+        has_content: {{ has_content }},
+        showContent: false,
+        fold_svg: '{{ icon_fold_svg }}',
+        unfold_svg: '{{ icon_unfold_svg }}',
+      }
+    "
+  >
+    <div class="b-page-width b-container">
+      <div class="b-box">
+        <div class="b-columns">
+          <!-- Left column - Image -->
+          {% if has_image %}
+            <div class="b-column b-is-3-tablet b-is-4-desktop b-is-align-content-center">
+              <div class="b-image b-is-fullwidth">
+                {% assign alt_text = collection.title | append: ' - ' | append: 'hero image' %}
+                {{
+                  image
+                  | image_url: width: 1200
+                  | image_tag:
+                    widths: '300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200',
+                    preload: true,
+                    loading: 'eager',
+                    alt: alt_text
+                }}
+              </div>
+            </div>
+          {% endif %}
+          <!-- Right column - Content -->
+          <div class="b-column b-is-align-content-space-evenly b-px-6-tablet b-mx-6-tablet">
+            <div class="b-block b-mx-4-desktop">
+              <h1 class="b-title b-is-size-1-desktop b-is-size-4">
+                {{ localized_h1 }}
+              </h1>
+
+              {% if localized_subtitle != blank %}
+                <h2 class="b-subtitle b-mt-6 b-is-size-3-desktop b-is-size-5">
+                  {{ localized_subtitle }}
+                </h2>
+              {% endif %}
+            </div>
+
+            <!-- Toggle button -->
+            {% if has_content %}
+              <div id="content-{{- section_id -}}">
+                <button
+                  class="b-button b-is-link b-is-outlined"
+                  @click.prevent="showContent = !showContent"
+                  :aria-expanded="showContent.toString()"
+                >
+                  <span class="b-icon b-is-small b-has-text-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                      <path x-bind:d="showContent ? fold_svg : unfold_svg"/>
+                    </svg>
+                  </span>
+                  <span>{{ 'sections.collections.learn_more' | t }}</span>
+                </button>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% if has_content %}
+        <div x-show="showContent" x-transition>
+          <!-- Expandable content -->
+          <div class="b-notification b-has-background-link-light">
+            <button class="b-delete b-is-large" @click="showContent = false"></button>
+            <div class="b-content b-my-6 b-is-medium">
+              {{ localized_intro }}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>

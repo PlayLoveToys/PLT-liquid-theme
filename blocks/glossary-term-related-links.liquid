@@ -1,0 +1,208 @@
+{% doc %}
+  Renders internal related links from glossary_term.related_links JSON field.
+  @example
+  {% content_for 'block', type: 'glossary-term-related-links', id: 'related-links' %}
+{% enddoc %}
+
+{% liquid
+  assign ai_gen_id = block.id | replace: '_', '' | downcase
+  assign related_links = metaobject.related_links.value
+%}
+
+{% if related_links != blank and related_links.size > 0 %}
+  {% style %}
+    .glossary-related-{{ ai_gen_id }} {
+      margin: {{ block.settings.margin_top }}px auto {{ block.settings.margin_bottom }}px;
+      max-width: {{ block.settings.container_width }}px;
+    }
+
+    .glossary-related__heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size }}px;
+      color: {{ block.settings.heading_color }};
+      margin-bottom: 20px;
+    }
+
+    .glossary-related__grid-{{ ai_gen_id }} {
+      display: grid;
+      grid-template-columns: repeat({{ block.settings.columns_desktop }}, 1fr);
+      gap: {{ block.settings.gap }}px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .glossary-related__link-{{ ai_gen_id }} {
+      display: block;
+      color: {{ block.settings.link_color }};
+      background-color: {{ block.settings.link_background }};
+      padding: 12px 16px;
+      border-radius: {{ block.settings.link_border_radius }}px;
+      text-decoration: none;
+      text-align: center;
+      font-weight: 500;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease-in-out;
+    }
+
+    .glossary-related__link-{{ ai_gen_id }}:hover,
+    .glossary-related__link-{{ ai_gen_id }}:focus {
+      color: {{ block.settings.link_hover_color }};
+      background-color: {{ block.settings.link_hover_background }};
+      transform: translateY(-2px);
+    }
+
+    @media screen and (max-width: 749px) {
+      .glossary-related__grid-{{ ai_gen_id }} {
+        grid-template-columns: repeat({{ block.settings.columns_mobile }}, 1fr);
+      }
+    }
+  {% endstyle %}
+
+  <div class="glossary-related-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+    {% if block.settings.heading != blank %}
+      <h2 class="glossary-related__heading-{{ ai_gen_id }} b-title">
+        {{ block.settings.heading }}
+      </h2>
+    {% endif %}
+
+    <ul class="glossary-related__grid-{{ ai_gen_id }}">
+      {% for link in related_links %}
+        {% if link.url != blank and link.label != blank %}
+          <li>
+            <a href="{{ link.url }}" class="glossary-related__link-{{ ai_gen_id }} b-link">
+              {{ link.label }}
+            </a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Glossary related links",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Related topics"
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "min": 600,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "label": "Container width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "label": "Columns (desktop)",
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "label": "Columns (mobile)",
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 8,
+      "max": 32,
+      "step": 4,
+      "unit": "px",
+      "label": "Gap",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 16,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading size",
+      "default": 28
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link hover color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "link_background",
+      "label": "Link background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_background",
+      "label": "Link hover background",
+      "default": "#533278"
+    },
+    {
+      "type": "range",
+      "id": "link_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Link border radius",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Top margin",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom margin",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "Glossary related links"
+    }
+  ]
+}
+{% endschema %}

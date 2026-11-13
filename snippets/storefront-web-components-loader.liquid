@@ -1,0 +1,10 @@
+{% comment %}Load Shopify Storefront Web Components once{% endcomment %}
+{% if settings.storefront_web_components_url != blank %}
+  <script type="module" src="{{ settings.storefront_web_components_url }}"></script>
+{% else %}
+  {%- comment -%}
+    The documented ESM URL at /storefront/web-components.esm.js can 404 intermittently.
+    Use the stable non-ESM bundle which self-registers the custom elements.
+  {%- endcomment -%}
+  <script src="https://cdn.shopify.com/storefront/web-components.js" defer></script>
+{% endif %}

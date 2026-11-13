@@ -1,0 +1,41 @@
+{%- liquid
+  assign schema_origin = request.origin
+  assign collection_canonical = canonical_url | default: '' | split: '?' | first
+  assign schema_limit = limit | default: 20
+-%}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": {{ collection.title | json }},
+    "url": {{ collection_canonical | json }},
+    "numberOfItems": {{ collection.products_count }},
+    "itemListElement": [
+      {%- paginate collection.products by schema_limit -%}
+        {%- assign position = 0 -%}
+        {%- assign first_item = true -%}
+        {%- for product in collection.products -%}
+          {%- if product.available -%}
+            {%- assign position = position | plus: 1 -%}
+            {%- if position > schema_limit -%}
+              {%- break -%}
+            {%- endif -%}
+            {%- unless first_item -%},{%- endunless -%}
+            {
+              "@type": "ListItem",
+              "position": {{ position }},
+              "item": {
+                "@type": "Product",
+                "@id": {{ product.url | prepend: schema_origin | json }},
+                "name": {{ product.title | json }},
+                "url": {{ product.url | prepend: schema_origin | json }},
+                "image": {{ product.featured_image | image_url: width: 600 | prepend: 'https:' | json }}
+              }
+            }
+            {%- assign first_item = false -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endpaginate -%}
+    ]
+  }
+</script>

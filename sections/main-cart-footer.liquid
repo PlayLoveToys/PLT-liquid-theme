@@ -1,0 +1,210 @@
+<div
+  x-data
+  x-show="$store.cart.item_count > 0"
+  x-cloak
+  class="b-container b-is-max-tablet b-py-3 b-px-3"
+>
+  <!-- Cart note (si está habilitado) -->
+  {% if settings.show_cart_note %}
+    <div class="b-mb-5">
+      <label for="Cart-note" class="b-label b-mb-2">
+        {{ 'sections.cart.note' | t }}
+      </label>
+      <textarea
+        class="b-textarea"
+        name="note"
+        form="cart"
+        id="Cart-note"
+        placeholder="{{ 'sections.cart.note' | t }}"
+      >{{ cart.note }}</textarea>
+    </div>
+  {% endif %}
+
+  <div class="b-mb-5 b-box">
+    {% if cart.cart_level_discount_applications.size > 0 %}
+      <div class="b-mb-5">
+        <h3 class="b-is-size-6 b-has-text-weight-semibold b-mb-2">Discounts applied</h3>
+
+        <ul class="b-pl-4">
+          {% for discount in cart.cart_level_discount_applications %}
+            <li class="b-is-flex b-is-align-items-center b-is-justify-content-space-between b-mb-1">
+              <span class="b-is-flex b-is-align-items-center">
+                <span class="b-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/>
+                    <circle cx="7.5" cy="7.5" r="1.5" fill="currentColor"/>
+                  </svg>
+                </span>
+                <span class="b-ml-2">{{ discount.title }}</span>
+              </span>
+              <div>
+                <span class="b-has-text-weight-semibold b-mr-3">−{{ discount.total_allocated_amount | money }} </span>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% else %}
+      <!-- AGREGAR CÓDIGO DESCUENTO -->
+      <div class="b-mb-5">
+        <h3 class="b-is-size-6 b-has-text-weight-semibold b-mb-2">Discount code</h3>
+
+        <form action="{{ routes.cart_url }}" method="post">
+          <div class="b-field b-has-addons">
+            <div class="b-control b-is-expanded">
+              <input
+                type="text"
+                name="discount"
+                id="cart-discount-code"
+                class="b-input"
+                placeholder="Enter discount code"
+              >
+            </div>
+            <div class="b-control">
+              <button type="submit" name="checkout" class="b-button b-is-primary">Apply</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+  <!-- Totals Card -->
+  <div class="b-box b-p-4 b-mb-5">
+    <!-- Línea horizontal estilo ecuación -->
+    <div x-data class="b-is-flex b-is-align-items-center b-is-justify-content-space-between">
+      <span class="b-is-size-5 b-has-text-weight-semibold">
+        {{ 'sections.cart.estimated_total' | t }}
+      </span>
+
+      <strong class="b-is-size-4">
+        <span>{{ cart.currency.symbol }}</span>
+        <span x-text="$store.cart.total_price / 100">{{ cart.total_price | money_with_currency }}</span>
+        <span> {{ cart.currency.iso_code }}</span>
+      </strong>
+    </div>
+
+    <!-- Tax + Duties -->
+    <p class="b-is-size-7 b-has-text-grey-dark b-mt-2">
+      {% if cart.duties_included and cart.taxes_included %}
+        {% if shop.shipping_policy.body == blank %}
+          {{ 'sections.cart.duties_and_taxes_included_shipping_at_checkout_without_policy' | t }}
+        {% else %}
+          {{
+            'sections.cart.duties_and_taxes_included_shipping_at_checkout_with_policy_html'
+            | t: link: shop.shipping_policy.url
+          }}
+        {% endif %}
+      {% elsif cart.duties_included == false and cart.taxes_included %}
+        {% if shop.shipping_policy.body == blank %}
+          {{ 'sections.cart.taxes_included_shipping_at_checkout_without_policy' | t }}
+        {% else %}
+          {{ 'sections.cart.taxes_included_shipping_at_checkout_with_policy_html' | t: link: shop.shipping_policy.url }}
+        {% endif %}
+      {% elsif cart.duties_included and cart.taxes_included == false %}
+        {% if shop.shipping_policy.body == blank %}
+          {{ 'sections.cart.duties_included_taxes_at_checkout_shipping_at_checkout_without_policy' | t }}
+        {% else %}
+          {{
+            'sections.cart.duties_included_taxes_at_checkout_shipping_at_checkout_with_policy_html'
+            | t: link: shop.shipping_policy.url
+          }}
+        {% endif %}
+      {% else %}
+        {% if shop.shipping_policy.body == blank %}
+          {{ 'sections.cart.taxes_at_checkout_shipping_at_checkout_without_policy' | t }}
+        {% else %}
+          {{
+            'sections.cart.taxes_at_checkout_shipping_at_checkout_with_policy_html'
+            | t: link: shop.shipping_policy.url
+          }}
+        {% endif %}
+      {% endif %}
+    </p>
+  </div>
+
+  <!-- Checkout Buttons -->
+  <div class="b-mt-4">
+    <button
+      type="submit"
+      name="checkout"
+      form="cart"
+      id="checkout"
+      x-data
+      :class="$store.cart.item_count > 0? 'b-is-focused' : ''"
+      :disabled="$store.cart.item_count <= 0"
+      class="b-button b-is-link b-is-fullwidth b-is-medium"
+    >
+      {{ 'sections.cart.checkout' | t }}
+    </button>
+
+    {% if additional_checkout_buttons %}
+      <div class="b-mt-3">
+        {{ content_for_additional_checkout_buttons }}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main-cart-footer.name",
+  "class": "cart__footer-wrapper",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "subtotal",
+      "name": "t:sections.main-cart-footer.blocks.subtotal.name",
+      "limit": 1
+    },
+    {
+      "type": "buttons",
+      "name": "t:sections.main-cart-footer.blocks.buttons.name",
+      "limit": 1
+    },
+    {
+      "type": "@app"
+    }
+  ]
+}
+{% endschema %}

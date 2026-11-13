@@ -1,0 +1,83 @@
+{% comment %}
+  Renders a set of links for paginated results. Must be used within paginate tags.
+
+  Usage:
+  {% paginate results by 2 %}
+    {% render 'pagination', paginate: paginate, anchor: '#yourID' %}
+  {% endpaginate %}
+
+  Accepts:
+  - paginate: {Object}
+  - anchor: {String} (optional) This can be added so that on page reload it takes you to wherever you've placed your anchor tag.
+{% endcomment %}
+
+{%- if paginate.parts.size > 0 -%}
+  <nav
+    class="b-pagination b-is-centered"
+    role="navigation"
+    aria-label="{{ 'general.pagination.label' | t }}"
+    data-page="{{ paginate.current_page }}"
+  >
+    {%- if paginate.previous -%}
+      <a
+        href="{{ paginate.previous.url }}{{ anchor }}"
+        class="b-pagination-previous"
+        aria-label="{{ 'general.pagination.previous' | t }}"
+      >
+        {{- 'general.pagination.previous' | t -}}
+      </a>
+    {%- else -%}
+      <a
+        class="b-pagination-previous b-is-disabled"
+        aria-disabled="true"
+        aria-label="{{ 'general.pagination.previous' | t }}"
+      >
+        {{- 'general.pagination.previous' | t -}}
+      </a>
+    {%- endif -%}
+
+    {%- if paginate.next -%}
+      <a
+        href="{{ paginate.next.url }}{{ anchor }}"
+        class="b-pagination-next"
+        aria-label="{{ 'general.pagination.next' | t }}"
+      >
+        {{- 'general.pagination.next' | t -}}
+      </a>
+    {%- else -%}
+      <a
+        class="b-pagination-next b-is-disabled"
+        aria-disabled="true"
+        aria-label="{{ 'general.pagination.next' | t }}"
+      >
+        {{- 'general.pagination.next' | t -}}
+      </a>
+    {%- endif -%}
+
+    <ul class="b-pagination-list">
+      {%- for part in paginate.parts -%}
+        <li>
+          {%- if part.is_link -%}
+            <a
+              href="{{ part.url }}{{ anchor }}"
+              class="b-pagination-link"
+              aria-label="{{ 'general.pagination.page' | t: number: part.title }}"
+            >
+              {{- part.title -}}
+            </a>
+          {%- elsif part.title == paginate.current_page -%}
+            <a
+              class="b-pagination-link b-is-current"
+              aria-current="page"
+              aria-label="{{ 'general.pagination.page' | t: number: part.title }}"
+            >
+              {{- part.title -}}
+            </a>
+          {%- else -%}
+            <span class="b-pagination-ellipsis" aria-hidden="true">&hellip;</span>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  </nav>
+{%- endif -%}

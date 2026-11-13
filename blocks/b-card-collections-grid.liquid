@@ -1,0 +1,160 @@
+<div class="b-column b-is-3-desktop b-is-6-tablet" {{ block.shopify_attributes }}>
+  {% render 'c-card-collections-grid', block: block %}
+</div>
+
+<script>
+  if (window.matchMedia('(min-width: 769px)').matches) {
+    const images = document.getElementsByClassName('image-priority-desktop-{{- block.id -}}');
+    Array.from(images).forEach((img) => {
+      img.loading = 'eager';
+      img.fetchPriority = 'high';
+    });
+  } else {
+    const images = document.getElementsByClassName('image-priority-mobile-{{- block.id -}}');
+    Array.from(images).forEach((img) => {
+      img.loading = 'eager';
+      img.fetchPriority = 'high';
+    });
+  }
+</script>
+
+{% schema %}
+{
+  "name": "b-card-collections-grid",
+
+  "settings": [
+    {
+      "type": "header",
+      "content": "Main Collection"
+    },
+    {
+      "type": "collection",
+      "id": "main_collection",
+      "label": "Main Collection",
+      "info": "Used for default CTA URL and title if not overridden"
+    },
+    {
+      "type": "text",
+      "id": "collections_card_title",
+      "label": "Card Title",
+      "info": "Override the main collection title"
+    },
+    {
+      "type": "header",
+      "content": "Loading priority"
+    },
+    {
+      "type": "checkbox",
+      "id": "priority_desktop",
+      "label": "Priority loading desktop",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "priority_mobile",
+      "label": "priority loading mobile",
+      "default": false
+    },
+
+    {
+      "type": "header",
+      "content": "Collection for the grid"
+    },
+    {
+      "type": "collection",
+      "id": "collection_1",
+      "label": "Collection 1",
+      "info": "Collection to be displayed in the grid"
+    },
+    {
+      "type": "text",
+      "id": "collection_1_title",
+      "label": "Collection 1 Title",
+      "info": "Title of the collection 1 if not default to collection name"
+    },
+
+    {
+      "type": "collection",
+      "id": "collection_2",
+      "label": "Collection 2",
+      "info": "Collection 2 to be displayed in the grid"
+    },
+    {
+      "type": "text",
+      "id": "collection_2_title",
+      "label": "Collection 2 Title",
+      "info": "Title of the collection 2 if not default to collection name"
+    },
+    {
+      "type": "collection",
+      "id": "collection_3",
+      "label": "Collection 3",
+      "info": "Collection 3 to be displayed in the grid"
+    },
+    {
+      "type": "text",
+      "id": "collection_3_title",
+      "label": "Collection 3 Title",
+      "info": "Title of the collection 3 if not default to collection name"
+    },
+    {
+      "type": "collection",
+      "id": "collection_4",
+      "label": "Collection 4",
+      "info": "Collection 4 to be displayed in the grid"
+    },
+    {
+      "type": "text",
+      "id": "collection_4_title",
+      "label": "Collection 4 Title",
+      "info": "Title of the collection 4 if not default to collection name"
+    },
+    {
+      "type": "collection",
+      "id": "collection_5",
+      "label": "Collection 5",
+      "info": "Collection 5 to be displayed in the grid"
+    },
+    {
+      "type": "text",
+      "id": "collection_5_title",
+      "label": "Collection 5 Title",
+      "info": "Title of the collection 5 if not default to collection name"
+    },
+    {
+      "type": "collection",
+      "id": "collection_6",
+      "label": "Collection 6",
+      "info": "Collection 6 to be displayed in the grid"
+    },
+    {
+      "type": "text",
+      "id": "collection_6_title",
+      "label": "Collection 6 Title",
+      "info": "Title of the collection 6 if not default to collection name"
+    },
+    {
+      "type": "header",
+      "content": "Card Footer"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA Text",
+      "default": "View All"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "CTA URL",
+      "info": "Override the main collection URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "b-card-collections-grid",
+      "category": "b-Blocks"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,127 @@
+{%- if card_product and card_product != empty -%}
+  <div
+    class="card-wrapper product-card-wrapper"
+    x-data="
+      productCard({
+        productUrl: '{{ card_product.url }}',
+        sectionId: '{{ section.id }}',
+        productId: '{{ card_product.id }}'
+      })
+    "
+  >
+    <div class="b-card" style="height: 100%; display: flex; flex-direction: column;">
+      {%- if card_product.featured_media -%}
+        <a href="{{ card_product.url }}" class="full-unstyled-link" tabindex="-1">
+          <div style="position: relative; z-index: 0">
+            <div class="b-card-image">
+              <figure class="b-image b-is-fullwidth b-is-1by1">
+                {%- assign card_alt = card_product.featured_media.alt | default: card_product.title -%}
+              {{
+                  card_product.featured_media
+                  | image_url: width: 300, pad_color: '000'
+                  | image_tag:
+                    widths: '300, 350, 400, 450, 500, 550, 600',
+                    preload: false,
+                    loading: 'lazy',
+                    style: 'object-fit: contain;',
+                    alt: card_alt
+                }}
+              </figure>
+            </div>
+            {%- if card_product.available == false -%}
+              <span class="b-tag-bottom-right b-badge-info">
+                {{- 'products.product.sold_out' | t -}}
+              </span>
+            {%- elsif card_product.compare_at_price > card_product.price and card_product.available -%}
+              <span class="b-tag-bottom-right b-badge-link">
+                {{- 'products.product.on_sale' | t -}}
+              </span>
+            {%- endif -%}
+          </div>
+        </a>
+      {%- endif -%}
+      <div class="b-card-content b-px-2 b-is-flex b-is-flex-direction-column b-is-flex-grow-1">
+        <div class="b-content b-is-flex-grow-1">
+          <br>
+          <p class="b-title b-is-6 b-mb-2 b-has-text-black b-is-family-secondary">
+            <a href="{{ card_product.url }}" class="full-unstyled-link">
+              {{ card_product.title | escape }}
+            </a>
+          </p>
+
+          <p class="b-is-size-6 b-has-text-grey-dark-dark b-mb-2 b-subtitle">{{ card_product.vendor }}</p>
+
+          {%- if show_rating and card_product.metafields.reviews.rating.value != blank -%}
+            {% liquid
+              assign rating_decimal = 0
+              assign decimal = card_product.metafields.reviews.rating.value.rating | modulo: 1
+              if decimal >= 0.3 and decimal <= 0.7
+                assign rating_decimal = 0.5
+              elsif decimal > 0.7
+                assign rating_decimal = 1
+              endif
+            %}
+            <div
+              class="rating b-mb-2"
+              role="img"
+              aria-label="{{ 'accessibility.star_reviews_info' | t: rating_value: card_product.metafields.reviews.rating.value, rating_max: card_product.metafields.reviews.rating.value.scale_max }}"
+            >
+              <span
+                aria-hidden="true"
+                class="rating-star"
+                style="--rating: {{ card_product.metafields.reviews.rating.value.rating | floor }}; --rating-max: {{ card_product.metafields.reviews.rating.value.scale_max }}; --rating-decimal: {{ rating_decimal }};"
+              ></span>
+              <span class="rating-text caption">
+                <span aria-hidden="true"> ({{ card_product.metafields.reviews.rating_count }}) </span>
+                <span class="visually-hidden">
+                  {{- card_product.metafields.reviews.rating_count }}
+                  {{ 'accessibility.total_reviews' | t -}}
+                </span>
+              </span>
+            </div>
+          {%- endif -%}
+
+          {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
+
+          {%- if card_product.quantity_price_breaks_configured? -%}
+            <div class="b-is-size-6 b-has-text-grey-dark-dark b-mt-2">
+              <span>{{ 'products.product.volume_pricing.note' | t }}</span>
+            </div>
+          {%- endif -%}
+
+          <!-- Error Message Display -->
+          <div class="product-form__error-message-wrapper" x-show="errorMessage" x-cloak>
+            <span class="product-form__error-message" x-text="errorMessage"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{%- else -%}
+  <div class="card-wrapper product-card-wrapper">
+    <div class="b-card" style="height: 100%;">
+      <div class="b-card-image">
+        <figure class="b-image b-is-1by1">
+          {%- if placeholder_image -%}
+            {{ placeholder_image | placeholder_svg_tag: 'placeholder-svg' }}
+          {%- else -%}
+            {{ 'product-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
+          {% endif %}
+        </figure>
+      </div>
+      <div class="b-card-content">
+        <div class="b-content">
+          <p class="b-title b-is-5 b-mb-2">
+            <a role="link" aria-disabled="true" class="full-unstyled-link">
+              {{ 'onboarding.product_title' | t }}
+            </a>
+          </p>
+          {%- if show_vendor -%}
+            <p class="b-is-size-7 b-has-text-grey-dark b-mb-2">{{ 'products.product.vendor' | t }}</p>
+          {%- endif -%}
+          {% render 'price', placeholder: true, show_compare_at_price: true %}
+        </div>
+      </div>
+    </div>
+  </div>
+{%- endif -%}

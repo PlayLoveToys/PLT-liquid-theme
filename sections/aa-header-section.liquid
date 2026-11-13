@@ -1,0 +1,110 @@
+{% liquid
+  assign title_htag = section.settings.title_htag
+  assign main_title = section.settings.main_title
+  assign subtitle = section.settings.subtitle
+  assign subtitle_htag = section.settings.subtitle_htag
+  assign content = section.settings.content
+  assign button_text = section.settings.button_text
+%}
+
+<div class="b-page-width">
+  <section class="b-section">
+    <b-block>
+      <{{ title_htag }} class="b-title">
+        {{ main_title }}
+      </{{ title_htag }}>
+      {% if subtitle %}
+        <{{ subtitle_htag }} class="b-subtitle b-mt-4">
+          {{ subtitle }}
+        </{{ subtitle_htag }}>
+      {% endif %}
+      {% if content %}
+        <div class="b-content b-mt-6">
+          {{ content }}
+        </div>
+      {% endif %}
+      {% if section.settings.button_link and section.settings.button_link != '/' %}
+        <div class="b-mt-6">
+          <a href="{{ section.settings.button_link }}" class="b-button b-is-primary">
+            {{ button_text }}
+          </a>
+        </div>
+      {% endif %}
+    </b-block>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "AA Header Section",
+  "tag": "section",
+  "class": "aa-header-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "main_title",
+      "label": "Main Title",
+      "default": "Welcome to Our Store",
+      "info": "** Required Field **"
+    },
+    {
+      "type": "select",
+      "id": "title_htag",
+      "label": "Title H-tag",
+      "default": "h1",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Discover our exclusive products"
+    },
+    {
+      "type": "select",
+      "id": "subtitle_htag",
+      "label": "Subtitle H-tag",
+      "default": "h2",
+      "options": [
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" }
+      ]
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Content",
+      "default": "<p>Donec at arcu rutrum, mattis mauris et, tempus arcu. Duis volutpat nec metus in gravida. Vivamus dapibus sem a laoreet euismod. In hac habitasse platea dictumst. Aenean consequat lacinia ligula, in efficitur velit posuere porta. Vestibulum dictum diam purus, vel pulvinar purus suscipit et. Sed at neque et est aliquet hendrerit sed at nisi. Integer nec eros non enim viverra suscipit. Morbi tincidunt sollicitudin ligula nec blandit.</p>"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link",
+      "default": "/"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image"
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "AA Header Section",
+      "category": "AA Sections"
+    }
+  ]
+}
+{% endschema %}

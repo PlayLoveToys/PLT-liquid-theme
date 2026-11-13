@@ -1,0 +1,115 @@
+{% liquid
+  assign bg_type = block.settings.slice_background_type | default: 'inherit'
+  assign style_attr = ''
+  if bg_type == 'solid'
+    assign style_attr = 'background-color: ' | append: block.settings.slice_bg_solid_color
+  elsif bg_type == 'gradient'
+    assign dir = block.settings.slice_gradient_direction | default: '135deg'
+    assign c1 = block.settings.slice_gradient_color_1 | default: '#667eea'
+    assign c2 = block.settings.slice_gradient_color_2 | default: '#764ba2'
+    assign style_attr = 'background: linear-gradient(' | append: dir | append: ', ' | append: c1 | append: ', ' | append: c2 | append: ')'
+  endif
+%}
+<div class="b-box banner-content-{{ block.id }}">
+  <div
+    class="b-columns slice-{{ block.id }}"
+    {% if style_attr != '' %}
+      style="{{ style_attr }}"
+    {% endif %}
+    {{ block.shopify_attributes }}
+  >
+    {% if block.settings.slice_image != blank %}
+      <div class="b-column b-is-3">
+        <div class="b-image b-is-fullwidth">
+          {{
+            block.settings.slice_image
+            | image_url: width: 300
+            | image_tag:
+              widths: '50, 100,150, 200, 250, 300, 350, 400, 450, 500, 550, 600',
+              class: 'multicolumn-grid__image',
+              loading: 'lazy'
+          }}
+        </div>
+      </div>
+    {% endif %}
+    {% liquid
+      assign alignment_settings = 'slice_alignment_mobile,slice_alignment_tablet,slice_alignment_desktop,slice_alignment_widescreen,slice_alignment_fullhd' | split: ','
+      assign alignment_classes = ''
+
+      for setting in alignment_settings
+        assign value = block.settings[setting]
+        if value != ''
+          assign alignment_classes = alignment_classes | append: ' ' | append: value
+        endif
+      endfor
+    %}
+
+    <div class="b-column b-is-align-content-space-evenly b-is-justify-content-center b-px-6-tablet b-mx-6-tablet{{ alignment_classes }}">
+      {%- comment -%} Render child blocks {%- endcomment -%}
+      {% for child_block in block.blocks %}
+        <div class="b-block">
+          {% render child_block %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% style %}
+  /* Banner slice styles */
+  .slice-{{ block.id }} {
+    /* Add any specific slice styling here */
+  }
+{% endstyle %}
+{% schema %}
+{
+  "name": "AA Slice",
+  "tag": "block",
+  "class": "AA Blocks",
+  "blocks": [
+    {
+      "type": "_aa-styled-text-block"
+    },
+    {
+      "type": "_aa-styled-button"
+    }
+  ],
+
+  "settings": [
+    { "type": "image_picker", "id": "slice_image", "label": "Image" },
+
+    { "type": "header", "content": "Background Settings" },
+    {
+      "type": "select",
+      "id": "slice_background_type",
+      "label": "Background Type",
+      "options": [
+        { "value": "inherit", "label": "Inherit section" },
+        { "value": "solid", "label": "Solid" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "default": "inherit"
+    },
+    { "type": "color", "id": "slice_bg_solid_color", "label": "Background Color", "default": "#f5f5f5" },
+    { "type": "color", "id": "slice_gradient_color_1", "label": "Gradient Start", "default": "#667eea" },
+    { "type": "color", "id": "slice_gradient_color_2", "label": "Gradient End", "default": "#764ba2" },
+    {
+      "type": "select",
+      "id": "slice_gradient_direction",
+      "label": "Gradient Direction",
+      "options": [
+        { "value": "to right", "label": "Left to Right →" },
+        { "value": "to bottom", "label": "Top to Bottom ↓" },
+        { "value": "to bottom right", "label": "Diagonal ↘" },
+        { "value": "135deg", "label": "Diagonal ↗" }
+      ],
+      "default": "135deg"
+    }
+  ],
+  "presets": [
+    {
+      "name": "aa-banner-slice",
+      "category": "AA Blocks"
+    }
+  ]
+}
+{% endschema %}

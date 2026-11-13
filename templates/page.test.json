@@ -1,0 +1,222 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "custom_section_M4z9rE": {
+      "type": "custom_section",
+      "blocks": {
+        "breadcrumb_aVqCDD": {
+          "type": "breadcrumb",
+          "settings": {
+            "home_text": "",
+            "show_home_icon": true,
+            "separator_style": "arrow",
+            "font_size": 18,
+            "font_weight": "500",
+            "background_color": "#f4f4f4",
+            "link_color": "#533278",
+            "link_hover_color": "#f4436c",
+            "link_hover_background": "#f4f4f4",
+            "current_color": "#533278",
+            "current_background": "#f4f4f4",
+            "separator_color": "#533278",
+            "focus_color": "#0c7489",
+            "padding_top": 4,
+            "padding_bottom": 10,
+            "item_spacing": 4,
+            "border_radius": 6
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "breadcrumb_aVqCDD"
+      ],
+      "name": "Breadcrumb",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "background_color": "#ffffff",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "content_padding_top": 0,
+        "content_padding_bottom": 0,
+        "content_padding_left": 0,
+        "content_padding_right": 0,
+        "custom_class": "custom-section-class"
+      }
+    },
+    "main": {
+      "type": "main-page",
+      "settings": {
+        "padding_top": 28,
+        "padding_bottom": 28
+      }
+    },
+    "newsletter_8MGyJw": {
+      "type": "newsletter",
+      "blocks": {
+        "heading_JHTtxe": {
+          "type": "heading",
+          "settings": {
+            "heading": "Subscribe to our emails",
+            "heading_size": "h1"
+          }
+        },
+        "paragraph_K3iCzc": {
+          "type": "paragraph",
+          "settings": {
+            "text": "<p>Be the first to know about new collections and exclusive offers.</p>"
+          }
+        },
+        "email_form_qghYwQ": {
+          "type": "email_form",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "heading_JHTtxe",
+        "paragraph_K3iCzc",
+        "email_form_qghYwQ"
+      ],
+      "name": "t:sections.newsletter.presets.name",
+      "settings": {
+        "color_scheme": "",
+        "full_width": true,
+        "padding_top": 40,
+        "padding_bottom": 52
+      }
+    },
+    "featured_collection_pYtz6Q": {
+      "type": "featured-collection",
+      "name": "t:sections.featured-collection.presets.name",
+      "settings": {
+        "collection": "sex-toys-new-arrival",
+        "products_to_show": 18,
+        "title": "New Arrivals",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "",
+        "image_ratio": "square",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": true,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_tablet": "4",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "175306098485c3e01c": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_81d98c4_HUhb3N": {
+          "type": "blog-carousel",
+          "settings": {
+            "heading": "Latest Blog Posts",
+            "subheading": "Stay updated with our latest articles and insights",
+            "blog": "playful-connect",
+            "max_posts": 12,
+            "posts_per_view": 4,
+            "posts_per_view_mobile": 1,
+            "card_gap": 20,
+            "image_height": 400,
+            "text_alignment": "center",
+            "show_navigation": true,
+            "show_dots": true,
+            "autoplay": true,
+            "autoplay_speed": 5,
+            "background_color": "#f4f4f4",
+            "text_color": "#000000",
+            "card_background_color": "#ffffff",
+            "card_text_color": "#000000",
+            "nav_button_color": "#f4436c",
+            "nav_button_text_color": "#ffffff",
+            "nav_button_hover_color": "#333333",
+            "dot_color": "#0c7489",
+            "dot_active_color": "#000000",
+            "heading_size": 32,
+            "subheading_size": 16,
+            "section_padding": 40,
+            "border_radius": 8,
+            "card_border_radius": 8
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_81d98c4_HUhb3N"
+      ],
+      "settings": {
+        "content_direction": "row",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "center",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#533278",
+        "overlay_style": "gradient",
+        "gradient_direction": "to bottom",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+  },
+  "order": [
+    "custom_section_M4z9rE",
+    "main",
+    "newsletter_8MGyJw",
+    "featured_collection_pYtz6Q",
+    "175306098485c3e01c",
+  ]
+}

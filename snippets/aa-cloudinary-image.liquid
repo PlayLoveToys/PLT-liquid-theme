@@ -1,0 +1,34 @@
+{%- assign loading_attr = loading | default: 'eager' -%}
+{%- assign image_public_id = public_id | default: 'sample.jpg' -%}
+{%- if alt and alt != '' -%}
+  {%- assign alt_text = alt -%}
+{%- else -%}
+  {%- assign alt_text = 'PlayLoveToys - ' | append: image_public_id -%}
+{%- endif -%}
+{%- assign sizes_mobile = image_size_mobile | default: '750px' -%}
+{%- assign sizes_tablet = image_size_tablet | default: '990px' -%}
+{%- assign sizes_desktop = image_size_desktop | default: '1600px' -%}
+
+<img
+  width="{{ image.width }}"
+  height="{{ image.height }}"
+  {% if class and class != '' %}
+    class="{{ class | escape }}"
+  {% endif %}
+  decoding="async"
+  loading="{{ loading_attr }}"
+  {% if loading_attr == 'eager' %}
+    fetchpriority="high"
+  {% endif %}
+  src="https://res.cloudinary.com/dv0xafomh/image/upload/f_webp%2Cq_auto%2Cdpr_auto%2Cw_{{- sizes_mobile | remove: "px" -}}/{{- image_public_id -}}"
+  srcset="
+    https://res.cloudinary.com/dv0xafomh/image/upload/f_webp%2Cq_auto%2Cdpr_auto%2Cw_{{- sizes_mobile | remove: "px" | divided_by: 2 -}}/{{ image_public_id }}   {{- sizes_mobile | remove: "px" | divided_by: 2 -}}w,
+    https://res.cloudinary.com/dv0xafomh/image/upload/f_webp%2Cq_auto%2Cdpr_auto%2Cw_{{- sizes_mobile | remove: "px" -}}/{{ image_public_id }}   {{- sizes_mobile | remove: "px" -}}w,
+    https://res.cloudinary.com/dv0xafomh/image/upload/f_webp%2Cq_auto%2Cdpr_auto%2Cw_{{- sizes_tablet | remove: "px" | divided_by: 2 -}}/{{ image_public_id }}   {{- sizes_tablet | remove: "px" | divided_by: 2 -}}w,
+    https://res.cloudinary.com/dv0xafomh/image/upload/f_webp%2Cq_auto%2Cdpr_auto%2Cw_{{- sizes_tablet | remove: "px" }}/{{ image_public_id }}   {{- sizes_tablet | remove: "px" }}w,
+    https://res.cloudinary.com/dv0xafomh/image/upload/f_webp%2Cq_auto%2Cdpr_auto%2Cw_{{- sizes_desktop | remove: "px" | divided_by: 2 -}}/{{ image_public_id }}   {{- sizes_desktop | remove: "px" | divided_by: 2 -}}w,
+    https://res.cloudinary.com/dv0xafomh/image/upload/f_webp%2Cq_auto%2Cdpr_auto%2Cw_{{- sizes_desktop | remove: "px" }}/{{ image_public_id }}   {{- sizes_desktop | remove: "px" }}w,
+  "
+  sizes="(max-width: 750px) {{ sizes_mobile }}, (max-width: 990px) {{ sizes_tablet }}, {{ sizes_desktop }}"
+  alt="{{ alt_text | escape }}"
+>

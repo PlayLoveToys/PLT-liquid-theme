@@ -1,0 +1,183 @@
+{% comment %}
+  Renders facets (filtering and sorting) as a unified drawer.
+  Accepts:
+  - results: {Object} Collection or Search object
+{% endcomment %}
+
+{%- liquid
+  assign sort_by = results.sort_by | default: results.default_sort_by
+
+  if results.url
+    assign results_url = results.url
+    assign form_action = results.url
+  else
+    assign terms = results.terms | escape
+    assign results_url = '?q=' | append: terms | append: '&options%5Bprefix%5D=last&sort_by=' | append: sort_by
+    assign form_action = routes.search_url
+  endif
+-%}
+
+<div x-data="{ drawerOpen: false }" class="b-container facets-wrapper">
+  <!-- Trigger Sticky -->
+  <div class="b-level b-top-4 b-px-4 b-border-bottom-light">
+    <div class="b-level-left">
+      <button
+        type="button"
+        class="b-button b-is-primary b-is-light"
+        @click="drawerOpen = true"
+      >
+        <span class="b-icon">
+          {{ 'icon-filter.svg' | inline_asset_content }}
+        </span>
+        <span class="b-is-size-5">{{ 'products.facets.filter_and_sort' | t }}</span>
+      </button>
+    </div>
+
+    <div class="b-level-right">
+      <p class="b-is-size-5">
+        {% if results.results_count %}
+          {{ 'templates.search.results_with_count' | t: terms: results.terms, count: results.results_count }}
+        {% else %}
+          {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
+        {% endif %}
+      </p>
+    </div>
+  </div>
+
+  <!-- Drawer Component -->
+  <div
+    class="b-drawer"
+    :class="{ 'b-is-active': drawerOpen }"
+    @keydown.escape.window="drawerOpen = false"
+  >
+    <div class="b-drawer-background" @click="drawerOpen = false"></div>
+
+    <div class="b-drawer-panel">
+      <form
+        id="FacetFiltersForm"
+        action="{{ form_action }}"
+        x-target="product-grid-container"
+        x-on:input.debounce.800ms="if($el.isConnected) $el.requestSubmit()"
+        class="b-is-flex b-is-flex-direction-column b-h-full b-px-4 b-py-6"
+      >
+        <!-- Header -->
+        <header class="b-level b-is-mobile b-is-align-items-center b-py-4 b-px-4 b-border-bottom-light">
+          <p class="b-title b-is-3 b-is-4-mobile b-my-0 b-has-text-primary ">
+            {{ 'products.facets.filter_and_sort' | t }}
+          </p>
+          <button type="button" class="b-delete" @click="drawerOpen = false"></button>
+        </header>
+
+        <!-- Body -->
+        <section class="b-px-4 b-py-4 b-is-flex-grow-1">
+          <!-- Valores ocultos de búsqueda -->
+          {% if results.terms %}
+            <input type="hidden" name="q" value="{{ results.terms | escape }}">
+            <input name="options[prefix]" type="hidden" value="last">
+          {%- endif -%}
+
+          {% comment %} Sorting {% endcomment %}
+
+          <div class="b-field b-mb-5">
+            <label class="b-label " for="SortBy">{{ 'products.facets.sort_by_label' | t }}</label>
+            <div class="b-control">
+              <div class="b-select b-is-primary b-is-fullwidth">
+                <select
+                  name="sort_by"
+                  id="SortBy"
+                  aria-describedby="a11y-refresh-page-message"
+                >
+                  {%- for option in results.sort_options -%}
+                    <option
+                      value="{{ option.value | escape }}"
+                      {% if option.value == sort_by %}
+                        selected="selected"
+                      {% endif %}
+                    >
+                      {{ option.name | escape }}
+                    </option>
+                  {%- endfor -%}
+                </select>
+              </div>
+            </div>
+          </div>
+          <hr class="b-dropdown-divider">
+
+          {% comment %} Filters {% endcomment %}
+
+          {%- for filter in results.filters -%}
+            <div class="b-mb-4" x-data="{ open: false }">
+              <button
+                type="button"
+                class="b-button b-is-primary b-is-light b-is-fullwidth b-is-justify-content-space-between"
+                @click="open = !open"
+              >
+                <span class="b-has-text-primary">{{ filter.label | escape }}</span>
+                <span class="b-icon b-is-size-6">
+                  <i class="fas" :class="open ? 'fa-angle-up' : 'fa-angle-down'"></i>
+                  {{- 'icon-caret.svg' | inline_asset_content -}}
+                </span>
+              </button>
+
+              <div x-show="open" x-collapse>
+                <div class="b-mt-2 b-pl-4">
+                  {% case filter.type %}
+                    {% when 'boolean', 'list' %}
+                      {%- for value in filter.values -%}
+                        <div class="b-field">
+                          <div class="b-control">
+                            <label class="b-checkbox">
+                              <input
+                                type="checkbox"
+                                name="{{ value.param_name }}"
+                                value="{{ value.value }}"
+                                {% if value.active %}
+                                  checked
+                                {% endif %}
+                                {% if value.count == 0 and value.active == false %}
+                                  disabled
+                                {% endif %}
+                              >
+                              {{ value.label | escape }} ({{ value.count }})
+                            </label>
+                          </div>
+                        </div>
+                      {%- endfor -%}
+                    {% when 'price_range' %}
+                      <div class="facets__price" x-data="priceRange()">
+                        {% render 'price-facet', filter: filter, id_prefix: 'Filter-' %}
+                      </div>
+                  {% endcase %}
+                </div>
+              </div>
+            </div>
+            <hr class="b-dropdown-divider">
+          {%- endfor -%}
+        </section>
+
+        {% comment %} Footer {% endcomment %}
+        <div class="b-drawer-footer b-is-radiusless">
+          <div class="b-level b-is-mobile">
+            <button
+              type="button"
+              class="b-button b-level-item b-is-primary b-is-small"
+              @click="drawerOpen = false"
+            >
+              {{ 'products.facets.apply' | t }}
+            </button>
+            <a
+              href="{{ results_url }}"
+              class="b-button b-level-item b-is-ghost b-has-text-link"
+              x-target="product-grid-container"
+            >
+              <span class="b-delete b-mr-2"></span>
+              {{- 'products.facets.clear_all' | t -}}
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="{{ 'show-more.js' | asset_url }}" defer></script>

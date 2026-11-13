@@ -1,0 +1,241 @@
+{%- doc -%}
+  Intended for use in a block similar to the text block.
+
+  @param {object} [settings] - The settings object for the text block.
+  @param {string} [shopify_attributes] - The shopify attributes for the text block.
+  @param {string} [class] - custom class to define in addition to text-block classes
+  @param {string} [fallback_text] - fallback text if settings.text does not exist
+  @param {string} [width] - width of the text block
+{%- enddoc -%}
+
+{% liquid
+  assign plain_text = fallback_text
+  if settings.text
+    assign plain_text = settings.text | strip_newlines | strip_html | strip
+  endif
+
+  assign text_width = width
+  if settings.width
+    assign text_width = text_width | default: settings.width
+  endif
+
+  assign type = 'body'
+  if settings.font_size
+    if settings.font_size contains 'heading-lg' or settings.font_size contains 'heading-xl'
+      assign type = 'display'
+    elsif settings.font_size contains 'heading'
+      assign type = 'heading'
+    endif
+  endif
+
+  assign is_rte = false
+  if settings.type_preset
+    if settings.type_preset == 'rte' or settings.type_preset == 'paragraph'
+      assign is_rte = true
+    endif
+  endif
+
+  capture text_block_classes
+    if text_width == '100%'
+      echo 'text-block--align-' | append: settings.alignment
+      if settings.max_width == 'none'
+        echo ' text-block--full-width '
+      endif
+    endif
+    if settings.type_preset == 'custom'
+      echo ' custom-typography '
+      if settings.font_size != ''
+        echo ' custom-font-size '
+      endif
+      if settings.color != ''
+        echo ' custom-color '
+      endif
+    endif
+    if settings.background
+      echo ' text-block--background '
+    endif
+    if is_rte
+      echo ' rte '
+    endif
+  endcapture
+%}
+
+{% capture attributes %}
+  class="{{ class }} spacing-style text-block
+    {% if settings %}
+      text-block--{{ settings.type_preset }}
+    {% endif %}
+    {{ text_block_classes }}
+  "
+
+  style="
+    {% if settings %}
+      {% render 'spacing-padding', settings: settings %}
+      {% render 'typography-style', settings: settings %}
+    {% endif %}
+    --width: {{ text_width }};
+    --max-width: var(--max-width--{{ type }}-{% if settings %}{{ settings.max_width }}{% else %}normal{% endif %});
+    {% if text_width == "100%" and settings %}
+      --text-align: {{ settings.alignment }};
+    {% endif %}
+    {% if settings and settings.background %}
+      --text-background-color: {{ settings.background_color | default: 'rgb(255 255 255 / 1.0)' }};
+      --text-corner-radius: {{ settings.corner_radius }}px;
+      --text-padding: max(var(--padding-2xs), calc((var(--text-corner-radius) + var(--padding-xs)) * (1 - cos(45deg))));
+    {% endif %}
+  "
+
+  {% if shopify_attributes %}
+    {{ shopify_attributes }}
+  {% endif %}
+{% endcapture %}
+{% liquid
+  # {{ attributes }} must be on the immediate HTML parent of the text to preserve
+  # the click-to-edit connection in the theme editor. Any break between the text,
+  # including if-statements, will break the connection.
+
+  assign element = 'div'
+  if is_rte
+    assign element = 'rte-formatter'
+  endif
+%}
+
+{% if fallback_text != blank and plain_text == blank %}
+  <div {{ attributes }}>
+    {{ fallback_text }}
+  </div>
+{% elsif plain_text != blank %}
+  <{{ element }} {{ attributes }}>
+    {% if settings %}
+      {{ settings.text }}
+    {% else %}
+      {{ plain_text }}
+    {% endif %}
+  </{{ element }}>
+{% endif %}
+
+<style>
+  :root {
+    --text-align-default: left;
+  }
+
+  [style*='--horizontal-alignment: center'] .text-block {
+    --text-align-default: center;
+  }
+
+  [style*='--horizontal-alignment: flex-end'] .text-block {
+    --text-align-default: right;
+  }
+
+  [style*='--horizontal-alignment: flex-start'] > .text-block {
+    --text-align-default: left;
+  }
+
+  [style*='--horizontal-alignment: center'] > .text-block {
+    --text-align-default: center;
+  }
+
+  [style*='--horizontal-alignment: flex-end'] > .text-block {
+    --text-align-default: right;
+  }
+
+  .text-block {
+    width: var(--width);
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: var(--horizontal-alignment);
+  }
+
+  .text-block > * {
+    width: var(--width);
+    max-width: var(--max-width, 100%);
+    text-align: var(--text-align, var(--text-align-default));
+    text-wrap: var(--text-wrap);
+  }
+
+  .text-block:not(.text-block--full-width).rte,
+  .text-block:not(.text-block--full-width).paragraph {
+    /* Safari doesn't support pretty, so fallback to balance */
+    text-wrap: balance;
+    text-wrap: pretty;
+  }
+
+  .text-block:not(.text-block--full-width):is(.h1, .h2, .h3, .h4, .h5, .h6) {
+    text-wrap: balance;
+  }
+
+  /* Hide underline unless text is using paragraph styles. */
+  .text-block:is(.h1, .h2, .h3, .h4, .h5, .h6) a {
+    text-decoration-color: transparent;
+  }
+
+  .text-block h1,
+  .text-block.h1 > * {
+    margin-block: var(--font-h1--spacing);
+  }
+
+  .text-block h2,
+  .text-block.h2 > * {
+    margin-block: var(--font-h2--spacing);
+  }
+
+  .text-block h3,
+  .text-block.h3 > * {
+    margin-block: var(--font-h3--spacing);
+  }
+
+  .text-block h4,
+  .text-block.h4 > * {
+    margin-block: var(--font-h4--spacing);
+  }
+
+  .text-block h5,
+  .text-block.h5 > * {
+    margin-block: var(--font-h5--spacing);
+  }
+
+  .text-block h6,
+  .text-block.h6 > * {
+    margin-block: var(--font-h6--spacing);
+  }
+
+  .text-block p,
+  .text-block.p > * {
+    margin-block: var(--font-paragraph--spacing);
+  }
+
+  .text-block > *:first-child {
+    margin-block-start: 0;
+  }
+
+  .text-block > *:last-child {
+    margin-block-end: 0;
+  }
+
+  .text-block--align-center,
+  .text-block--align-center > * {
+    margin-inline: auto;
+  }
+
+  .text-block--align-right,
+  .text-block--align-right > * {
+    margin-inline-start: auto;
+  }
+
+  .text-block--background {
+    background-color: var(--text-background-color);
+    border-radius: var(--text-corner-radius);
+
+    /* To avoid text being cropped when using a border radius we add a minimum padding. */
+    padding-block-start: max(var(--text-padding), var(--padding-block-start, 0));
+    padding-block-end: max(var(--text-padding), var(--padding-block-end, 0));
+    padding-inline-start: max(var(--text-padding), var(--padding-inline-start, 0));
+    padding-inline-end: max(var(--text-padding), var(--padding-inline-end, 0));
+  }
+
+  .custom-color,
+  .custom-color > :is(h1, h2, h3, h4, h5, h6, p, *) {
+    color: var(--color);
+  }
+</style>

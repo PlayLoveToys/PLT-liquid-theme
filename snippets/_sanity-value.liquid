@@ -1,0 +1,55 @@
+{% doc %}
+  Resuelve e imprime el valor localizado de un array internacionalizado de Sanity.
+
+  @param {object} items - Array de internationalizedArray*Value
+  @param {string} [key_prefix] - Prefijo para fallback por _key
+  @param {string} [locale] - Override de locale IETF (p. ej. en-US)
+  @param {string} [default] - Valor fallback si no hay match
+  @param {boolean} [escape_output] - Escapar HTML, default true
+
+  @example
+  {% capture sanity_locale %}{% render '_filter-locale' %}{% endcapture %}
+  {% render '_sanity-value', items: header_content.h1, key_prefix: 'h1', locale: sanity_locale %}
+  {% capture intro_html %}
+    {% render '_sanity-value', items: header_content.intro, key_prefix: 'intro', locale: sanity_locale, escape_output: false %}
+  {% endcapture %}
+{% enddoc %}
+
+{% liquid
+  assign resolved = default
+
+  unless items == blank
+    if locale != blank
+      assign locale_tag = locale
+    else
+      assign locale_tag = localization.language.iso_code | append: '-' | append: localization.country.iso_code
+    endif
+
+    assign item = items | find: 'language', locale_tag
+
+    if item == blank
+      if key_prefix != blank
+        assign target_key = key_prefix | append: '-' | append: localization.language.iso_code | append: '-' | append: localization.country.iso_code | downcase
+        assign item = items | find: '_key', target_key
+      endif
+    endif
+
+    if item != blank
+      assign resolved = item.value
+    elsif items.size > 0
+      assign resolved = items.first.value
+    endif
+  endunless
+
+  if resolved == blank
+    assign resolved = default
+  endif
+%}
+
+{%- if resolved != blank -%}
+  {%- if escape_output != false -%}
+    {{- resolved | escape -}}
+  {%- else -%}
+    {{- resolved -}}
+  {%- endif -%}
+{%- endif -%}

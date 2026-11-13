@@ -1,0 +1,276 @@
+{% doc %}
+  @prompt
+    Create a configurable marquee banner that scrolls text horizontally across the screen. Include settings for text content, scroll speed, background color, text color, font size, and direction (left to right or right to left). Make it responsive and accessible with pause on hover functionality., add multiples line of text, at list 3
+    make text RTE
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-marquee-banner-{{ ai_gen_id }} {
+    width: 100%;
+    background-color: {{ block.settings.background_color }};
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.font_size }}px;
+    padding: {{ block.settings.padding }}px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+  }
+
+  .ai-marquee-content-{{ ai_gen_id }} {
+    display: inline-block;
+    animation: ai-marquee-scroll-{{ ai_gen_id }} {{ block.settings.scroll_speed }}s linear infinite;
+    animation-direction: {% if block.settings.direction == 'right-to-left' %}normal{% else %}reverse{% endif %};
+  }
+
+  .ai-marquee-banner-{{ ai_gen_id }}:hover .ai-marquee-content-{{ ai_gen_id }} {
+    animation-play-state: paused;
+  }
+
+  .ai-marquee-item-{{ ai_gen_id }} {
+    display: inline-block;
+    margin-right: {{ block.settings.spacing }}px;
+  }
+
+  .ai-marquee-item-{{ ai_gen_id }} * {
+    display: inline;
+    margin: 0;
+    padding: 0;
+  }
+
+  .ai-marquee-separator-{{ ai_gen_id }} {
+    display: inline-block;
+    margin: 0 {{ block.settings.separator_spacing }}px;
+    color: {{ block.settings.separator_color }};
+  }
+
+  @keyframes ai-marquee-scroll-{{ ai_gen_id }} {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ai-marquee-content-{{ ai_gen_id }} {
+      animation: none;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-marquee-banner-{{ ai_gen_id }} {
+      font-size: {{ block.settings.font_size | times: 0.8 }}px;
+      padding: {{ block.settings.padding | times: 0.8 }}px 0;
+    }
+  }
+{% endstyle %}
+
+<marquee-banner-{{ ai_gen_id }}
+  class="ai-marquee-banner-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+  role="banner"
+  aria-label="Scrolling announcement"
+>
+  <div class="ai-marquee-content-{{ ai_gen_id }}">
+    {% for i in (1..5) %}
+      {% if block.settings.text_line_1 != blank %}
+        <span class="ai-marquee-item-{{ ai_gen_id }}">
+          {{ block.settings.text_line_1 }}
+        </span>
+        {% if block.settings.text_line_2 != blank or block.settings.text_line_3 != blank %}
+          <span class="ai-marquee-separator-{{ ai_gen_id }}">{{ block.settings.separator }}</span>
+        {% endif %}
+      {% endif %}
+
+      {% if block.settings.text_line_2 != blank %}
+        <span class="ai-marquee-item-{{ ai_gen_id }}">
+          {{ block.settings.text_line_2 }}
+        </span>
+        {% if block.settings.text_line_3 != blank %}
+          <span class="ai-marquee-separator-{{ ai_gen_id }}">{{ block.settings.separator }}</span>
+        {% endif %}
+      {% endif %}
+
+      {% if block.settings.text_line_3 != blank %}
+        <span class="ai-marquee-item-{{ ai_gen_id }}">
+          {{ block.settings.text_line_3 }}
+        </span>
+      {% endif %}
+
+      {% unless forloop.last %}
+        <span class="ai-marquee-separator-{{ ai_gen_id }}" style="margin: 0 {{ block.settings.spacing }}px;">
+          {{- block.settings.separator -}}
+        </span>
+      {% endunless %}
+    {% endfor %}
+  </div>
+</marquee-banner-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class MarqueeBanner{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.setupAccessibility();
+      }
+
+      setupAccessibility() {
+        this.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            const content = this.querySelector('.ai-marquee-content-{{ ai_gen_id }}');
+            if (content.style.animationPlayState === 'paused') {
+              content.style.animationPlayState = 'running';
+            } else {
+              content.style.animationPlayState = 'paused';
+            }
+          }
+        });
+
+        this.setAttribute('tabindex', '0');
+        this.setAttribute('aria-live', 'polite');
+      }
+    }
+
+    customElements.define('marquee-banner-{{ ai_gen_id }}', MarqueeBanner{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Marquee Banner",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "text_line_1",
+      "label": "Text line 1",
+      "default": "<p>Welcome to our store! Free shipping on orders over $50</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "text_line_2",
+      "label": "Text line 2",
+      "default": "<p>New arrivals now available - Shop the latest collection</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "text_line_3",
+      "label": "Text line 3",
+      "default": "<p>Sign up for our newsletter and get 10% off your first order</p>"
+    },
+    {
+      "type": "text",
+      "id": "separator",
+      "label": "Text separator",
+      "default": "•"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Scroll direction",
+      "options": [
+        {
+          "value": "left-to-right",
+          "label": "Left to right"
+        },
+        {
+          "value": "right-to-left",
+          "label": "Right to left"
+        }
+      ],
+      "default": "right-to-left"
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "min": 10,
+      "max": 200,
+      "step": 10,
+      "unit": "s",
+      "label": "Scroll duration (in seconds, higher is slower)",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "spacing",
+      "min": 20,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "Text spacing",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "separator_spacing",
+      "min": 5,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Separator spacing",
+      "default": 15
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "separator_color",
+      "label": "Separator color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 12,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Font size",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "min": 5,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "label": "Vertical padding",
+      "default": 15
+    }
+  ],
+  "presets": [
+    {
+      "name": "Marquee Banner",
+      "category": "Banner"
+    }
+  ],
+  "tag": null
+}
+{% endschema %}

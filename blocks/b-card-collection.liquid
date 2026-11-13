@@ -1,0 +1,61 @@
+<div class="b-column b-is-3-desktop b-is-6-tablet">
+  {% render 'c-card-collection' %}
+</div>
+
+{% schema %}
+{
+  "name": "b-Card Collection",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "checkbox",
+      "id": "priority",
+      "label": "Preload image",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show description",
+      "default": false
+    },
+    {
+      "type": "number",
+      "id": "truncatewords",
+      "label": "Truncate words",
+      "default": 20
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA text",
+      "default": "View Collection"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "CTA URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "b-Card Collection",
+      "category": "b-Blocks"
+    }
+  ]
+}
+{% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{% render 'c-card-collection', block %}"
+  to: "{% render 'c-card-collection' %}"
+  position: 54..86
+{% endcomment %}

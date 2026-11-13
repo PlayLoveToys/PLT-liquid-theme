@@ -1,0 +1,11 @@
+{% comment %}
+  Loads a theme stylesheet without blocking render.
+  Usage: {% render 'defer-stylesheet', asset: 'example.css' %}
+{% endcomment %}
+<link
+  rel="stylesheet"
+  href="{{ asset | asset_url }}"
+  media="print"
+  onload="this.media='all'; this.onload=null"
+>
+<noscript>{{ asset | asset_url | stylesheet_tag }}</noscript>

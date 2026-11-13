@@ -1,0 +1,168 @@
+{% doc %}
+  @prompt
+    add a code block to add a custom html. The html content is to be taken from a product metafield, the linked metafield is to be taken as a dynamic source.
+    If source does not exist, hide the whole block, Custom HTML content is linked to a metafield (dynamic source), this block is to be used on the product page only and uses a product metafield as dynamic source
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% if product.metafields[block.settings.metafield_namespace][block.settings.metafield_key] != blank %}
+  {% style %}
+    .ai-custom-html-{{ ai_gen_id }} {
+      width: 100%;
+      margin: {{ block.settings.margin_top }}px0 {{ block.settings.margin_bottom }}px0;
+      padding: {{ block.settings.padding_top }}px {{ block.settings.padding_horizontal }}px {{ block.settings.padding_bottom }}px {{ block.settings.padding_horizontal }}px;
+      background-color: {{ block.settings.background_color }};
+      border-radius: {{ block.settings.border_radius }}px;
+      {% if block.settings.max_width > 0 %}
+        max-width: {{ block.settings.max_width }}px;
+        margin-left: auto;
+        margin-right: auto;
+      {% endif %}
+    }
+
+    .ai-custom-html-{{ ai_gen_id }} * {
+      max-width: 100%;
+    }
+
+    .ai-custom-html-{{ ai_gen_id }} img {
+      height: auto;
+      display: block;
+    }
+
+    .ai-custom-html-{{ ai_gen_id }} iframe,
+    .ai-custom-html-{{ ai_gen_id }} video {
+      width: 100%;
+      height: auto;
+    }
+
+    .ai-custom-html-{{ ai_gen_id }} table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .ai-custom-html-{{ ai_gen_id }} table td,
+    .ai-custom-html-{{ ai_gen_id }} table th {
+      padding: 8px;
+      text-align: left;
+    }
+  {% endstyle %}
+
+  <div class="ai-custom-html-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+    {{ product.metafields[block.settings.metafield_namespace][block.settings.metafield_key] }}
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Product custom HTML",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Metafield source"
+    },
+    {
+      "type": "text",
+      "id": "metafield_namespace",
+      "label": "Metafield namespace",
+      "default": "custom"
+    },
+    {
+      "type": "text",
+      "id": "metafield_key",
+      "label": "Metafield key",
+      "default": "html_content"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 0,
+      "max": 1200,
+      "step": 50,
+      "unit": "px",
+      "label": "Maximum width",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Top margin",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom margin",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Horizontal padding",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "transparent"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product custom HTML"
+    }
+  ],
+  "tag": null
+}
+{% endschema %}

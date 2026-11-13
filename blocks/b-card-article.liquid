@@ -1,0 +1,43 @@
+<div
+  class="b-column b-is-3-desktop b-is-6-tablet"
+  {{ block.shopify_attributes }}
+>
+  {% render 'c-card-article', block: block %}
+</div>
+
+{% schema %}
+{
+  "name": "b-Card Article",
+  "settings": [
+    {
+      "type": "article",
+      "id": "article",
+      "label": "Article"
+    },
+    {
+      "type": "checkbox",
+      "id": "priority",
+      "label": "Preload image",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "Show excerpt",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "truncatewords",
+      "label": "Truncate words",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "b-Card Article",
+      "category": "b-Blocks"
+    }
+  ]
+}
+{% endschema %}

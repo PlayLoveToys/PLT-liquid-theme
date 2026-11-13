@@ -1,0 +1,290 @@
+{{ 'component-article-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'section-main-blog.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  .blog-articles--masonry {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+
+    .blog-articles--masonry {
+      grid-template-columns: repeat(4, 1fr);
+      align-items: stretch;
+    }
+    .blog-article {
+      max-height: 100%;
+      overflow: hidden;
+      font-size: clamp(.5rem, 4vw, 2rem);
+
+    }
+    .blog-articles--masonry .blog-articles__article--span-1 {
+      grid-column: span 1;
+      font-size: clamp(.5rem, 4vw, 3rem);
+
+    }
+
+    .blog-articles--masonry .blog-articles__article--span-1s {
+      grid-column: span 1;
+      font-size: clamp(.5rem, 4vw, 1.25rem);
+
+    }
+    .blog-articles--masonry .blog-articles__article--span-2 {
+      grid-column: span 2;
+    }
+    .blog-articles--masonry .blog-articles__article--span-2s {
+      grid-column: span 2;
+      font-size: clamp(.5rem, 4vw, 1.25rem);
+    }
+    .blog-articles--masonry .blog-articles__article--span-3 {
+      grid-column: span 3;
+      font-size: clamp(.5rem, 4vw, 3rem);
+    }
+
+    .blog-articles--masonry .blog-articles__article--span-4 {
+      grid-column: span 4;
+      font-size: clamp(.5rem, 4vw, 1.5rem);
+    }
+
+    .blog-articles--masonry .blog-articles__article--span-c2 {
+      grid-row: span 2;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign all_articles = '' | split: ''
+  if section.settings.blog != blank and blogs[section.settings.blog] != blank
+    assign all_articles = blogs[section.settings.blog].articles
+  else
+    for blog in blogs
+      for article in blog.articles
+        assign all_articles = all_articles | concat: self[article]
+      endfor
+    endfor
+  endif
+  assign sorted_articles = all_articles | sort: 'published_at' | reverse
+
+  assign posts_per_page = section.settings.posts_per_page
+  assign total_articles = sorted_articles | size
+  assign total_pages = total_articles | plus: 0.0 | divided_by: posts_per_page | ceil
+
+  assign current_page = request.params.page | default: 1 | plus: 0
+  if current_page > total_pages and total_pages > 0
+    assign current_page = total_pages
+  elsif current_page < 1
+    assign current_page = 1
+  endif
+
+  assign offset = current_page | minus: 1 | times: posts_per_page
+  assign paginated_articles = sorted_articles | slice: offset, posts_per_page
+-%}
+
+<div class="main-blog page-width section-{{ section.id }}-padding">
+  {%- if section.settings.heading != blank -%}
+    <h1 class="title--primary{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
+      {{ section.settings.heading | escape }}
+    </h1>
+  {%- endif -%}
+
+  <div class="blog-articles blog-articles--masonry">
+    {%- for article in paginated_articles -%}
+      <div
+        class="blog-articles__article blog-articles__article--span-{%- cycle '2', '1s', '1s', '1s', '1s','2', '1s', '2', '1s', '1s', '1s', '1s', '1s' -%} {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+        {% if settings.animations_reveal_on_scroll %}
+          data-cascade
+          style="--animation-order: {{ forloop.index }};"
+        {% endif %}
+      >
+        {%- render 'article-card',
+          article: article,
+          media_height: section.settings.image_height,
+          media_aspect_ratio: article.image.aspect_ratio,
+          show_image: section.settings.show_image,
+          show_date: section.settings.show_date,
+          show_author: section.settings.show_author,
+          show_excerpt: true,
+          show_blog_title: true,
+          show_cta_button: true
+        -%}
+      </div>
+    {%- else -%}
+      <div class="blog-articles__article">
+        <p>No articles found.</p>
+      </div>
+    {%- endfor -%}
+  </div>
+
+  {%- if total_pages > 1 -%}
+    <div class="pagination-wrapper">
+      <nav class="pagination" role="navigation" aria-label="{{ 'general.pagination.label' | t }}">
+        <ul class="pagination__list list-unstyled">
+          {%- if current_page > 1 -%}
+            <li>
+              <a
+                href="?page={{ current_page | minus: 1 }}"
+                class="pagination__item pagination__item--prev"
+                aria-label="{{ 'general.pagination.previous' | t }}"
+              >
+                <svg aria-hidden="true" focusable="false" viewBox="0 0 10 6">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M9.354.646a.5.5 0 00-.708 0L5 4.293 1.354.646a.5.5 0 00-.708.708l4 4a.5.5 0 00.708 0l4-4a.5.5 0 000-.708z" fill="currentColor">
+                </svg>
+              </a>
+            </li>
+          {%- endif -%}
+
+          {%- for i in (1..total_pages) -%}
+            <li>
+              {%- if i == current_page -%}
+                <span class="pagination__item pagination__item--current" aria-current="page" aria-label="Page {{ i }}">
+                  {{- i -}}
+                </span>
+              {%- else -%}
+                <a href="?page={{ i }}" class="pagination__item" aria-label="Page {{ i }}">{{ i }}</a>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+
+          {%- if current_page < total_pages -%}
+            <li>
+              <a
+                href="?page={{ current_page | plus: 1 }}"
+                class="pagination__item pagination__item--next"
+                aria-label="{{ 'general.pagination.next' | t }}"
+              >
+                <svg aria-hidden="true" focusable="false" viewBox="0 0 10 6">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M9.354.646a.5.5 0 00-.708 0L5 4.293 1.354.646a.5.5 0 00-.708.708l4 4a.5.5 0 00.708 0l4-4a.5.5 0 000-.708z" fill="currentColor">
+                </svg>
+              </a>
+            </li>
+          {%- endif -%}
+        </ul>
+      </nav>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "All Articles (Masonry)",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "All Articles"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog"
+    },
+    {
+      "type": "range",
+      "id": "posts_per_page",
+      "min": 3,
+      "max": 24,
+      "step": 1,
+      "label": "Posts per page",
+      "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "default": true,
+      "label": "t:sections.main-blog.settings.show_image.label"
+    },
+    {
+      "type": "select",
+      "id": "image_height",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "t:sections.main-blog.settings.image_height.options__1.label"
+        },
+        {
+          "value": "small",
+          "label": "t:sections.main-blog.settings.image_height.options__2.label"
+        },
+        {
+          "value": "medium",
+          "label": "t:sections.main-blog.settings.image_height.options__3.label"
+        },
+        {
+          "value": "large",
+          "label": "t:sections.main-blog.settings.image_height.options__4.label"
+        }
+      ],
+      "default": "medium",
+      "label": "t:sections.main-blog.settings.image_height.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "default": true,
+      "label": "t:sections.main-blog.settings.show_date.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "default": false,
+      "label": "t:sections.main-blog.settings.show_author.label"
+    },
+
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "All Articles Feed (Masonry)",
+      "category": "Blog"
+    }
+  ]
+}
+{% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "        assign all_articles = all_articles | concat: [article]"
+  to: "        assign all_articles = all_articles | concat: self[article]"
+  position: 2102..2168
+{% endcomment %}

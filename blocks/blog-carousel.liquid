@@ -1,0 +1,769 @@
+{% doc %}
+  @prompt
+    Create a Blog Carousel web component that displays multiple blog articles in a sliding carousel format. The carousel should show blog post titles, featured images, excerpts, publication dates, and author information. Include navigation arrows and dots for easy browsing between posts. Make it responsive and customizable with settings for number of posts to show, autoplay functionality, and styling options.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-blog-carousel-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background-color: {{ block.settings.background_color }};
+    padding: {{ block.settings.section_padding }}px;
+    border-radius: {{ block.settings.border_radius }}px;}
+
+  .ai-blog-carousel__header-{{ ai_gen_id }} {
+    text-align: {{ block.settings.text_alignment }};
+    margin-bottom: 32px;
+  }
+
+  .ai-blog-carousel__title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.heading_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 16px;
+    font-weight: 600;
+  }
+
+  .ai-blog-carousel__subtitle-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subheading_size }}px;
+    color: {{ block.settings.text_color }};
+    opacity: 0.8;
+    margin: 0;
+  }
+
+  .ai-blog-carousel__container-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+  }
+
+  .ai-blog-carousel__track-{{ ai_gen_id }} {
+    display: flex;
+    transition: transform 0.5s ease;
+    gap: {{ block.settings.card_gap }}px;
+  }
+
+  .ai-blog-carousel__slide-{{ ai_gen_id }} {
+    flex: 0 0 calc((100% - ({{ block.settings.posts_per_view | minus: 1 }} * {{ block.settings.card_gap }}px)) / {{ block.settings.posts_per_view }});
+    background-color: {{ block.settings.card_background_color }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .ai-blog-carousel__slide-{{ ai_gen_id }}:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .ai-blog-carousel__image-{{ ai_gen_id }} {
+    width: 100%;
+    height: {{ block.settings.image_height }}px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ai-blog-carousel__image-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-blog-carousel__image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-blog-carousel__image-placeholder-{{ ai_gen_id }} svg {
+    width: 60px;
+    height: 60px;
+    opacity: 0.5;
+  }
+
+  .ai-blog-carousel__content-{{ ai_gen_id }} {
+    padding: 24px;
+  }
+
+  .ai-blog-carousel__post-title-{{ ai_gen_id }} {
+    font-size: 18px;
+    font-weight: 600;
+    color: {{ block.settings.card_text_color }};
+    margin: 0 0 12px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .ai-blog-carousel__excerpt-{{ ai_gen_id }} {
+    font-size: 14px;
+    color: {{ block.settings.card_text_color }};
+    opacity: 0.8;
+    margin: 0 0 16px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .ai-blog-carousel__meta-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: {{ block.settings.card_text_color }};
+    opacity: 0.7;
+  }
+
+  .ai-blog-carousel__date-{{ ai_gen_id }} {
+    font-weight: 500;
+  }
+
+  .ai-blog-carousel__author-{{ ai_gen_id }} {
+    font-style: italic;
+  }
+
+  .ai-blog-carousel__nav-{{ ai_gen_id }} {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: {{ block.settings.nav_button_color }};
+    color: {{ block.settings.nav_button_text_color }};
+    border: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .ai-blog-carousel__nav-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.nav_button_hover_color }};
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  .ai-blog-carousel__nav-{{ ai_gen_id }}:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: translateY(-50%) scale(1);
+  }
+
+  .ai-blog-carousel__nav--prev-{{ ai_gen_id }} {
+    left: -24px;
+  }
+
+  .ai-blog-carousel__nav--next-{{ ai_gen_id }} {
+    right: -24px;
+  }
+
+  .ai-blog-carousel__nav-{{ ai_gen_id }} svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .ai-blog-carousel__dots-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 32px;
+  }
+
+  .ai-blog-carousel__dot-{{ ai_gen_id }} {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: {{ block.settings.dot_color }};
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0.4;
+  }
+
+  .ai-blog-carousel__dot-{{ ai_gen_id }}.active {
+    opacity: 1;
+    background-color: {{ block.settings.dot_active_color }};
+    transform: scale(1.2);
+  }
+
+  .ai-blog-carousel__link-{{ ai_gen_id }} {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-blog-carousel__slide-{{ ai_gen_id }} {
+      flex: 0 0 calc((100% - ({{ block.settings.posts_per_view_mobile | minus: 1 }} * {{ block.settings.card_gap }}px)) / {{ block.settings.posts_per_view_mobile }});
+    }
+
+    .ai-blog-carousel__nav--prev-{{ ai_gen_id }} {
+      left: -16px;
+    }
+
+    .ai-blog-carousel__nav--next-{{ ai_gen_id }} {
+      right: -16px;
+    }
+
+    .ai-blog-carousel__content-{{ ai_gen_id }} {
+      padding: 16px;
+    }
+
+    .ai-blog-carousel__post-title-{{ ai_gen_id }} {
+      font-size: 16px;
+    }
+  }
+{% endstyle %}
+
+<blog-carousel-{{ ai_gen_id }}
+  class="ai-blog-carousel-{{ ai_gen_id }}"
+  data-autoplay="{{ block.settings.autoplay }}"
+  data-autoplay-speed="{{ block.settings.autoplay_speed }}"
+  data-posts-per-view="{{ block.settings.posts_per_view }}"
+  data-posts-per-view-mobile="{{ block.settings.posts_per_view_mobile }}"
+  {{ block.shopify_attributes }}
+>
+  {% if block.settings.heading != blank or block.settings.subheading != blank %}
+    <div class="ai-blog-carousel__header-{{ ai_gen_id }}">
+      {% if block.settings.heading != blank %}
+        <h2 class="ai-blog-carousel__title-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+      {% endif %}
+      {% if block.settings.subheading != blank %}
+        <p class="ai-blog-carousel__subtitle-{{ ai_gen_id }}">{{ block.settings.subheading }}</p>
+      {% endif %}
+    </div>
+  {% endif %}
+  <div class="ai-blog-carousel__container-{{ ai_gen_id }}">
+    <div class="ai-blog-carousel__track-{{ ai_gen_id }}">
+      {% if block.settings.blog != blank %}
+        {% for article in block.settings.blog.articles limit: block.settings.max_posts %}
+          <div class="ai-blog-carousel__slide-{{ ai_gen_id }}">
+            <a href="{{ article.url }}" class="ai-blog-carousel__link-{{ ai_gen_id }}">
+              <div class="ai-blog-carousel__image-{{ ai_gen_id }}">
+                {% if article.image %}
+                  <img
+                    src="{{ article.image | image_url: width: 600 }}"
+                    alt="{{ article.image.alt | escape }}"
+                    loading="lazy"
+                    width="600"
+                    height="{{ block.settings.image_height }}"
+                  >
+                {% else %}
+                  <div class="ai-blog-carousel__image-placeholder-{{ ai_gen_id }}">
+                    {{ 'blog-apparel-1' | placeholder_svg_tag }}
+                  </div>
+                {% endif %}
+              </div>
+              <div class="ai-blog-carousel__content-{{ ai_gen_id }}">
+                <h3 class="ai-blog-carousel__post-title-{{ ai_gen_id }}">{{ article.title }}</h3>
+                {% if article.excerpt != blank %}
+                  <p class="ai-blog-carousel__excerpt-{{ ai_gen_id }}">
+                    {{ article.excerpt | strip_html | truncate: 120 }}
+                  </p>
+                {% endif %}
+                <div class="ai-blog-carousel__meta-{{ ai_gen_id }}">
+                  <span class="ai-blog-carousel__date-{{ ai_gen_id }}">
+                    {{- article.published_at | date: '%B %d, %Y' -}}
+                  </span>
+                  {% if article.author != blank %}
+                    <span class="ai-blog-carousel__author-{{ ai_gen_id }}">{{ article.author }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      {% else %}
+        {% for i in (1..6) %}
+          <div class="ai-blog-carousel__slide-{{ ai_gen_id }}">
+            <div class="ai-blog-carousel__link-{{ ai_gen_id }}">
+              <div class="ai-blog-carousel__image-{{ ai_gen_id }}">
+                <div class="ai-blog-carousel__image-placeholder-{{ ai_gen_id }}">
+                  {{ 'blog-apparel-1' | placeholder_svg_tag }}
+                </div>
+              </div>
+              <div class="ai-blog-carousel__content-{{ ai_gen_id }}">
+                <h3 class="ai-blog-carousel__post-title-{{ ai_gen_id }}">Sample Blog Post {{ i }}</h3>
+                <p class="ai-blog-carousel__excerpt-{{ ai_gen_id }}">
+                  This is a sample excerpt for a blog post. It provides a brief preview of the article content.
+                </p>
+                <div class="ai-blog-carousel__meta-{{ ai_gen_id }}">
+                  <span class="ai-blog-carousel__date-{{ ai_gen_id }}">{{ 'now' | date: '%B %d, %Y' }}</span>
+                  <span class="ai-blog-carousel__author-{{ ai_gen_id }}">Author Name</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    {% if block.settings.show_navigation %}
+      <button
+        class="ai-blog-carousel__nav-{{ ai_gen_id }} ai-blog-carousel__nav--prev-{{ ai_gen_id }}"
+        aria-label="Previous posts"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="15,18 9,12 15,6"></polyline>
+        </svg>
+      </button>
+      <button
+        class="ai-blog-carousel__nav-{{ ai_gen_id }} ai-blog-carousel__nav--next-{{ ai_gen_id }}"
+        aria-label="Next posts"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="9,18 15,12 9,6"></polyline>
+        </svg>
+      </button>
+    {% endif %}
+  </div>
+
+  {% if block.settings.show_dots %}
+    <div class="ai-blog-carousel__dots-{{ ai_gen_id }}"></div>
+  {% endif %}
+</blog-carousel-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class BlogCarousel{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.currentIndex = 0;
+        this.autoplayInterval = null;
+        this.isAutoplayPaused = false;
+      }
+
+      connectedCallback() {
+        this.track = this.querySelector('.ai-blog-carousel__track-{{ ai_gen_id }}');
+        this.slides = this.querySelectorAll('.ai-blog-carousel__slide-{{ ai_gen_id }}');
+        this.prevButton = this.querySelector('.ai-blog-carousel__nav--prev-{{ ai_gen_id }}');
+        this.nextButton = this.querySelector('.ai-blog-carousel__nav--next-{{ ai_gen_id }}');
+        this.dotsContainer = this.querySelector('.ai-blog-carousel__dots-{{ ai_gen_id }}');
+
+        this.autoplay = this.dataset.autoplay === 'true';
+        this.autoplaySpeed = parseInt(this.dataset.autoplaySpeed) * 1000;
+        this.postsPerView = parseInt(this.dataset.postsPerView);
+        this.postsPerViewMobile = parseInt(this.dataset.postsPerViewMobile);
+
+        this.setupEventListeners();
+        this.createDots();
+        this.updateCarousel();
+        this.updateNavigation();
+
+        if (this.autoplay) {
+          this.startAutoplay();
+        }
+
+        window.addEventListener('resize', () => this.updateCarousel());
+      }
+
+      disconnectedCallback() {
+        this.stopAutoplay();
+        window.removeEventListener('resize', () => this.updateCarousel());
+      }
+
+      setupEventListeners() {
+        if (this.prevButton) {
+          this.prevButton.addEventListener('click', () => this.goToPrevious());
+        }
+        if (this.nextButton) {
+          this.nextButton.addEventListener('click', () => this.goToNext());
+        }
+
+        this.addEventListener('mouseenter', () => {
+          this.isAutoplayPaused = true;
+          this.stopAutoplay();
+        });
+
+        this.addEventListener('mouseleave', () => {
+          this.isAutoplayPaused = false;
+          if (this.autoplay) {
+            this.startAutoplay();
+          }
+        });
+      }
+
+      createDots() {
+        if (!this.dotsContainer) return;
+
+        const currentPostsPerView = window.innerWidth <= 749 ? this.postsPerViewMobile : this.postsPerView;
+        const totalDots = Math.ceil(this.slides.length / currentPostsPerView);
+
+        this.dotsContainer.innerHTML = '';
+        for (let i = 0; i < totalDots; i++) {
+          const dot = document.createElement('button');
+          dot.className = `ai-blog-carousel__dot-{{ ai_gen_id }}`;
+          dot.setAttribute('aria-label', `Go to slide group ${i + 1}`);
+          dot.addEventListener('click', () => this.goToSlide(i));
+          this.dotsContainer.appendChild(dot);
+        }
+      }
+
+      updateCarousel() {
+        const currentPostsPerView = window.innerWidth <= 749 ? this.postsPerViewMobile : this.postsPerView;
+        const maxIndex = Math.max(0, this.slides.length - currentPostsPerView);
+        
+        if (this.currentIndex > maxIndex) {
+          this.currentIndex = maxIndex;
+        }
+
+        const translateX = -(this.currentIndex * (100 / currentPostsPerView));
+        this.track.style.transform = `translateX(${translateX}%)`;
+
+        this.updateDots();
+        this.updateNavigation();
+      }
+
+      updateDots() {
+        if (!this.dotsContainer) return;
+
+        const dots = this.dotsContainer.querySelectorAll('.ai-blog-carousel__dot-{{ ai_gen_id }}');
+        const currentPostsPerView = window.innerWidth <= 749 ? this.postsPerViewMobile : this.postsPerView;
+        const currentDotIndex = Math.floor(this.currentIndex / currentPostsPerView);
+
+        dots.forEach((dot, index) => {
+          dot.classList.toggle('active', index === currentDotIndex);
+        });
+      }
+
+      updateNavigation() {
+        if (!this.prevButton || !this.nextButton) return;
+
+        const currentPostsPerView = window.innerWidth <= 749 ? this.postsPerViewMobile : this.postsPerView;
+        const maxIndex = Math.max(0, this.slides.length - currentPostsPerView);
+
+        this.prevButton.disabled = this.currentIndex <= 0;
+        this.nextButton.disabled = this.currentIndex >= maxIndex;
+      }
+
+      goToPrevious() {
+        const currentPostsPerView = window.innerWidth <= 749 ? this.postsPerViewMobile : this.postsPerView;
+        this.currentIndex = Math.max(0, this.currentIndex - currentPostsPerView);
+        this.updateCarousel();
+      }
+
+      goToNext() {
+        const currentPostsPerView = window.innerWidth <= 749 ? this.postsPerViewMobile : this.postsPerView;
+        const maxIndex = Math.max(0, this.slides.length - currentPostsPerView);
+        this.currentIndex = Math.min(maxIndex, this.currentIndex + currentPostsPerView);
+        this.updateCarousel();
+      }
+
+      goToSlide(index) {
+        const currentPostsPerView = window.innerWidth <= 749 ? this.postsPerViewMobile : this.postsPerView;
+        this.currentIndex = index * currentPostsPerView;
+        this.updateCarousel();
+      }
+
+      startAutoplay() {
+        if (!this.autoplay || this.isAutoplayPaused) return;
+        
+        this.autoplayInterval = setInterval(() => {
+          const currentPostsPerView = window.innerWidth <= 749 ? this.postsPerViewMobile : this.postsPerView;
+          const maxIndex = Math.max(0, this.slides.length - currentPostsPerView);
+          
+          if (this.currentIndex >= maxIndex) {
+            this.currentIndex = 0;
+          } else {
+            this.currentIndex += currentPostsPerView;
+          }
+          this.updateCarousel();
+        }, this.autoplaySpeed);
+      }
+
+      stopAutoplay() {
+        if (this.autoplayInterval) {
+          clearInterval(this.autoplayInterval);
+          this.autoplayInterval = null;
+        }
+      }
+    }
+
+    customElements.define('blog-carousel-{{ ai_gen_id }}', BlogCarousel{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Blog Carousel",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Latest Blog Posts"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Stay updated with our latest articles and insights"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog"
+    },
+    {
+      "type": "range",
+      "id": "max_posts",
+      "min": 3,
+      "max": 20,
+      "step": 1,
+      "label": "Maximum posts to show",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "posts_per_view",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "label": "Posts per view (desktop)",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "posts_per_view_mobile",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "label": "Posts per view (mobile)",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "min": 8,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "label": "Gap between cards",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "image_height",
+      "min": 150,
+      "max": 400,
+      "step": 25,
+      "unit": "px",
+      "label": "Image height",
+      "default": 200
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Show navigation arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show navigation dots",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Autoplay"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Enable autoplay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "label": "Autoplay speed",
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "card_background_color",
+      "label": "Card background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "Card text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "nav_button_color",
+      "label": "Navigation button color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "nav_button_text_color",
+      "label": "Navigation button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "nav_button_hover_color",
+      "label": "Navigation button hover color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "dot_color",
+      "label": "Dot color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "color",
+      "id": "dot_active_color",
+      "label": "Active dot color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 20,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading size",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Subheading size",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Section padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Section border radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Card border radius",
+      "default": 8
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog Carousel"
+    }
+  ]
+}
+{% endschema %}

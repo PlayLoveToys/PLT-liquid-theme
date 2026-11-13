@@ -1,0 +1,8 @@
+{%- if settings.favicon_ico != blank -%}
+  <link rel="icon" type="image/x-icon" href="{{ settings.favicon_ico | asset_url }}">
+{%- endif -%}
+{%- if settings.favicon != blank -%}
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ settings.favicon | image_url: width: 16, height: 16 }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+  <link rel="icon" type="image/png" sizes="48x48" href="{{ settings.favicon | image_url: width: 48, height: 48 }}">
+{%- endif -%}

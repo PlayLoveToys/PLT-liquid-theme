@@ -1,0 +1,164 @@
+{% doc %}
+  @prompt
+    Create a flexible Liquid section that allows merchants to input and display custom HTML content. The section should include a textarea setting where merchants can paste their custom HTML code, and the section should safely render that HTML on the storefront. Include basic styling options like padding and background color settings.
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-custom-html-{{ ai_gen_id }} {
+    padding: {{ block.settings.padding_top }}px {{ block.settings.padding_horizontal }}px {{ block.settings.padding_bottom }}px {{ block.settings.padding_horizontal }}px;
+    background-color: {{ block.settings.background_color }};
+    {% if block.settings.background_gradient != blank %}
+      background: {{ block.settings.background_gradient }};
+    {% endif %}
+    border-radius: {{ block.settings.border_radius }}px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .ai-custom-html-content-{{ ai_gen_id }} {
+    width: 100%;
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+  }
+
+  .ai-custom-html-empty-state-{{ ai_gen_id }} {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    font-style: italic;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+
+  .ai-custom-html-empty-state-{{ ai_gen_id }} h3 {
+    margin: 0 0 8px;
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .ai-custom-html-empty-state-{{ ai_gen_id }} p {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-custom-html-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding_top | times: 0.7 }}px {{ block.settings.padding_horizontal | times: 0.7 }}px {{ block.settings.padding_bottom | times: 0.7 }}px {{ block.settings.padding_horizontal | times: 0.7 }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-custom-html-{{ ai_gen_id }}" {{ block.shopify_attributes }}><div class="ai-custom-html-content-{{ ai_gen_id }}">
+    {% if block.settings.custom_html != blank %}
+      {{ block.settings.custom_html }}
+
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom HTML",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "custom_html",
+      "label": "Custom HTML",
+      "info": "Add your custom HTML code here. Be careful with the code you add as it will be rendered directly on your storefront."
+    },
+        {
+      "type": "html",
+      "id": "custom_style",
+      "label": "Custom Style",
+      "info": "Add your custom CSS code here."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 300,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "label": "Maximum content width",
+      "default": 1200
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Horizontal padding",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom HTML"
+    }
+  ],
+  "tag": null
+}
+{% endschema %}

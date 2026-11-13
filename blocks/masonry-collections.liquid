@@ -1,0 +1,460 @@
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .masonry-collection-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.columns_desktop }}, 1fr);
+    gap: {{ block.settings.gap }}px;
+    background-color: {{ block.settings.section_bg_color }};
+    padding: {{ block.settings.padding }}px;
+  }
+
+  .collection-card-{{ ai_gen_id }} {
+    position: relative;
+    overflow: hidden;
+    border-radius: {{ block.settings.border_radius }}px;
+    background-color: {{ block.settings.card_bg_color }};
+    box-shadow: {% if block.settings.enable_shadow %}0 4px 10px rgba(0, 0, 0, 0.1){% else %}none{% endif %};border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+    margin-bottom: {{ block.settings.margin }}px;
+    height: 100%;display: flex;
+    flex-direction: column;
+  }
+
+  .collection-card-image-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; /* Square aspect ratio */
+    overflow: hidden;
+  }
+
+  .collection-card-image-container-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .collection-card-image-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 1;
+  }
+
+  .collection-card-image-{{ ai_gen_id }}.active {
+    opacity: 1;
+    z-index: 2;
+  }
+
+  .collection-card-image-placeholder-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f4f4;}
+
+  .collection-card-image-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .collection-card-overlay-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: {{ block.settings.overlay_color }};
+    opacity: {{ block.settings.overlay_opacity | divided_by: 100.0 }};
+    z-index: 1;
+  }
+
+  .collection-card-content-{{ ai_gen_id }} {
+    padding: 15px;
+    text-align: center;
+    z-index: 2;
+    position: relative;
+  }
+
+  .collection-card-title-{{ ai_gen_id }} {
+    margin: 0;
+    color: {{ block.settings.title_color }};
+    font-size: {{ block.settings.title_size }}px;
+    font-weight: {{ block.settings.title_weight }};
+    {% if block.settings.enable_title_shadow %}text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);{% endif %}}
+
+  @media screen and (max-width: 990px) {
+    .masonry-collection-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.columns_tablet }}, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .masonry-collection-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.columns_mobile }}, 1fr);
+    }
+  }
+{% endstyle %}
+
+<masonry-collection-{{ ai_gen_id }} class="masonry-collection-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% for collection in block.settings.collection_list %}
+    {% if collection != blank %}
+      <a
+        href="{{ collection.url }}"
+        class="collection-card-link-{{ ai_gen_id }}"
+        aria-label="{{ collection.title | escape }}"
+      >
+        <div class="collection-card-{{ ai_gen_id }}" data-collection-id="{{ collection.id }}">
+          <div class="collection-card-image-wrapper-{{ ai_gen_id }}">
+            <div class="collection-card-image-container-{{ ai_gen_id }}">
+              {% assign product_count = collection.products.size %}
+              {% if product_count > 0 %}
+                {% assign image_count = 0 %}
+                {% for product in collection.products limit: 10 %}
+                  {% if product.featured_image != blank %}
+                    <img
+                      data-index="{{ forloop.index0 }}"
+                      height="600"
+                      width="600"
+                      loading="lazy"
+                      style="width: 100%; height: auto; max-width: 600px;"
+                      class="collection-card-image-{{ ai_gen_id }} {% if forloop.first %}active{% endif %}"
+                      alt="{{ product.title | escape }}"
+                      sizes="
+                        (max-width: 480px) 300px,
+                        (max-width: 768px) 400px,
+                        (max-width: 1024px) 600px,
+                        800px
+                      "
+                      srcset="
+                        {{ product.featured_image | image_url: width: 300 }} 300w,
+                        {{ product.featured_image | image_url: width: 400 }} 400w,
+                        {{ product.featured_image | image_url: width: 600 }} 600w,
+                        {{ product.featured_image | image_url: width: 800 }} 800w
+                      "
+                      src="{{ product.featured_image | image_url: width: 300 }}"
+                    >
+
+                    {% assign image_count = image_count | plus: 1 %}
+                  {% endif %}
+                {% endfor %}
+
+                {% if image_count == 0 %}
+                  <div class="collection-card-image-placeholder-{{ ai_gen_id }}">
+                    {{ 'collection-apparel-1' | placeholder_svg_tag }}
+                  </div>
+                {% endif %}
+              {% else %}
+                <div class="collection-card-image-placeholder-{{ ai_gen_id }}">
+                  {{ 'collection-apparel-1' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+              <div class="collection-card-overlay-{{ ai_gen_id }}"></div>
+            </div>
+          </div>
+          <div class="collection-card-content-{{ ai_gen_id }}">
+            <h3 class="collection-card-title-{{ ai_gen_id }}">{{ collection.title }}</h3>
+          </div>
+        </div>
+      </a>
+    {% endif %}
+  {% endfor %}
+</masonry-collection-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class MasonryCollection extends HTMLElement {
+      constructor() {
+        super();
+        this.rotationSpeed = {{ block.settings.rotation_speed }};
+        this.rotationIntervals = [];
+      }
+
+      connectedCallback() {
+        this.initializeRotation();
+      }
+
+      disconnectedCallback() {
+        this.clearAllIntervals();
+      }
+
+      initializeRotation() {
+        const cards = this.querySelectorAll('.collection-card-{{ ai_gen_id }}');
+
+        cards.forEach(card => {
+          const images = card.querySelectorAll('.collection-card-image-{{ ai_gen_id }}');
+
+          if (images.length > 1) {
+            let currentIndex = 0;
+
+            const rotateImages = () => {
+              // Remove active class from all images
+              images.forEach(img => {
+                img.classList.remove('active');
+              });
+
+              // Increment index and wrap around if needed
+              currentIndex = (currentIndex + 1) % images.length;
+
+              // Add active class to current image
+              images[currentIndex].classList.add('active');};
+
+            // Set initial active image
+            images[0].classList.add('active');
+
+            // Start rotation interval
+            const intervalId = setInterval(rotateImages, this.rotationSpeed * 1000);
+            this.rotationIntervals.push(intervalId);
+          }
+        });
+      }
+
+      clearAllIntervals() {
+        this.rotationIntervals.forEach(interval => {
+          clearInterval(interval);
+        });
+        this.rotationIntervals = [];
+      }
+    }
+
+    customElements.define('masonry-collection-{{ ai_gen_id }}', MasonryCollection);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Masonry Collections",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Collections"
+    },
+    {
+      "type": "collection_list",
+      "id": "collection_list",
+      "label": "Collections",
+      "limit": 12
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 3,
+      "label": "Columns on desktop"
+    },
+    {
+      "type": "range",
+      "id": "columns_tablet",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2,
+      "label": "Columns on tablet"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on mobile",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 16,
+      "unit": "px",
+      "label": "Gap between cards"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "default": 20,
+      "unit": "px",
+      "label": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "margin",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 16,
+      "unit": "px",
+      "label": "Card bottom margin"
+    },
+    {
+      "type": "header",
+      "content": "Card Style"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "default": 8,
+      "unit": "px",
+      "label": "Border radius"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_shadow",
+      "label": "Enable shadow",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "default": 0,
+      "unit": "px",
+      "label": "Border width"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "default": 18,
+      "unit": "px",
+      "label": "Title size"
+    },
+    {
+      "type": "select",
+      "id": "title_weight",
+      "label": "Title weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#333333"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_title_shadow",
+      "label": "Enable title shadow",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Image Overlay"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 0,
+      "unit": "%",
+      "label": "Overlay opacity"
+    },
+    {
+      "type": "header",
+      "content": "Rotation"
+    },
+    {
+      "type": "range",
+      "id": "rotation_speed",
+      "min": 1,
+      "max": 10,
+      "step": 0.5,
+      "default": 3,
+      "unit": "s",
+      "label": "Rotation speed"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Masonry Collections"
+    }
+  ]
+}
+{% endschema %}

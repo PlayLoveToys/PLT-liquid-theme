@@ -1,0 +1,785 @@
+{% doc %}
+  @prompt
+    Create a modern 2-column blog layout where the first column takes up 2/3 of the page width and contains: col-1 row-1: Featured article (larger, prominent display), with image, excerpt and date. col-1 row-2: 2 important articles (smaller but still prominent) with image, excerpt and date. col-1 row-3: 4 article cards with image, excerpt and date. col-1 row-4: List of articles with thumbnail image, excerpt and date. Each article in a horizontal card. If pagination applies, "read more" button that will display 10 more articles, if the last article is already displayed, hide button. The second column takes up 1/3 for a configurable sidebar with: col2-row1: social media links. col2-row-2: Customizable menu. col2-row-3: newsletter signup. col2-row-4: Other blogs. Each blog shows linkable title and a list of 3 selectable articles showing small thumbnail image and title. The design should be responsive, clean and modern with proper spacing. Ensure mobile responsiveness with columns stacking vertically., column 2 row 5: featured products
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% comment %} TODO: Fix Git merge conflict marker on line 9 - remove "<<<<<<< HEAD" {% endcomment %}
+
+
+<blog-layout-{{ ai_gen_id }} class="tw-py-8 tw-bg-gray-50" {{ block.shopify_attributes }}>
+  <div class="tw-w-full tw-mx-auto tw-px-4" style="max-width: 1600px;">
+    <div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-3 tw-gap-8">
+      <!-- Main Content Section -->
+      <div class="lg:tw-col-span-2 tw-space-y-6" id="main-content">
+        <!-- Blog Content -->
+        {% if block.settings.featured_blog and block.settings.featured_blog.articles.size > 0 %}
+          {% assign featured_article = block.settings.featured_blog.articles.first %}
+          <article class="tw-bg-white tw-rounded-lg tw-shadow-md tw-overflow-hidden tw-relative" id="card-01">
+            <div class="tw-absolute tw-top-2 tw-right-2 tw-bg-black tw-bg-opacity-50 tw-text-white tw-text-xs tw-px-2 tw-py-1 tw-rounded tw-z-10">01</div>
+            <div class="tw-h-80 md:tw-h-96 tw-overflow-hidden">
+              {% if featured_article.image %}
+                <img
+                  src="{{ featured_article.image | image_url: width: 800 }}"
+                  alt="{{ featured_article.image.alt | escape }}"
+                  width="{{ featured_article.image.width }}"
+                  height="{{ featured_article.image.height }}"
+                  loading="lazy"
+                  class="tw-w-full tw-h-full tw-object-cover tw-transition-transform tw-duration-300 hover:tw-scale-105"
+                >
+              {% else %}
+                <div class="tw-w-full tw-h-full tw-bg-gray-200 tw-flex tw-items-center tw-justify-center">
+                  {{ 'image' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+            </div>
+            <div class="tw-p-6">
+              <h2 class="tw-text-2xl tw-font-bold tw-text-purple-600 tw-mb-3">
+                <a href="{{ featured_article.url }}" class="tw-text-purple-600 hover:tw-text-blue-600 tw-transition-colors tw-no-underline">{{ featured_article.title }}</a>
+              </h2>
+              <div class="tw-text-base tw-text-gray-600 tw-mb-4">
+                {{ featured_article.excerpt | truncate: 150 }}
+              </div>
+              <div class="tw-flex tw-justify-between tw-items-center">
+                <time class="tw-text-sm tw-text-gray-500">
+                  {{ featured_article.published_at | date: '%B %d, %Y' }}
+                </time>
+                <a href="{{ featured_article.url }}" class="tw-text-blue-600 hover:tw-text-blue-700 tw-transition-colors tw-text-sm tw-font-medium tw-no-underline">
+                  Continue Reading →
+                </a>
+              </div>
+            </div>
+          </article>
+        {% endif %}
+
+        {% if block.settings.featured_blog and block.settings.featured_blog.articles.size > 2 %}
+          <div class="tw-bg-white tw-p-6 tw-rounded-lg tw-shadow-sm tw-relative" id="card-02">
+            <div class="tw-absolute tw-top-2 tw-right-2 tw-bg-black tw-bg-opacity-50 tw-text-white tw-text-xs tw-px-2 tw-py-1 tw-rounded tw-z-10">02</div>
+            <!-- Section 1 - Inside important articles card -->
+            {% if block.settings.section_1_title != blank %}
+              <h2 class="tw-text-2xl tw-font-bold tw-text-purple-600 tw-mb-4">{{ block.settings.section_1_title }}</h2>
+            {% endif %}
+            {% if block.settings.section_1_text != blank %}
+              <div class="tw-text-base tw-text-gray-600 tw-mb-6">{{ block.settings.section_1_text }}</div>
+            {% endif %}
+            
+            <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6 tw-mb-6">
+              {% for article in block.settings.featured_blog.articles limit: 2 offset: 1 %}
+                <article class="tw-bg-gray-50 tw-rounded-lg tw-shadow-sm tw-overflow-hidden tw-group">
+                  <div class="tw-h-48 tw-overflow-hidden">
+                    {% if article.image %}
+                      <img
+                        src="{{ article.image | image_url: width: 400 }}"
+                        alt="{{ article.image.alt | escape }}"
+                        width="{{ article.image.width }}"
+                        height="{{ article.image.height }}"
+                        loading="lazy"
+                        class="tw-w-full tw-h-full tw-object-cover tw-transition-transform tw-duration-300 group-hover:tw-scale-105"
+                      >
+                    {% else %}
+                      <div class="tw-w-full tw-h-full tw-bg-gray-200 tw-flex tw-items-center tw-justify-center">
+                        {{ 'image' | placeholder_svg_tag }}
+                      </div>
+                    {% endif %}
+                  </div>
+                  <div class="tw-p-4">
+                    <h3 class="tw-text-lg tw-font-semibold tw-text-purple-600 tw-mb-2">
+                      <a href="{{ article.url }}" class="tw-text-purple-600 group-hover:tw-text-blue-600 tw-transition-colors tw-no-underline">{{ article.title }}</a>
+                    </h3>
+                    <div class="tw-text-gray-600 tw-text-sm tw-mb-3">
+                      {{ article.excerpt | truncate: 100 }}
+                    </div>
+                    <div class="tw-flex tw-justify-between tw-items-center">
+                      <time class="tw-text-xs tw-text-gray-500">
+                        {{ article.published_at | date: '%B %d, %Y' }}
+                      </time>
+                      <a href="{{ article.url }}" class="tw-text-blue-600 hover:tw-text-blue-700 tw-transition-colors tw-text-sm tw-font-medium tw-no-underline">
+                        Continue Reading →
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              {% endfor %}
+            </div>
+
+            {% if block.settings.featured_blog and block.settings.featured_blog.articles.size > 6 %}
+              <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 tw-gap-6">
+                {% for article in block.settings.featured_blog.articles limit: 2 offset: 3 %}
+                  <article class="tw-bg-gray-50 tw-rounded-lg tw-shadow-sm tw-overflow-hidden tw-group">
+                    <div class="tw-h-40 tw-overflow-hidden">
+                      {% if article.image %}
+                        <img
+                          src="{{ article.image | image_url: width: 300 }}"
+                          alt="{{ article.image.alt | escape }}"
+                          width="{{ article.image.width }}"
+                          height="{{ article.image.height }}"
+                          loading="lazy"
+                          class="tw-w-full tw-h-full tw-object-cover tw-transition-transform tw-duration-300 group-hover:tw-scale-105"
+                        >
+                      {% else %}
+                        <div class="tw-w-full tw-h-full tw-bg-gray-200 tw-flex tw-items-center tw-justify-center">
+                          {{ 'image' | placeholder_svg_tag }}
+                        </div>
+                      {% endif %}
+                    </div>
+                    <div class="tw-p-4">
+                      <h4 class="tw-text-base tw-font-medium tw-text-purple-600 tw-mb-2">
+                        <a href="{{ article.url }}" class="tw-text-purple-600 group-hover:tw-text-blue-600 tw-transition-colors tw-no-underline">{{ article.title }}</a>
+                      </h4>
+                      <div class="tw-text-gray-600 tw-text-sm tw-mb-2">
+                        {{ article.excerpt | truncate: 80 }}
+                      </div>
+                      <div class="tw-flex tw-justify-between tw-items-center">
+                        <time class="tw-text-xs tw-text-gray-500">
+                          {{ article.published_at | date: '%B %d, %Y' }}
+                        </time>
+                        <a href="{{ article.url }}" class="tw-text-blue-600 hover:tw-text-blue-700 tw-transition-colors tw-text-sm tw-font-medium tw-no-underline">
+                          Continue Reading →
+                        </a>
+                      </div>
+                    </div>
+                  </article>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        <div class="tw-bg-white tw-p-6 tw-rounded-lg tw-shadow-sm tw-relative" id="card-03">
+          <div class="tw-absolute tw-top-2 tw-right-2 tw-bg-black tw-bg-opacity-50 tw-text-white tw-text-xs tw-px-2 tw-py-1 tw-rounded tw-z-10">03</div>
+          <!-- Section 2 - Inside thumbnail posts card -->
+          {% if block.settings.section_2_title != blank %}
+            <h2 class="tw-text-2xl tw-font-bold tw-text-purple-600 tw-mb-4">{{ block.settings.section_2_title }}</h2>
+            {% if block.settings.section_2_text != blank %}
+              <div class="tw-text-base tw-text-gray-600 tw-mb-6">{{ block.settings.section_2_text }}</div>
+            {% endif %}
+          {% endif %}
+
+          <div class="tw-space-y-6" data-articles-container>
+            {% if block.settings.featured_blog and block.settings.featured_blog.articles.size > 5 %}
+              {% for article in block.settings.featured_blog.articles offset: 5 %}
+                <article
+                  class="tw-bg-gray-50 tw-rounded-lg tw-shadow-sm tw-p-4 tw-flex tw-gap-4 tw-group"
+                  {% if forloop.index > 10 %}
+                    style="display: none;"
+                  {% endif %}
+                  data-article-item
+                >
+                  <div class="tw-flex-shrink-0 tw-w-32 tw-h-24 tw-overflow-hidden tw-rounded">
+                    {% if article.image %}
+                      <img
+                        src="{{ article.image | image_url: width: 240 }}"
+                        alt="{{ article.image.alt | escape }}"
+                        width="{{ article.image.width }}"
+                        height="{{ article.image.height }}"
+                        loading="lazy"
+                        class="tw-w-full tw-h-full tw-object-cover"
+                      >
+                    {% else %}
+                      <div class="tw-w-full tw-h-full tw-bg-gray-200 tw-flex tw-items-center tw-justify-center">
+                        {{ 'image' | placeholder_svg_tag }}
+                      </div>
+                    {% endif %}
+                  </div>
+                  <div class="tw-flex-1 tw-min-w-0">
+                    <h5 class="tw-text-base tw-font-medium tw-text-purple-600 tw-mb-1 tw-truncate">
+                      <a href="{{ article.url }}" class="tw-text-purple-600 group-hover:tw-text-blue-600 tw-transition-colors tw-no-underline">{{ article.title }}</a>
+                    </h5>
+                    <div class="tw-text-gray-600 tw-text-sm tw-mb-2">
+                      {{ article.excerpt | truncate: 120 }}
+                    </div>
+                    <div class="tw-flex tw-justify-between tw-items-center">
+                      <time class="tw-text-xs tw-text-gray-500">
+                        {{ article.published_at | date: '%B %d, %Y' }}
+                      </time>
+                      <a href="{{ article.url }}" class="tw-text-blue-600 hover:tw-text-blue-700 tw-transition-colors tw-text-xs tw-font-medium tw-no-underline">
+                        Continue Reading →
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Section 3 - After thumbnail posts -->
+        {% if block.settings.section_3_title != blank %}
+          <div class="tw-bg-white tw-p-6 tw-rounded-lg tw-shadow-sm">
+            <h2 class="tw-text-2xl tw-font-bold tw-text-purple-600 tw-mb-4">{{ block.settings.section_3_title }}</h2>
+            {% if block.settings.section_3_text != blank %}
+              <div class="tw-text-base tw-text-gray-600">{{ block.settings.section_3_text }}</div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if block.settings.featured_blog and block.settings.featured_blog.articles.size > 15 %}
+          <div class="tw-text-center tw-mt-8">
+            <button class="tw-bg-blue-600 tw-text-white tw-px-8 tw-py-3 tw-rounded-lg hover:tw-bg-blue-700 tw-transition-colors tw-font-medium" data-load-more>
+              {{ block.settings.load_more_text }}
+            </button>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Sidebar Section -->
+      <aside class="tw-space-y-6" id="sidebar">
+        <!-- Social Media -->
+        <div class="tw-bg-white tw-p-6 tw-rounded-lg tw-shadow-sm">
+          <h3 class="tw-text-lg tw-font-semibold tw-mb-4 tw-text-purple-600">{{ block.settings.social_title }}</h3>
+          <div class="tw-flex tw-space-x-3">
+            {% if block.settings.facebook_url != blank %}
+              <a
+                href="{{ block.settings.facebook_url }}"
+                class="tw-w-10 tw-h-10 tw-bg-blue-600 tw-text-white tw-rounded-full tw-flex tw-items-center tw-justify-center hover:tw-bg-blue-700 tw-transition-colors"
+                target="_blank"
+                rel="noopener"
+              >
+                <svg class="tw-w-5 tw-h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+              </a>
+            {% endif %}
+            {% if block.settings.twitter_url != blank %}
+              <a
+                href="{{ block.settings.twitter_url }}"
+                class="tw-w-10 tw-h-10 tw-bg-blue-400 tw-text-white tw-rounded-full tw-flex tw-items-center tw-justify-center hover:tw-bg-blue-500 tw-transition-colors"
+                target="_blank"
+                rel="noopener"
+              >
+                <svg class="tw-w-5 tw-h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                </svg>
+              </a>
+            {% endif %}
+            {% if block.settings.instagram_url != blank %}
+              <a
+                href="{{ block.settings.instagram_url }}"
+                class="tw-w-10 tw-h-10 tw-bg-pink-600 tw-text-white tw-rounded-full tw-flex tw-items-center tw-justify-center hover:tw-bg-pink-700 tw-transition-colors"
+                target="_blank"
+                rel="noopener"
+              >
+                <svg class="tw-w-5 tw-h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+              </a>
+            {% endif %}
+            {% if block.settings.linkedin_url != blank %}
+              <a
+                href="{{ block.settings.linkedin_url }}"
+                class="tw-w-10 tw-h-10 tw-bg-blue-700 tw-text-white tw-rounded-full tw-flex tw-items-center tw-justify-center hover:tw-bg-blue-800 tw-transition-colors"
+                target="_blank"
+                rel="noopener"
+              >
+                <svg class="tw-w-5 tw-h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                </svg>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Custom Menu -->
+        {% if block.settings.custom_menu != blank %}
+          <div class="tw-bg-white tw-p-6 tw-rounded-lg tw-shadow-sm">
+            <h3 class="tw-text-lg tw-font-semibold tw-mb-4 tw-text-purple-600">{{ block.settings.menu_title }}</h3>
+            <ul class="tw-space-y-2">
+              {% for link in block.settings.custom_menu.links %}
+                <li>
+                  <a href="{{ link.url }}" class="tw-text-gray-600 hover:tw-text-blue-600 tw-transition-colors tw-block tw-py-1">{{ link.title }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <!-- Newsletter -->
+        <div class="tw-bg-white tw-p-6 tw-rounded-lg tw-shadow-sm">
+          <h3 class="tw-text-lg tw-font-semibold tw-mb-4 tw-text-purple-600">{{ block.settings.newsletter_title }}</h3>
+          {% form 'customer' %}
+            <div class="tw-space-y-3">
+              <input
+                type="email"
+                name="contact[email]"
+                class="tw-w-full tw-px-4 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-colors"
+                placeholder="{{ block.settings.newsletter_placeholder }}"
+                required
+              >
+              <button type="submit" class="tw-w-full tw-bg-blue-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-md hover:tw-bg-blue-700 tw-transition-colors tw-font-medium">
+                {{ block.settings.newsletter_button }}
+              </button>
+            </div>
+          {% endform %}
+        </div>
+
+        <!-- Other Blogs -->
+        <div class="tw-bg-white tw-p-6 tw-rounded-lg tw-shadow-sm">
+          <h3 class="tw-text-lg tw-font-semibold tw-mb-4 tw-text-purple-600">{{ block.settings.other_blogs_title }}</h3>
+          <div class="tw-space-y-6">
+            {% for i in (1..3) %}
+              {% assign blog_key = 'other_blog_' | append: i %}
+              {% assign blog = block.settings[blog_key] %}
+              {% if blog != blank and blog.articles.size > 0 %}
+                <div class="tw-border-b tw-border-gray-200 tw-pb-4 last:tw-border-b-0 last:tw-pb-0">
+                  <h4 class="tw-font-medium tw-text-purple-600 tw-mb-3">
+                    <a href="{{ blog.url }}" class="tw-text-purple-600 hover:tw-text-blue-600 tw-transition-colors tw-no-underline">{{ blog.title }}</a>
+                  </h4>
+                  <div class="tw-space-y-2">
+                    {% for article in blog.articles limit: 3 %}
+                      <div class="tw-flex tw-gap-3 tw-items-start">
+                        <div class="tw-flex-shrink-0 tw-w-16 tw-h-12 tw-overflow-hidden tw-rounded">
+                          {% if article.image %}
+                            <img
+                              src="{{ article.image | image_url: width: 120 }}"
+                              alt="{{ article.image.alt | escape }}"
+                              width="{{ article.image.width }}"
+                              height="{{ article.image.height }}"
+                              loading="lazy"
+                              class="tw-w-full tw-h-full tw-object-cover"
+                            >
+                          {% else %}
+                            <div class="tw-w-full tw-h-full tw-bg-gray-200 tw-flex tw-items-center tw-justify-center">
+                              {{ 'image' | placeholder_svg_tag }}
+                            </div>
+                          {% endif %}
+                        </div>
+                        <a href="{{ article.url }}" class="tw-text-sm tw-text-gray-600 hover:tw-text-blue-600 tw-transition-colors tw-flex-1">
+                          {{ article.title | truncate: 60 }}
+                        </a>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Featured Products -->
+        <div class="tw-bg-white tw-p-6 tw-rounded-lg tw-shadow-sm">
+          <h3 class="tw-text-lg tw-font-semibold tw-mb-4 tw-text-purple-600">{{ block.settings.featured_products_title }}</h3>
+          <div class="tw-space-y-6">
+            {% for product in block.settings.featured_products limit: 3 %}
+              <div class="tw-border tw-border-gray-200 tw-rounded-lg tw-overflow-hidden tw-group tw-flex">
+                <div class="tw-w-1/2 tw-aspect-square tw-flex-shrink-0 tw-overflow-hidden tw-rounded">
+                  {% if product.featured_image %}
+                    <img
+                      src="{{ product.featured_image | image_url: width: 200 }}"
+                      alt="{{ product.featured_image.alt | escape }}"
+                      width="{{ product.featured_image.width }}"
+                      height="{{ product.featured_image.height }}"
+                      loading="lazy"
+                      class="tw-w-full tw-h-full tw-object-cover tw-transition-transform tw-duration-300 group-hover:tw-scale-105"
+                    >
+                  {% else %}
+                    <div class="tw-w-full tw-h-full tw-bg-gray-200 tw-flex tw-items-center tw-justify-center">
+                      {{ 'product-1' | placeholder_svg_tag }}
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="tw-p-3 tw-flex-1">
+                  {% if product.vendor %}
+                    <div class="tw-text-xs tw-text-gray-500 tw-mb-1">{{ product.vendor }}</div>
+                  {% endif %}
+                  <h4 class="tw-font-medium tw-text-purple-600 tw-mb-2 tw-text-sm tw-leading-tight">
+                    <a href="{{ product.url }}" class="tw-text-purple-600 group-hover:tw-text-blue-600 tw-transition-colors tw-no-underline">{{ product.title | truncate: 35 }}</a>
+                  </h4>
+                  {% if product.description != blank %}
+                    <p class="tw-text-xs tw-text-gray-600 tw-mb-2 tw-leading-relaxed">{{ product.description | strip_html | truncate: 60 }}</p>
+                  {% endif %}
+                  <div class="tw-flex tw-items-center tw-gap-2 tw-mb-2">
+                    {% if product.compare_at_price > product.price %}
+                      <span class="tw-text-xs tw-text-gray-500 tw-line-through">{{ product.compare_at_price | money }}</span>
+                    {% endif %}
+                    <span class="tw-font-semibold tw-text-gray-900 tw-text-sm">{{ product.price | money }}</span>
+                  </div>
+                  <a href="{{ product.url }}" class="tw-block tw-w-full tw-bg-blue-600 tw-text-white tw-text-center tw-py-1 tw-rounded tw-text-xs tw-font-medium hover:tw-bg-blue-700 tw-transition-colors">
+                    {{ block.settings.product_button_text }}
+                  </a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</blog-layout-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class BlogLayout{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.currentlyVisible = 10;
+        this.articlesPerLoad = 10;
+      }
+
+      connectedCallback() {
+        this.loadMoreBtn = this.querySelector('[data-load-more]');
+        this.articlesContainer = this.querySelector('[data-articles-container]');
+        this.articles = this.querySelectorAll('[data-article-item]');
+
+        if (this.loadMoreBtn) {
+          this.loadMoreBtn.addEventListener('click', this.loadMoreArticles.bind(this));
+          this.updateLoadMoreButton();
+        }
+      }
+
+      loadMoreArticles() {
+        const hiddenArticles = Array.from(this.articles).slice(this.currentlyVisible, this.currentlyVisible + this.articlesPerLoad);
+
+        hiddenArticles.forEach(article => {
+          article.style.display = 'flex';
+        });
+
+        this.currentlyVisible += this.articlesPerLoad;
+        this.updateLoadMoreButton();
+      }
+
+      updateLoadMoreButton() {
+        if (this.currentlyVisible >= this.articles.length) {
+          this.loadMoreBtn.style.display = 'none';
+        }
+      }
+    }
+
+    customElements.define('blog-layout-{{ ai_gen_id }}', BlogLayout{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Blog 2 Col layout",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Custom Sections"
+    },
+    {
+      "type": "text",
+      "id": "section_1_title",
+      "label": "Section 1 Title"
+    },
+    {
+      "type": "richtext",
+      "id": "section_1_text",
+      "label": "Section 1 Text"
+    },
+    {
+      "type": "text",
+      "id": "section_2_title",
+      "label": "Section 2 Title"
+    },
+    {
+      "type": "richtext",
+      "id": "section_2_text",
+      "label": "Section 2 Text"
+    },
+    {
+      "type": "text",
+      "id": "section_3_title",
+      "label": "Section 3 Title"
+    },
+    {
+      "type": "richtext",
+      "id": "section_3_text",
+      "label": "Section 3 Text"
+    },
+    {
+      "type": "header",
+      "content": "Main blog"
+    },
+    {
+      "type": "blog",
+      "id": "featured_blog",
+      "label": "Featured blog"
+    },
+    {
+      "type": "text",
+      "id": "load_more_text",
+      "label": "Load more button text",
+      "default": "Load more articles"
+    },
+    {
+      "type": "header",
+      "content": "Social media"
+    },
+    {
+      "type": "text",
+      "id": "social_title",
+      "label": "Social media title",
+      "default": "Follow us"
+    },
+    {
+      "type": "url",
+      "id": "facebook_url",
+      "label": "Facebook URL"
+    },
+    {
+      "type": "url",
+      "id": "twitter_url",
+      "label": "Twitter URL"
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "url",
+      "id": "linkedin_url",
+      "label": "LinkedIn URL"
+    },
+    {
+      "type": "header",
+      "content": "Custom menu"
+    },
+    {
+      "type": "text",
+      "id": "menu_title",
+      "label": "Menu title",
+      "default": "Quick links"
+    },
+    {
+      "type": "link_list",
+      "id": "custom_menu",
+      "label": "Menu"
+    },
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_title",
+      "label": "Newsletter title",
+      "default": "Newsletter"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_placeholder",
+      "label": "Email placeholder",
+      "default": "Enter your email"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_button",
+      "label": "Subscribe button text",
+      "default": "Subscribe"
+    },
+    {
+      "type": "header",
+      "content": "Other blogs"
+    },
+    {
+      "type": "text",
+      "id": "other_blogs_title",
+      "label": "Other blogs title",
+      "default": "Other blogs"
+    },
+    {
+      "type": "blog",
+      "id": "other_blog_1",
+      "label": "Blog 1"
+    },
+    {
+      "type": "blog",
+      "id": "other_blog_2",
+      "label": "Blog 2"
+    },
+    {
+      "type": "blog",
+      "id": "other_blog_3",
+      "label": "Blog 3"
+    },
+    {
+      "type": "header",
+      "content": "Featured products"
+    },
+    {
+      "type": "text",
+      "id": "featured_products_title",
+      "label": "Featured products title",
+      "default": "Featured products"
+    },
+    {
+      "type": "product_list",
+      "id": "featured_products",
+      "label": "Featured products",
+      "limit": 3
+    },
+    {
+      "type": "text",
+      "id": "product_button_text",
+      "label": "Product button text",
+      "default": "View product"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "meta_color",
+      "label": "Meta text color",
+      "default": "#999999"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link color",
+      "default": "#007acc"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "sidebar_background",
+      "label": "Sidebar background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button color",
+      "default": "#007acc"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button hover color",
+      "default": "#005a99"
+    },
+    {
+      "type": "color",
+      "id": "social_bg_color",
+      "label": "Social icon background",
+      "default": "#007acc"
+    },
+    {
+      "type": "color",
+      "id": "social_icon_color",
+      "label": "Social icon color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Section padding",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Column gap",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "row_gap",
+      "min": 15,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Row gap",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "sidebar_gap",
+      "min": 15,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "label": "Sidebar gap",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Card border radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Button border radius",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Mobile"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile padding",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_gap",
+      "min": 15,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile gap",
+      "default": 25
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog 2 Col layout",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

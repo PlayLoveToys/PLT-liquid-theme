@@ -1,0 +1,149 @@
+{% liquid
+  assign page_type = request.page_type
+  assign subfolder = ''
+  assign handle_url = ''
+  assign ca_index_only = false
+  assign us_index_only = false
+  assign glossary_hreflang = false
+
+  case page_type
+    when 'index'
+      assign subfolder = ''
+      assign handle_url = ''
+
+    when 'product'
+      assign subfolder = 'products/'
+      assign handle_url = product.handle
+
+    when 'collection'
+      assign subfolder = 'collections/'
+      assign handle_url = collection.handle
+
+    when 'blog'
+      assign subfolder = 'blogs/'
+      assign handle_url = blog.handle
+
+    when 'article'
+      assign subfolder = 'blogs/'
+      assign handle_url = article.handle
+
+    when 'page'
+      assign subfolder = 'pages/'
+      assign handle_url = page.handle
+
+    when 'metaobject'
+      if metaobject.system.type == 'location_page'
+        assign subfolder = 'pages/canada-location/'
+        assign handle_url = metaobject.system.handle
+        assign ca_index_only = true
+      elsif metaobject.system.type == 'region'
+        assign subfolder = 'pages/canada/'
+        assign handle_url = metaobject.system.handle
+        assign ca_index_only = true
+      elsif metaobject.system.type == 'local_page'
+        assign subfolder = 'pages/en-us/'
+        assign handle_url = metaobject.system.handle
+        assign us_index_only = true
+      elsif metaobject.system.type == 'glossary_term'
+        assign subfolder = 'pages/glossary/'
+        assign handle_url = metaobject.system.handle
+        assign glossary_hreflang = true
+      endif
+    when 'search'
+      assign subfolder = 'search/'
+      assign handle_url = ''
+  endcase
+%}
+
+{% if glossary_hreflang %}
+  {% assign current_term = metaobject.term.value %}
+  {% assign glossary_default_url = metaobject.system.url | default: canonical_url %}
+
+  <link
+    rel="alternate"
+    hreflang="x-default"
+    href="{{ glossary_default_url }}"
+  >
+
+  {% if metaobject.locale.value != blank %}
+    <link
+      rel="alternate"
+      hreflang="{{ metaobject.locale.value }}"
+      href="{{ glossary_default_url }}"
+    >
+  {% endif %}
+
+  {% for glossary_entry in metaobjects.glossary_term.values %}
+    {% if glossary_entry.term.value == current_term and glossary_entry.system.handle != metaobject.system.handle %}
+      {% if glossary_entry.locale.value != blank and glossary_entry.system.url != blank %}
+        <link
+          rel="alternate"
+          hreflang="{{ glossary_entry.locale.value }}"
+          href="{{ glossary_entry.system.url }}"
+        >
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+{% elsif ca_index_only %}
+  <link
+    rel="alternate"
+    hreflang="x-default"
+    href="https://playlovetoys.ca/{{- subfolder -}}{{- handle_url -}}"
+  >
+  <link
+    rel="alternate"
+    hreflang="en-CA"
+    href="https://playlovetoys.ca/{{- subfolder -}}{{- handle_url -}}"
+  >
+  <link
+    rel="alternate"
+    hreflang="fr-CA"
+    href="https://playlovetoys.ca/fr/{{- subfolder -}}{{- handle_url -}}"
+  >
+  {% if request.host != 'playlovetoys.ca' %}
+    <meta name="robots" content="noindex, follow">
+  {% endif %}
+
+{% elsif us_index_only %}
+  <link
+    rel="alternate"
+    hreflang="x-default"
+    href="https://playlovetoys.com/{{- subfolder -}}{{- handle_url -}}"
+  >
+  <link
+    rel="alternate"
+    hreflang="en-US"
+    href="https://playlovetoys.com/es/{{- subfolder -}}{{- handle_url -}}"
+  >
+  {% if request.host != 'playlovetoys.com' %}
+    <meta name="robots" content="noindex, follow">
+  {% endif %}
+
+{% else %}
+  <link
+    rel="alternate"
+    hreflang="x-default"
+    href="https://playlovetoys.com/{{- subfolder -}}{{- handle_url -}}"
+  >
+  <link
+    rel="alternate"
+    hreflang="en-US"
+    href="https://playlovetoys.com/{{- subfolder -}}{{- handle_url -}}"
+  >
+  <link
+    rel="alternate"
+    hreflang="es-US"
+    href="https://playlovetoys.com/es/{{- subfolder -}}{{- handle_url -}}"
+  >
+  <link
+    rel="alternate"
+    hreflang="en-CA"
+    href="https://playlovetoys.ca/{{- subfolder -}}{{- handle_url -}}"
+  >
+  <link
+    rel="alternate"
+    hreflang="fr-CA"
+    href="https://playlovetoys.ca/fr/{{- subfolder -}}{{- handle_url -}}"
+  >
+{% endif %}

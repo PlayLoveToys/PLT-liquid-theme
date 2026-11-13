@@ -1,0 +1,1335 @@
+{% doc %}
+  @prompt
+    Create a modern 2-column blog layout where the first column takes up 2/3 of the page width and contains: col-1 row-1: Featured article (larger, prominent display), with image, excerpt and date. col-1 row-2: 2 important articles (smaller but still prominent) with image, excerpt and date. col-1 row-3: 4 article cards with image, excerpt and date. col-1 row-4: List of articles with thumbnail image, excerpt and date. Each article in a horizontal card. If pagination applies, "read more" button that will display 10 more articles, if the last article is already displayed, hide button. The second column takes up 1/3 for a configurable sidebar with: col2-row1: social media links. col2-row-2: Customizable menu. col2-row-3: newsletter signup. col2-row-4: Other blogs. Each blog shows linkable title and a list of 3 selectable articles showing small thumbnail image and title. The design should be responsive, clean and modern with proper spacing. Ensure mobile responsiveness with columns stacking vertically., column 2 row 5: featured products
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-blog-layout-{{ ai_gen_id }} {
+    max-width: 95%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: {{ block.settings.column_gap }}px;
+    font-family: inherit;
+  }
+
+  .ai-blog-main-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: {{ block.settings.row_gap }}px;
+  }
+
+  .ai-blog-sidebar-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: {{ block.settings.sidebar_gap }}px;
+  }
+
+  .ai-featured-article-{{ ai_gen_id }} {
+    background: {{ block.settings.card_background }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .ai-featured-article-{{ ai_gen_id }}:hover {
+    transform: translateY(-2px);
+  }
+
+  .ai-featured-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: auto;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ai-featured-image-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-featured-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-featured-image-placeholder-{{ ai_gen_id }} svg {
+    width: 80px;
+    height: 80px;
+    opacity: 0.3;
+  }
+
+  .ai-featured-content-{{ ai_gen_id }} {
+    padding: 24px;
+  }
+
+  .ai-featured-title-{{ ai_gen_id }} {
+    font-size: 28px;
+    font-weight: 700;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 12px;
+    line-height: 1.3;
+  }
+
+  .ai-featured-title-{{ ai_gen_id }} a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ai-featured-title-{{ ai_gen_id }} a:hover {
+    color: {{ block.settings.link_color }};
+  }
+
+  .ai-featured-excerpt-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0 0 12px;
+  }
+
+  .ai-featured-date-{{ ai_gen_id }} {
+    color: {{ block.settings.meta_color }};
+    font-size: 14px;
+  }
+
+  .ai-important-articles-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .ai-important-article-{{ ai_gen_id }} {
+    background: {{ block.settings.card_background }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+  }
+
+  .ai-important-article-{{ ai_gen_id }}:hover {
+    transform: translateY(-2px);
+  }
+
+  .ai-important-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ai-important-image-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-important-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-important-image-placeholder-{{ ai_gen_id }} svg {
+    width: 50px;
+    height: 50px;
+    opacity: 0.3;
+  }
+
+  .ai-important-content-{{ ai_gen_id }} {
+    padding: 16px;
+  }
+
+  .ai-important-title-{{ ai_gen_id }} {
+    font-size: 18px;
+    font-weight: 600;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 8px;
+    line-height: 1.4;
+  }
+
+  .ai-important-title-{{ ai_gen_id }} a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ai-important-title-{{ ai_gen_id }} a:hover {
+    color: {{ block.settings.link_color }};
+  }
+
+  .ai-important-excerpt-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0 0 8px;
+  }
+
+  .ai-important-date-{{ ai_gen_id }} {
+    color: {{ block.settings.meta_color }};
+    font-size: 12px;
+  }
+
+  .ai-article-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .ai-article-card-{{ ai_gen_id }} {
+    background: {{ block.settings.card_background }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    transition: transform 0.3s ease;
+  }
+
+  .ai-article-card-{{ ai_gen_id }}:hover {
+    transform: translateY(-1px);
+  }
+
+  .ai-card-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 120px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ai-card-image-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-card-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-card-image-placeholder-{{ ai_gen_id }} svg {
+    width: 40px;
+    height: 40px;
+    opacity: 0.3;
+  }
+
+  .ai-card-content-{{ ai_gen_id }} {
+    padding: 12px;
+  }
+
+  .ai-card-title-{{ ai_gen_id }} {
+    font-size: 14px;
+    font-weight: 600;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 6px;
+    line-height: 1.3;
+  }
+
+  .ai-card-title-{{ ai_gen_id }} a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ai-card-title-{{ ai_gen_id }} a:hover {
+    color: {{ block.settings.link_color }};
+  }
+
+  .ai-card-excerpt-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 0 0 6px;
+  }
+
+  .ai-card-date-{{ ai_gen_id }} {
+    color: {{ block.settings.meta_color }};
+    font-size: 11px;
+  }
+
+  .ai-article-list-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ai-list-article-{{ ai_gen_id }} {
+    display: flex;
+    gap: 12px;
+    background: {{ block.settings.card_background }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    padding: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    transition: transform 0.3s ease;
+  }
+
+  .ai-list-article-{{ ai_gen_id }}:hover {
+    transform: translateY(-1px);
+  }
+
+  .ai-list-image-{{ ai_gen_id }} {
+    width: 80px;
+    height: 60px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .ai-list-image-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-list-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-list-image-placeholder-{{ ai_gen_id }} svg {
+    width: 24px;
+    height: 24px;
+    opacity: 0.3;
+  }
+
+  .ai-list-content-{{ ai_gen_id }} {
+    flex: 1;
+  }
+
+  .ai-list-title-{{ ai_gen_id }} {
+    font-size: 14px;
+    font-weight: 600;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 4px;
+    line-height: 1.3;
+  }
+
+  .ai-list-title-{{ ai_gen_id }} a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ai-list-title-{{ ai_gen_id }} a:hover {
+    color: {{ block.settings.link_color }};
+  }
+
+  .ai-list-excerpt-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 0 0 4px;
+  }
+
+  .ai-list-date-{{ ai_gen_id }} {
+    color: {{ block.settings.meta_color }};
+    font-size: 11px;
+  }
+
+  .ai-load-more-{{ ai_gen_id }} {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .ai-load-more-btn-{{ ai_gen_id }} {
+    background: {{ block.settings.button_color }};
+    color: {{ block.settings.button_text_color }};
+    border: none;
+    padding: 12px 24px;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .ai-load-more-btn-{{ ai_gen_id }}:hover {
+    background: {{ block.settings.button_hover_color }};
+  }
+
+  .ai-sidebar-section-{{ ai_gen_id }} {
+    background: {{ block.settings.sidebar_background }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  .ai-sidebar-title-{{ ai_gen_id }} {
+    font-size: 18px;
+    font-weight: 700;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 16px;
+  }
+
+  .ai-social-links-{{ ai_gen_id }} {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .ai-social-link-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: {{ block.settings.social_bg_color }};
+    color: {{ block.settings.social_icon_color }};
+    border-radius: 50%;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+  }
+
+  .ai-social-link-{{ ai_gen_id }}:hover {
+    transform: scale(1.1);
+  }
+
+  .ai-social-link-{{ ai_gen_id }} svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .ai-menu-list-{{ ai_gen_id }} {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .ai-menu-item-{{ ai_gen_id }} {
+    margin-bottom: 8px;
+  }
+
+  .ai-menu-link-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+  }
+
+  .ai-menu-link-{{ ai_gen_id }}:hover {
+    color: {{ block.settings.link_color }};
+  }
+
+  .ai-newsletter-form-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ai-newsletter-input-{{ ai_gen_id }} {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .ai-newsletter-btn-{{ ai_gen_id }} {
+    background: {{ block.settings.button_color }};
+    color: {{ block.settings.button_text_color }};
+    border: none;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .ai-newsletter-btn-{{ ai_gen_id }}:hover {
+    background: {{ block.settings.button_hover_color }};
+  }
+
+  .ai-other-blogs-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ai-blog-section-{{ ai_gen_id }} {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 16px;
+  }
+
+  .ai-blog-section-{{ ai_gen_id }}:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .ai-blog-title-{{ ai_gen_id }} {
+    font-size: 16px;
+    font-weight: 600;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 12px;
+  }
+
+  .ai-blog-title-{{ ai_gen_id }} a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ai-blog-title-{{ ai_gen_id }} a:hover {
+    color: {{ block.settings.link_color }};
+  }
+
+  .ai-blog-articles-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ai-blog-article-{{ ai_gen_id }} {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .ai-blog-article-image-{{ ai_gen_id }} {
+    width: 40px;
+    height: 30px;
+    flex-shrink: 0;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .ai-blog-article-image-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-blog-article-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-blog-article-image-placeholder-{{ ai_gen_id }} svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.3;
+  }
+
+  .ai-blog-article-title-{{ ai_gen_id }} {
+    font-size: 12px;
+    color: {{ block.settings.text_color }};
+    text-decoration: none;
+    line-height: 1.3;
+  }
+
+  .ai-blog-article-title-{{ ai_gen_id }}:hover {
+    color: {{ block.settings.link_color }};
+  }
+
+  .ai-featured-products-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ai-product-card-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    background: {{ block.settings.card_background }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    transition: transform 0.3s ease;
+  }
+
+  .ai-product-card-{{ ai_gen_id }}:hover {
+    transform: translateY(-2px);
+  }
+
+  .ai-product-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ai-product-image-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-product-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-product-image-placeholder-{{ ai_gen_id }} svg {
+    width: 60px;
+    height: 60px;
+    opacity: 0.3;
+  }
+
+  .ai-product-content-{{ ai_gen_id }} {
+    padding: 16px;
+  }
+
+  .ai-product-title-{{ ai_gen_id }} {
+    font-size: 14px;
+    font-weight: 600;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 8px;
+    line-height: 1.3;
+  }
+
+  .ai-product-title-{{ ai_gen_id }} a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ai-product-title-{{ ai_gen_id }} a:hover {
+    color: {{ block.settings.link_color }};
+  }
+
+  .ai-product-price-{{ ai_gen_id }} {
+    font-size: 16px;
+    font-weight: 700;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 12px;
+  }
+
+  .ai-product-price-compare-{{ ai_gen_id }} {
+    color: {{ block.settings.meta_color }};
+    text-decoration: line-through;
+    font-size: 14px;
+    margin-right: 8px;
+  }
+
+  .ai-product-btn-{{ ai_gen_id }} {
+    width: 100%;
+    background: {{ block.settings.button_color }};
+    color: {{ block.settings.button_text_color }};
+    border: none;
+    padding: 10px 16px;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .ai-product-btn-{{ ai_gen_id }}:hover {
+    background: {{ block.settings.button_hover_color }};
+  }
+
+  @media screen and (max-width: 768px) {
+    .ai-blog-layout-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+      gap: {{ block.settings.mobile_gap }}px;
+      padding: {{ block.settings.mobile_padding }}px;
+    }
+
+    .ai-important-articles-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+    }
+
+    .ai-article-grid-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+    }
+
+    .ai-featured-title-{{ ai_gen_id }} {
+      font-size: 24px;
+    }
+
+    .ai-featured-image-{{ ai_gen_id }} {
+      height: 200px;
+    }
+
+    .ai-important-image-{{ ai_gen_id }} {
+      height: 150px;
+    }
+
+    .ai-product-image-{{ ai_gen_id }} {
+      height: 150px;
+    }
+  }
+{% endstyle %}
+
+<blog-layout-{{ ai_gen_id }} class="ai-blog-layout-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-blog-main-{{ ai_gen_id }}">
+    {% if block.settings.featured_blog and block.settings.featured_blog.articles.size > 0 %}
+      {% assign featured_article = block.settings.featured_blog.articles.first %}
+      <article class="ai-featured-article-{{ ai_gen_id }}">
+        <div class="ai-featured-image-{{ ai_gen_id }}">
+          {% if featured_article.image %}
+            <img
+              src="{{ featured_article.image | image_url: width: 800 }}"
+              alt="{{ featured_article.image.alt | escape }}"
+              loading="lazy"
+              width="800"
+              height="300"
+            >
+          {% else %}
+            <div class="ai-featured-image-placeholder-{{ ai_gen_id }}">
+              {{ 'image' | placeholder_svg_tag }}
+            </div>
+          {% endif %}
+        </div>
+        <div class="ai-featured-content-{{ ai_gen_id }}">
+          <h2 class="ai-featured-title-{{ ai_gen_id }}">
+            <a href="{{ featured_article.url }}">{{ featured_article.title }}</a>
+          </h2>
+          <div class="ai-featured-excerpt-{{ ai_gen_id }}">
+            {{ featured_article.excerpt }}
+          </div>
+          <div class="ai-featured-date-{{ ai_gen_id }}">
+            {{ featured_article.published_at | date: '%B %d, %Y' }}
+          </div>
+        </div>
+      </article>
+    {% endif %}
+
+    {% if block.settings.featured_blog and block.settings.featured_blog.articles.size > 2 %}
+      <div class="ai-important-articles-{{ ai_gen_id }}">
+        {% for article in block.settings.featured_blog.articles limit: 2 offset: 1 %}
+          <article class="ai-important-article-{{ ai_gen_id }}">
+            <div class="ai-important-image-{{ ai_gen_id }}">
+              {% if article.image %}
+                <img
+                  src="{{ article.image | image_url: width: 400 }}"
+                  alt="{{ article.image.alt | escape }}"
+                  loading="lazy"
+                  width="400"
+                  height="180"
+                >
+              {% else %}
+                <div class="ai-important-image-placeholder-{{ ai_gen_id }}">
+                  {{ 'image' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+            </div>
+            <div class="ai-important-content-{{ ai_gen_id }}">
+              <h3 class="ai-important-title-{{ ai_gen_id }}">
+                <a href="{{ article.url }}">{{ article.title }}</a>
+              </h3>
+              <div class="ai-important-excerpt-{{ ai_gen_id }}">
+                {{ article.excerpt | truncate: 1000 }}
+              </div>
+              <div class="ai-important-date-{{ ai_gen_id }}">
+                {{ article.published_at | date: '%B %d, %Y' }}
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if block.settings.featured_blog and block.settings.featured_blog.articles.size > 6 %}
+      <div class="ai-article-grid-{{ ai_gen_id }}">
+        {% for article in block.settings.featured_blog.articles limit: 4 offset: 3 %}
+          <article class="ai-article-card-{{ ai_gen_id }}">
+            <div class="ai-card-image-{{ ai_gen_id }}">
+              {% if article.image %}
+                <img
+                  src="{{ article.image | image_url: width: 300 }}"
+                  alt="{{ article.image.alt | escape }}"
+                  loading="lazy"
+                  width="300"
+                  height="120"
+                >
+              {% else %}
+                <div class="ai-card-image-placeholder-{{ ai_gen_id }}">
+                  {{ 'image' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+            </div>
+            <div class="ai-card-content-{{ ai_gen_id }}">
+              <h4 class="ai-card-title-{{ ai_gen_id }}">
+                <a href="{{ article.url }}">{{ article.title }}</a>
+              </h4>
+              <div class="ai-card-excerpt-{{ ai_gen_id }}">
+                {{ article.excerpt | truncate: 500 }}
+              </div>
+              <div class="ai-card-date-{{ ai_gen_id }}">
+                {{ article.published_at | date: '%B %d, %Y' }}
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="ai-article-list-{{ ai_gen_id }}" data-articles-container>
+      {% if block.settings.featured_blog and block.settings.featured_blog.articles.size > 7 %}
+        {% for article in block.settings.featured_blog.articles offset: 7 %}
+          <article
+            class="ai-list-article-{{ ai_gen_id }}"
+            {% if forloop.index > 10 %}
+              style="display: none;"
+            {% endif %}
+            data-article-item
+          >
+            <div class="ai-list-image-{{ ai_gen_id }}">
+              {% if article.image %}
+                <img
+                  src="{{ article.image | image_url: width: 160 }}"
+                  alt="{{ article.image.alt | escape }}"
+                  loading="lazy"
+                  width="80"
+                  height="60"
+                >
+              {% else %}
+                <div class="ai-list-image-placeholder-{{ ai_gen_id }}">
+                  {{ 'image' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+            </div>
+            <div class="ai-list-content-{{ ai_gen_id }}">
+              <h5 class="ai-list-title-{{ ai_gen_id }}">
+                <a href="{{ article.url }}">{{ article.title }}</a>
+              </h5>
+              <div class="ai-list-excerpt-{{ ai_gen_id }}">
+                {{ article.excerpt | truncate: 500 }}
+              </div>
+              <div class="ai-list-date-{{ ai_gen_id }}">
+                {{ article.published_at | date: '%B %d, %Y' }}
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    {% if block.settings.featured_blog and block.settings.featured_blog.articles.size > 17 %}
+      <div class="ai-load-more-{{ ai_gen_id }}">
+        <button class="ai-load-more-btn-{{ ai_gen_id }}" data-load-more>
+          {{ block.settings.load_more_text }}
+        </button>
+      </div>
+    {% endif %}
+  </div>
+
+  <aside class="ai-blog-sidebar-{{ ai_gen_id }}">
+    <div class="ai-sidebar-section-{{ ai_gen_id }}">
+      <h3 class="ai-sidebar-title-{{ ai_gen_id }}">{{ block.settings.social_title }}</h3>
+      <div class="ai-social-links-{{ ai_gen_id }}">
+        {% if block.settings.facebook_url != blank %}
+          <a
+            href="{{ block.settings.facebook_url }}"
+            class="ai-social-link-{{ ai_gen_id }}"
+            target="_blank"
+            rel="noopener"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+          </a>
+        {% endif %}
+        {% if block.settings.twitter_url != blank %}
+          <a
+            href="{{ block.settings.twitter_url }}"
+            class="ai-social-link-{{ ai_gen_id }}"
+            target="_blank"
+            rel="noopener"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+            </svg>
+          </a>
+        {% endif %}
+        {% if block.settings.instagram_url != blank %}
+          <a
+            href="{{ block.settings.instagram_url }}"
+            class="ai-social-link-{{ ai_gen_id }}"
+            target="_blank"
+            rel="noopener"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </a>
+        {% endif %}
+        {% if block.settings.linkedin_url != blank %}
+          <a
+            href="{{ block.settings.linkedin_url }}"
+            class="ai-social-link-{{ ai_gen_id }}"
+            target="_blank"
+            rel="noopener"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+            </svg>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if block.settings.custom_menu != blank %}
+      <div class="ai-sidebar-section-{{ ai_gen_id }}">
+        <h3 class="ai-sidebar-title-{{ ai_gen_id }}">{{ block.settings.menu_title }}</h3>
+        <ul class="ai-menu-list-{{ ai_gen_id }}">
+          {% for link in block.settings.custom_menu.links %}
+            <li class="ai-menu-item-{{ ai_gen_id }}">
+              <a href="{{ link.url }}" class="ai-menu-link-{{ ai_gen_id }}">{{ link.title }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <div class="ai-sidebar-section-{{ ai_gen_id }}">
+      <h3 class="ai-sidebar-title-{{ ai_gen_id }}">{{ block.settings.newsletter_title }}</h3>
+      {% form 'customer' %}
+        <div class="ai-newsletter-form-{{ ai_gen_id }}">
+          <input
+            type="email"
+            name="contact[email]"
+            class="ai-newsletter-input-{{ ai_gen_id }}"
+            placeholder="{{ block.settings.newsletter_placeholder }}"
+            required
+          >
+          <button type="submit" class="ai-newsletter-btn-{{ ai_gen_id }}">
+            {{ block.settings.newsletter_button }}
+          </button>
+        </div>
+      {% endform %}
+    </div>
+
+    <div class="ai-sidebar-section-{{ ai_gen_id }}">
+      <h3 class="ai-sidebar-title-{{ ai_gen_id }}">{{ block.settings.other_blogs_title }}</h3>
+      <div class="ai-other-blogs-{{ ai_gen_id }}">
+        {% for i in (1..3) %}
+          {% assign blog_key = 'other_blog_' | append: i %}
+          {% assign blog = block.settings[blog_key] %}
+          {% if blog != blank and blog.articles.size > 0 %}
+            <div class="ai-blog-section-{{ ai_gen_id }}">
+              <h4 class="ai-blog-title-{{ ai_gen_id }}">
+                <a href="{{ blog.url }}">{{ blog.title }}</a>
+              </h4>
+              <div class="ai-blog-articles-{{ ai_gen_id }}">
+                {% for article in blog.articles limit: 3 %}
+                  <div class="ai-blog-article-{{ ai_gen_id }}">
+                    <div class="ai-blog-article-image-{{ ai_gen_id }}">
+                      {% if article.image %}
+                        <img
+                          src="{{ article.image | image_url: width: 80 }}"
+                          alt="{{ article.image.alt | escape }}"
+                          loading="lazy"
+                          width="40"
+                          height="30"
+                        >
+                      {% else %}
+                        <div class="ai-blog-article-image-placeholder-{{ ai_gen_id }}">
+                          {{ 'image' | placeholder_svg_tag }}
+                        </div>
+                      {% endif %}
+                    </div>
+                    <a href="{{ article.url }}" class="ai-blog-article-title-{{ ai_gen_id }}">
+                      {{ article.title | truncate: 500 }}
+                    </a>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="ai-sidebar-section-{{ ai_gen_id }}">
+      <h3 class="ai-sidebar-title-{{ ai_gen_id }}">{{ block.settings.featured_products_title }}</h3>
+      <div class="ai-featured-products-{{ ai_gen_id }}">
+        {% for product in block.settings.featured_products limit: 3 %}
+          <div class="ai-product-card-{{ ai_gen_id }}">
+            <div class="ai-product-image-{{ ai_gen_id }}">
+              {% if product.featured_image %}
+                <img
+                  src="{{ product.featured_image | image_url: width: 400 }}"
+                  alt="{{ product.featured_image.alt | escape }}"
+                  loading="lazy"
+                  width="400"
+                  height="180"
+                >
+              {% else %}
+                <div class="ai-product-image-placeholder-{{ ai_gen_id }}">
+                  {{ 'product-1' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+            </div>
+            <div class="ai-product-content-{{ ai_gen_id }}">
+              <h4 class="ai-product-title-{{ ai_gen_id }}">
+                <a href="{{ product.url }}">{{ product.title }}</a>
+              </h4>
+              <div class="ai-product-price-{{ ai_gen_id }}">
+                {% if product.compare_at_price > product.price %}
+                  <span class="ai-product-price-compare-{{ ai_gen_id }}">{{ product.compare_at_price | money }}</span>
+                {% endif %}
+                {{ product.price | money }}
+              </div>
+              <a href="{{ product.url }}" class="ai-product-btn-{{ ai_gen_id }}">
+                {{ block.settings.product_button_text }}
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </aside>
+</blog-layout-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class BlogLayout{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.currentlyVisible = 10;
+        this.articlesPerLoad = 10;
+      }
+
+      connectedCallback() {
+        this.loadMoreBtn = this.querySelector('[data-load-more]');
+        this.articlesContainer = this.querySelector('[data-articles-container]');
+        this.articles = this.querySelectorAll('[data-article-item]');
+
+        if (this.loadMoreBtn) {
+          this.loadMoreBtn.addEventListener('click', this.loadMoreArticles.bind(this));
+          this.updateLoadMoreButton();
+        }
+      }
+
+      loadMoreArticles() {
+        const hiddenArticles = Array.from(this.articles).slice(this.currentlyVisible, this.currentlyVisible + this.articlesPerLoad);
+
+        hiddenArticles.forEach(article => {
+          article.style.display = 'flex';
+        });
+
+        this.currentlyVisible += this.articlesPerLoad;
+        this.updateLoadMoreButton();
+      }
+
+      updateLoadMoreButton() {
+        if (this.currentlyVisible >= this.articles.length) {
+          this.loadMoreBtn.style.display = 'none';
+        }
+      }
+    }
+
+    customElements.define('blog-layout-{{ ai_gen_id }}', BlogLayout{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Modern blog layout",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Main blog"
+    },
+    {
+      "type": "blog",
+      "id": "featured_blog",
+      "label": "Featured blog"
+    },
+    {
+      "type": "text",
+      "id": "load_more_text",
+      "label": "Load more button text",
+      "default": "Load more articles"
+    },
+    {
+      "type": "header",
+      "content": "Social media"
+    },
+    {
+      "type": "text",
+      "id": "social_title",
+      "label": "Social media title",
+      "default": "Follow us"
+    },
+    {
+      "type": "url",
+      "id": "facebook_url",
+      "label": "Facebook URL"
+    },
+    {
+      "type": "url",
+      "id": "twitter_url",
+      "label": "Twitter URL"
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "url",
+      "id": "linkedin_url",
+      "label": "LinkedIn URL"
+    },
+    {
+      "type": "header",
+      "content": "Custom menu"
+    },
+    {
+      "type": "text",
+      "id": "menu_title",
+      "label": "Menu title",
+      "default": "Quick links"
+    },
+    {
+      "type": "link_list",
+      "id": "custom_menu",
+      "label": "Menu"
+    },
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_title",
+      "label": "Newsletter title",
+      "default": "Newsletter"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_placeholder",
+      "label": "Email placeholder",
+      "default": "Enter your email"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_button",
+      "label": "Subscribe button text",
+      "default": "Subscribe"
+    },
+    {
+      "type": "header",
+      "content": "Other blogs"
+    },
+    {
+      "type": "text",
+      "id": "other_blogs_title",
+      "label": "Other blogs title",
+      "default": "Other blogs"
+    },
+    {
+      "type": "blog",
+      "id": "other_blog_1",
+      "label": "Blog 1"
+    },
+    {
+      "type": "blog",
+      "id": "other_blog_2",
+      "label": "Blog 2"
+    },
+    {
+      "type": "blog",
+      "id": "other_blog_3",
+      "label": "Blog 3"
+    },
+    {
+      "type": "header",
+      "content": "Featured products"
+    },
+    {
+      "type": "text",
+      "id": "featured_products_title",
+      "label": "Featured products title",
+      "default": "Featured products"
+    },
+    {
+      "type": "product_list",
+      "id": "featured_products",
+      "label": "Featured products",
+      "limit": 3
+    },
+    {
+      "type": "text",
+      "id": "product_button_text",
+      "label": "Product button text",
+      "default": "View product"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "meta_color",
+      "label": "Meta text color",
+      "default": "#999999"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link color",
+      "default": "#007acc"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "sidebar_background",
+      "label": "Sidebar background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button color",
+      "default": "#007acc"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button hover color",
+      "default": "#005a99"
+    },
+    {
+      "type": "color",
+      "id": "social_bg_color",
+      "label": "Social icon background",
+      "default": "#007acc"
+    },
+    {
+      "type": "color",
+      "id": "social_icon_color",
+      "label": "Social icon color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Section padding",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Column gap",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "row_gap",
+      "min": 15,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Row gap",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "sidebar_gap",
+      "min": 15,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "label": "Sidebar gap",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Card border radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Button border radius",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Mobile"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile padding",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_gap",
+      "min": 15,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile gap",
+      "default": 25
+    }
+  ],
+  "presets": [
+    {
+      "name": "Modern blog layout"
+    }
+  ]
+}
+{% endschema %}

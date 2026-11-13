@@ -1,0 +1,133 @@
+{% schema %}
+{
+  "name": "Jumbo text",
+  "tag": null,
+  "settings": [
+    {
+      "id": "text",
+      "type": "textarea",
+      "label": "text",
+      "default": "t:text_defaults.be_bold"
+    },
+    {
+      "type": "select",
+      "id": "font",
+      "label": "font",
+      "options": [
+        {
+          "value": "body",
+          "label": "body"
+        },
+        {
+          "value": "subheading",
+          "label": "subheading"
+        },
+        {
+          "value": "heading",
+          "label": "heading"
+        },
+        {
+          "value": "accent",
+          "label": "accent"
+        }
+      ],
+      "default": "heading"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "alignment",
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "line_height",
+      "label": "line_height",
+      "options": [
+        {
+          "value": "0.8",
+          "label": "tight"
+        },
+        {
+          "value": "1",
+          "label": "normal"
+        },
+        {
+          "value": "1.2",
+          "label": "loose"
+        }
+      ],
+      "default": "0.8"
+    },
+    {
+      "type": "select",
+      "id": "letter_spacing",
+      "label": "letter_spacing",
+      "options": [
+        {
+          "value": "-0.03em",
+          "label": "tight"
+        },
+        {
+          "value": "normal",
+          "label": "normal"
+        },
+        {
+          "value": "0.03em",
+          "label": "loose"
+        }
+      ],
+      "default": "-0.03em"
+    },
+    {
+      "type": "select",
+      "id": "case",
+      "label": "case",
+      "options": [
+        {
+          "value": "none",
+          "label": "default"
+        },
+        {
+          "value": "uppercase",
+          "label": "uppercase"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "text_effect",
+      "label": "effects",
+      "options": [
+        {
+          "value": "none",
+          "label": "none"
+        },
+        {
+          "value": "blur",
+          "label": "blur"
+        },
+        {
+          "value": "reveal",
+          "label": "reveal"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "checkbox",
+      "id": "animation_repeat",
+      "label": "animation_repeat",
+      "default": false,
+      "visible_if": "{{ block.settings.text_effect == \"blur\" or block.settings.text_effect == \"reveal\" }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.jumbo_text",
+      "category": "decorative"
+    }
+  ]
+}
+{% endschema %}

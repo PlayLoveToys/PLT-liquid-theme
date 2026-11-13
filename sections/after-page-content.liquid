@@ -1,0 +1,67 @@
+{% if collection.metafields.custom.collection_description %}
+<div class="page-width" style="margin: 0 auto; padding: {{ section.settings.content_padding }}px;">
+  <style>
+    .responsive-figure {
+      max-width: 100%;
+    }
+    .responsive-figure img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+
+  {{ 'faq.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'faq.js' | asset_url }}" defer></script>
+
+    {{ collection.metafields.custom.collection_description.value }}
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "After Page Content",
+  "settings": [
+    {
+      "type": "text",
+      "id": "after_page_content",
+      "label": "After Page Content",
+      "default": "Null",
+      "info": "This will display the collection description if it exists."
+    },
+    {
+      "type": "checkbox",
+      "id": "as_html",
+      "label": "HTML Content",
+      "default": true,
+      "info": "Check this box to enable the display of the collection description."
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Content Width (px)",
+      "min": 300,
+      "max": 1200,
+      "step": 50,
+      "default": 800,
+      "info": "Set the maximum width of the content container."
+    },
+    {
+      "type": "range",
+      "id": "content_padding",
+      "label": "Content Padding (px)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 20,
+      "info": "Set the padding around the content."
+    }
+  ],
+  "presets": [
+    {
+      "name": "AfterPageCont",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

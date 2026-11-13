@@ -1,0 +1,398 @@
+<!-- Hero section with slideshow functionality -->
+<section
+  class="b-section banner-section-{{ section.id }}"
+  x-data="slideshowSection{{ section.id | replace: '-', '_' }}()"
+  x-init="initSlideshow()"
+>
+  <div class="b-page-width b-container">
+    <!-- Slideshow Container -->
+    <div
+      class="slideshow-container-{{ section.id }}"
+      x-show="blocks.length > 0"
+      @mouseenter="isPaused = true"
+      @mouseleave="isPaused = false"
+      @touchstart="handleTouchStart($event)"
+      @touchmove="handleTouchMove($event)"
+      @touchend="handleTouchEnd($event)"
+    >
+      <!-- Active Slide -->
+      <div
+        x-show="currentSlide >= 0 && currentSlide < blocks.length"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-80"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-90"
+      >
+        <div x-html="blocks[currentSlide]"></div>
+      </div>
+
+      <!-- Navigation Dots -->
+      <div class="slideshow-dots-{{ section.id }}" x-show="blocks.length > 1">
+        <div class="dots-container">
+          <template x-for="(block, index) in blocks" :key="index">
+            <button
+              class="dot"
+              :class="{ 'active': index === currentSlide }"
+              @click="goToSlide(index)"
+              x-text="index + 1"
+            ></button>
+          </template>
+        </div>
+      </div>
+
+      <!-- Navigation Arrows -->
+      <div class="slideshow-nav-{{ section.id }}" x-show="blocks.length > 1">
+        <button
+          class="nav-arrow nav-prev"
+          @click="previousSlide()"
+          x-show="currentSlide > 0"
+        >
+          &#8249;
+        </button>
+        <button
+          class="nav-arrow nav-next"
+          @click="nextSlide()"
+          x-show="currentSlide < blocks.length - 1"
+        >
+          &#8250;
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+function slideshowSection{{ section.id | replace: '-', '_' }}() {
+  return {
+    blocks: [],
+    currentSlide: 0,
+    autoRotateInterval: null,
+    isPaused: false,
+    isTransitioning: false,
+    touchStartX: 0,
+    touchStartY: 0,
+    minSwipeDistance: 50,
+
+    initSlideshow() {
+      // Render all blocks and store their HTML
+      {% for block in section.blocks %}
+        this.blocks.push(`
+          {% render block %}
+        `);
+      {% endfor %}
+
+      // Start auto-rotation if we have multiple slides
+      if (this.blocks.length > 1) {
+        this.startAutoRotate();
+      }
+    },
+
+    goToSlide(index) {
+      if (index >= 0 && index < this.blocks.length && !this.isTransitioning) {
+        this.isTransitioning = true;
+        this.currentSlide = index;
+        this.restartAutoRotate();
+
+        // Reset transition state after animation completes
+        setTimeout(() => {
+          this.isTransitioning = false;
+        }, 300);
+      }
+    },
+
+    nextSlide() {
+      if (this.currentSlide < this.blocks.length - 1 && !this.isTransitioning) {
+        this.goToSlide(this.currentSlide + 1);
+      }
+    },
+
+    previousSlide() {
+      if (this.currentSlide > 0 && !this.isTransitioning) {
+        this.goToSlide(this.currentSlide - 1);
+      }
+    },
+
+    startAutoRotate() {
+      this.stopAutoRotate(); // Clear any existing interval
+      if (this.blocks.length > 1 && !this.isPaused) {
+        this.autoRotateInterval = setInterval(() => {
+          if (!this.isPaused && !this.isTransitioning) {
+            this.currentSlide = (this.currentSlide + 1) % this.blocks.length;
+          }
+        }, 5000); // 5 seconds
+      }
+    },
+
+    stopAutoRotate() {
+      if (this.autoRotateInterval) {
+        clearInterval(this.autoRotateInterval);
+        this.autoRotateInterval = null;
+      }
+    },
+
+    restartAutoRotate() {
+      this.startAutoRotate();
+    },
+
+    // Touch handling methods for mobile swipe support
+    handleTouchStart(e) {
+      this.touchStartX = e.touches[0].clientX;
+      this.touchStartY = e.touches[0].clientY;
+    },
+
+    handleTouchMove(e) {
+      if (!this.touchStartX || !this.touchStartY) return;
+
+      const currentX = e.touches[0].clientX;
+      const currentY = e.touches[0].clientY;
+      const diffX = this.touchStartX - currentX;
+      const diffY = this.touchStartY - currentY;
+
+      // Prevent vertical scrolling if horizontal swipe is detected
+      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
+        e.preventDefault();
+      }
+    },
+
+    handleTouchEnd(e) {
+      if (!this.touchStartX || !this.touchStartY) return;
+
+      const endX = e.changedTouches[0].clientX;
+      const endY = e.changedTouches[0].clientY;
+      const diffX = this.touchStartX - endX;
+      const diffY = this.touchStartY - endY;
+
+      // Check if horizontal swipe is greater than vertical
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        // Check if swipe distance is sufficient
+        if (Math.abs(diffX) > this.minSwipeDistance) {
+          if (diffX > 0) {
+            // Swipe left - next slide
+            this.nextSlide();
+          } else {
+            // Swipe right - previous slide
+            this.previousSlide();
+          }
+        }
+      }
+
+      // Reset touch coordinates
+      this.touchStartX = 0;
+      this.touchStartY = 0;
+    }
+  }
+}
+</script>
+
+{% style %}
+         .banner-image-{{ section.id }} {
+           margin-left: auto;
+           max-width: 350px;
+           height: 350px;
+           margin-top: 1rem;
+           margin-bottom: 1rem;
+
+         }
+
+  /* Background Styles - Using Bulma utilities */
+  .banner-section-{{ section.id }} {
+    @apply relative overflow-hidden;
+  }
+
+  /* Solid Background */
+  {% if section.settings.background_type == 'solid' %}
+    .banner-content-{{ section.id }} {
+      background-color: {{ section.settings.bg_solid_color }};
+    }
+  {% endif %}
+
+  /* Gradient Background */
+  {% if section.settings.background_type == 'gradient' %}
+    .banner-content-{{ section.id }} {
+      background: linear-gradient({{ section.settings.gradient_direction }}, {{ section.settings.gradient_color_1 }}, {{ section.settings.gradient_color_2 }});
+    }
+  {% endif %}
+
+  /* Image Background */
+  {% if section.settings.background_type == 'image' and section.settings.bg_image != blank %}
+    .banner-content-{{ section.id }} {
+      position: relative;
+      background-image: url('{{ section.settings.bg_image | image_url }}');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .banner-content-{{ section.id }}::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: {{ section.settings.image_overlay_color }};
+      opacity: {{ section.settings.image_overlay_opacity | divided_by: 100.0 }};
+      z-index: 1;
+    }
+
+    .banner-content-{{ section.id }} .b-columns {
+      position: relative;
+      z-index: 2;
+    }
+  {% endif %}
+
+  /* Slideshow Styles - Using Bulma utilities */
+  .slideshow-container-{{ section.id }} {
+    @apply relative;
+    touch-action: pan-y; /* Allow vertical scrolling, prevent horizontal */
+  }
+
+  /* Pause state visual feedback */
+  .slideshow-container-{{ section.id }}[x-data*="isPaused"] {
+    cursor: pointer;
+  }
+
+  /* Enhanced transition effects */
+  .slideshow-container-{{ section.id }} .active-slide-entering {
+    animation: slideInSmooth 0.5s ease-out forwards;
+  }
+
+  .slideshow-container-{{ section.id }} .active-slide-leaving {
+    animation: slideOutSmooth 0.3s ease-in forwards;
+  }
+
+  .slideshow-dots-{{ section.id }} {
+    @apply text-center mt-8;
+  }
+
+  .slideshow-dots-{{ section.id }} .dots-container {
+    @apply inline-flex gap-2 bg-black bg-opacity-10 p-2 rounded-full;
+  }
+
+  .slideshow-dots-{{ section.id }} .dot {
+    @apply w-3 h-3 rounded-full border-none cursor-pointer transition-all duration-300;
+    background: rgba(255, 255, 255, 0.5);
+    color: white;
+    font-size: 12px;
+  }
+
+  .slideshow-dots-{{ section.id }} .dot.active {
+    @apply bg-white;
+    transform: scale(1.2);
+  }
+
+  .slideshow-dots-{{ section.id }} .dot:hover {
+    background: rgba(255, 255, 255, 0.8);
+  }
+
+  .slideshow-nav-{{ section.id }} {
+    @apply absolute top-1/2 transform -translate-y-1/2 w-full flex justify-between pointer-events-none z-10;
+  }
+
+  .slideshow-nav-{{ section.id }} .nav-arrow {
+    @apply bg-black bg-opacity-50 text-white border-none w-12 h-12 rounded-full text-2xl cursor-pointer transition-all duration-300 pointer-events-auto flex items-center justify-center;
+  }
+
+  .slideshow-nav-{{ section.id }} .nav-arrow:hover {
+    @apply bg-black bg-opacity-80;
+    transform: scale(1.1);
+  }
+
+  .slideshow-nav-{{ section.id }} .nav-prev {
+    @apply ml-4;
+  }
+
+  .slideshow-nav-{{ section.id }} .nav-next {
+    @apply mr-4;
+  }
+
+  /* Pause auto-rotation on hover */
+  .slideshow-container-{{ section.id }}:hover ~ .slideshow-nav-{{ section.id }} {
+    opacity: 1;
+  }
+
+  /* Enhanced animations */
+  @keyframes slideInSmooth {
+    from {
+      opacity: 0;
+      transform: translateX(30px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+
+  @keyframes slideOutSmooth {
+    from {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(-20px) scale(1.05);
+    }
+  }
+
+  /* Touch-friendly enhancements for mobile - Using Bulma utilities */
+  @media (hover: none) and (pointer: coarse) {
+    .slideshow-nav-{{ section.id }} .nav-arrow {
+      @apply w-11 h-11 text-xl bg-black bg-opacity-70;
+    }
+
+    .slideshow-dots-{{ section.id }} .dot {
+      @apply w-3.5 h-3.5 text-xs bg-white bg-opacity-70;
+    }
+
+    .slideshow-dots-{{ section.id }} .dot.active {
+      @apply bg-white;
+      transform: scale(1.3);
+    }
+  }
+
+  /* Mobile responsive styles - Using Bulma utilities */
+  @media (max-width: 768px) {
+    .slideshow-dots-{{ section.id }} .dots-container {
+      @apply gap-1 p-1;
+    }
+
+    .slideshow-dots-{{ section.id }} .dot {
+      @apply w-2.5 h-2.5 text-xs;
+    }
+
+    .slideshow-nav-{{ section.id }} .nav-arrow {
+      @apply w-10 h-10 text-lg;
+    }
+
+    .slideshow-nav-{{ section.id }} .nav-prev {
+      @apply ml-2;
+    }
+
+    .slideshow-nav-{{ section.id }} .nav-next {
+      @apply mr-2;
+    }
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "AA-Slideshow-New",
+  "tag": "section",
+  "class": "AA Sections",
+  "blocks": [
+    {
+      "type": "_aa-banner-slice"
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "AA-Slideshow-New",
+      "category": "AA Sections",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

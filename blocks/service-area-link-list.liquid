@@ -1,0 +1,388 @@
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+{% assign location_columns_desktop = block.settings.location_columns_desktop | default: 6 %}
+{% assign location_columns_tablet = block.settings.location_columns_tablet | default: 3 %}
+{% assign location_columns_mobile = block.settings.location_columns_mobile | default: 2 %}
+{% assign location_gap = block.settings.location_gap | default: 16 %}
+
+{% style %}
+  .region-locations-{{ ai_gen_id }} {
+    margin: {{ block.settings.margin_top }}px auto {{ block.settings.margin_bottom }}px;
+    max-width: {{ block.settings.container_width }}px;
+  }
+
+  .region-locations__heading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin-bottom: 20px;
+    text-align: {{ block.settings.text_alignment }};
+  }
+
+  .region-locations__description-{{ ai_gen_id }} {
+    margin-bottom: 30px;
+    color: {{ block.settings.text_color }};
+    text-align: {{ block.settings.text_alignment }};
+  }
+
+  .region-locations__grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.columns_desktop }}, 1fr);
+    gap: {{ block.settings.gap }}px;
+  }
+
+  .region-locations__region-{{ ai_gen_id }} {
+    margin-bottom: 30px;
+  }
+
+  .region-locations__region-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.region_title_size }}px;
+    color: {{ block.settings.region_title_color }};
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid {{ block.settings.divider_color }};
+  }
+
+  .region-locations__location-list-{{ ai_gen_id }} {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat({{ location_columns_desktop }}, 1fr);
+    gap: {{ location_gap }}px;
+  }
+
+  .region-locations__location-item-{{ ai_gen_id }} {
+    margin-bottom: 0; /* Gap is handled by the grid */
+  }
+
+  .region-locations__location-link-{{ ai_gen_id }} {
+    display: block;
+    color: {{ block.settings.link_color }};
+    background-color: {{ block.settings.link_background }};
+    padding: 12px 16px; /* Material Design padding */
+    border-radius: {{ block.settings.link_border_radius }}px;
+    text-decoration: none;
+    text-align: center;
+    font-weight: 500; /* Medium weight for emphasis */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.2); /* Material Design shadow */
+    transition: all 0.3s ease-in-out;
+  }
+
+  .region-locations__location-link-{{ ai_gen_id }}:hover,
+  .region-locations__location-link-{{ ai_gen_id }}:focus {
+    color: {{ block.settings.link_hover_color }};
+    background-color: {{ block.settings.link_hover_background }};
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3); /* Elevated shadow */
+    transform: translateY(-2px); /* Lift effect */
+  }
+
+  .region-locations__empty-{{ ai_gen_id }} {
+    text-align: center;
+    padding: 30px;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    color: #666;
+  }
+
+  @media screen and (max-width: 1023px) { /* Tablet */
+    .region-locations__location-list-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ location_columns_tablet }}, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .region-locations__grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.columns_mobile }}, 1fr);
+    }
+    .region-locations__location-list-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ location_columns_mobile }}, 1fr);
+    }
+
+    .region-locations__heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | minus: 6 }}px;
+    }
+
+    .region-locations__region-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.region_title_size | minus: 2 }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="region-locations-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if block.settings.title != blank %}
+    <h2 class="region-locations__heading-{{ ai_gen_id }}">{{ block.settings.title }}</h2>
+  {% endif %}
+
+  {% if block.settings.description != blank %}
+    <div class="region-locations__description-{{ ai_gen_id }}">{{ block.settings.description }}</div>
+  {% endif %}
+
+  {% assign selected_region = block.settings.region %}
+
+  {% if selected_region != blank %}
+    <div class="region-locations__grid-{{ ai_gen_id }}">
+      <div class="region-locations__region-{{ ai_gen_id }}">
+        <h3 class="region-locations__region-title-{{ ai_gen_id }}">
+          <a href="{{ selected_region.system.url }}" class="region-locations__region-link-{{ ai_gen_id }}">
+            {{ selected_region.province }}
+          </a>
+        </h3>
+        {% assign location_pages = selected_region.location_pages.value %}
+        {% if location_pages %}
+          <ul class="region-locations__location-list-{{ ai_gen_id }}">
+            {% for loc in location_pages %}
+              <li class="region-locations__location-item-{{ ai_gen_id }}">
+                <a
+                  href="{{ loc.system.url }}"
+                  class="region-locations__location-link-{{ ai_gen_id }}"
+                >
+                  {{ loc.city }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="region-locations__empty-{{ ai_gen_id }}">No locations found for this region.</div>
+        {% endif %}
+      </div>
+    </div>
+  {% else %}
+    <div class="region-locations__empty-{{ ai_gen_id }}">Please select a region in the block settings.</div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Region Link List",
+  "tag": null,
+  "class": "locations-link-list-block",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Our Locations"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Find a location near you.</p>"
+    },
+    {
+      "type": "metaobject",
+      "id": "region",
+      "label": "Select Region",
+      "metaobject_type": "region"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "min": 600,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "label": "Container width",
+      "default": 1200
+    },
+
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "label": "Gap between columns",
+      "default": 32
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "label": "Text alignment",
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top margin",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom margin",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Location Items Layout"
+    },
+    {
+      "type": "select",
+      "id": "location_columns_desktop",
+      "options": [
+        { "value": "6", "label": "6" },
+        { "value": "8", "label": "8" },
+        { "value": "10", "label": "10" },
+        { "value": "12", "label": "12" }
+      ],
+      "label": "Location items per row (Desktop)",
+      "default": "6"
+    },
+    {
+      "type": "select",
+      "id": "location_columns_tablet",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "label": "Location items per row (Tablet)",
+      "default": "3"
+    },
+    {
+      "type": "select",
+      "id": "location_columns_mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" }
+      ],
+      "label": "Location items per row (Mobile)",
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "location_gap",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "label": "Gap between location items",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 16,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading size",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "region_title_size",
+      "min": 14,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Region title size",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "region_title_color",
+      "label": "Region title color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link hover color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "link_background",
+      "label": "Link background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_background",
+      "label": "Link hover background",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "range",
+      "id": "link_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Link border radius",
+      "default": 4
+    }
+  ],
+  "presets": [
+    {
+      "name": "Locations Link List"
+    }
+  ]
+}
+{% endschema %}

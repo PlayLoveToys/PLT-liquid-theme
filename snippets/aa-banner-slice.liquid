@@ -1,0 +1,156 @@
+{% liquid
+  assign bg_type = block.settings.slice_background_type | default: 'inherit'
+  assign style_attr = ''
+  if bg_type == 'solid'
+    assign style_attr = 'background-color: ' | append: block.settings.slice_bg_solid_color
+  elsif bg_type == 'gradient'
+    assign dir = block.settings.slice_gradient_direction | default: '135deg'
+    assign c1 = block.settings.slice_gradient_color_1 | default: '#667eea'
+    assign c2 = block.settings.slice_gradient_color_2 | default: '#764ba2'
+    assign style_attr = 'background: linear-gradient(' | append: dir | append: ', ' | append: c1 | append: ', ' | append: c2 | append: ')'
+  endif
+%}
+
+<div
+  class="b-columns slice-{{ block.id }}"
+  {% if style_attr != '' %}
+    style="{{ style_attr }}"
+  {% endif %}
+  {{ block.shopify_attributes }}
+>
+  {% if block.settings.slice_image != blank %}
+    <div class="b-column b-is-3">
+      <div class="b-image b-is-fullwidth">
+        {{
+          block.settings.slice_image
+          | image_url: width: 350, crop: 'center', pad_color: 'white'
+          | image_tag: widths: '200, 300, 400, 500, 600, 700, 800, 1000, 1200, 1400, 1600, 1800, 2000'
+        }}
+      </div>
+    </div>
+  {% endif %}
+  <div class="b-column b-is-align-content-space-evenly b-px-6-tablet b-mx-6-tablet">
+    {% if block.settings.slice_title != blank %}
+      <div class="b-block">
+        <{{ title_htag }}
+          class="b-title b-is-size-1-desktop b-is-size-4 banner-title-{{- block.id -}}"
+        >
+          {{ block.settings.slice_title }}
+        </{{ title_htag }}>
+      </div>
+    {% endif %}
+    {% if block.settings.slice_subtitle != blank %}
+      <div class="b-block">
+        <{{ subtitle_htag }}
+          class="b-subtitle b-mt-6 b-is-size-3-desktop b-is-size-5 banner-subtitle-{{- block.id -}}"
+        >
+          {{- block.settings.slice_subtitle -}}
+        </{{ subtitle_htag }}>
+      </div>
+    {% endif %}
+    {% liquid
+      assign show_cta = false
+      if block.settings.slice_cta_type != 'none' and block.settings.slice_cta_url != blank and block.settings.slice_cta_text != blank
+        assign show_cta = true
+      endif
+    %}
+    {% if show_cta %}
+      <div class="b-block">
+        {% if block.settings.slice_cta_type == 'button' %}
+          <a
+            href="{{ block.settings.slice_cta_url }}"
+            {% if block.settings.slice_cta_new_tab %}
+              target="_blank" rel="noopener"
+            {% endif %}
+            class="b-button b-is-large {% if block.settings.slice_cta_style == 'link' %}b-is-link{% else %}b-is-primary{% endif %}"
+          >
+            <strong>{{ block.settings.slice_cta_text }}</strong>
+          </a>
+        {% else %}
+          <a
+            href="{{ block.settings.slice_cta_url }}"
+            {% if block.settings.slice_cta_new_tab %}
+              target="_blank" rel="noopener"
+            {% endif %}
+            class="b-is-underlined"
+          >
+            {{ block.settings.slice_cta_text }}
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{%- comment -%}
+  Per-slice typography and color CSS moved into the snippet.
+  Generates fonts and color modes targeting this block's unique classes.
+{%- endcomment -%}
+<style>
+  {{ block.settings.slice_title_font | font_face }}
+  {{ block.settings.slice_subtitle_font | font_face }}
+  {% liquid
+    assign title_mode_b = block.settings.slice_title_color_mode | default: section.settings.title_color_mode
+    assign subtitle_mode_b = block.settings.slice_subtitle_color_mode | default: section.settings.subtitle_color_mode
+
+    assign title_is_grad_b = false
+    assign subtitle_is_grad_b = false
+    if title_mode_b == 'gradient'
+      assign title_is_grad_b = true
+    endif
+    if subtitle_mode_b == 'gradient'
+      assign subtitle_is_grad_b = true
+    endif
+
+    assign title_color_grad_b = block.settings.slice_title_color | default: section.settings.text_color
+    assign title_color_solid_b = block.settings.slice_title_color_solid | default: section.settings.title_color_solid | default: '#111111'
+    assign subtitle_color_grad_b = block.settings.slice_subtitle_color | default: section.settings.subtitle_color
+    assign subtitle_color_solid_b = block.settings.slice_subtitle_color_solid | default: section.settings.subtitle_color_solid | default: '#333333'
+
+    assign title_font_family = block.settings.slice_title_font.family | default: section.settings.title_font.family
+    assign title_font_fallback = block.settings.slice_title_font.fallback_families | default: section.settings.title_font.fallback_families
+    assign title_font_weight = block.settings.slice_title_font.weight | default: section.settings.title_font.weight
+    assign title_font_style = block.settings.slice_title_font.style | default: section.settings.title_font.style
+
+    assign subtitle_font_family = block.settings.slice_subtitle_font.family | default: section.settings.subtitle_font.family
+    assign subtitle_font_fallback = block.settings.slice_subtitle_font.fallback_families | default: section.settings.subtitle_font.fallback_families
+    assign subtitle_font_weight = block.settings.slice_subtitle_font.weight | default: section.settings.subtitle_font.weight
+    assign subtitle_font_style = block.settings.slice_subtitle_font.style | default: section.settings.subtitle_font.style
+  %}
+  .banner-title-{{ block.id }} {
+    font-family: {{ title_font_family }}, {{ title_font_fallback }};
+    font-weight: {{ title_font_weight }};
+    font-style: {{ title_font_style }};
+    {% if title_is_grad_b %}
+      background-image: {{ title_color_grad_b }};
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+    {% else %}
+      background-image: none;
+      -webkit-background-clip: border-box;
+      background-clip: border-box;
+      -webkit-text-fill-color: initial;
+      color: {{ title_color_solid_b }};
+    {% endif %}
+  }
+  .banner-subtitle-{{ block.id }} {
+    font-family: {{ subtitle_font_family }}, {{ subtitle_font_fallback }};
+    font-weight: {{ subtitle_font_weight }};
+    font-style: {{ subtitle_font_style }};
+    {% if subtitle_is_grad_b %}
+      background-image: {{ subtitle_color_grad_b }};
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+    {% else %}
+      background-image: none;
+      -webkit-background-clip: border-box;
+      background-clip: border-box;
+      -webkit-text-fill-color: initial;
+      color: {{ subtitle_color_solid_b }};
+    {% endif %}
+  }
+</style>

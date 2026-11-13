@@ -1,0 +1,54 @@
+{% for block in block.blocks -%}
+  <div class="b-column b-is-col-span-2">
+    {% render block %}
+  </div>
+{% endfor %}
+
+{% schema %}
+{
+  "name": "b-cell",
+  "settings": [
+    {
+      "type": "select",
+      "id": "col_span",
+      "label": "Column Span",
+      "default": "",
+      "options": [
+        { "value": "", "label": "Auto" },
+        { "value": "b-is-col-span-2", "label": "2" },
+        { "value": "b-is-col-span-3", "label": "3" },
+        { "value": "b-is-col-span-4", "label": "4" }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    },
+    {
+      "type": "b-carousel"
+    },
+    {
+      "type": "b-card-collection"
+    },
+    {
+      "type": "b-card-article"
+    },
+    {
+      "type": "b-card-products-grid"
+    },
+    {
+      "type": "b-card-collections-grid"
+    }
+  ],
+  "presets": [
+    {
+      "name": "b-cell",
+      "category": "b-Layout"
+    }
+  ]
+}
+{% endschema %}

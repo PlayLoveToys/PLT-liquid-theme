@@ -1,0 +1,14 @@
+{% doc %}
+  Imprime el locale IETF de Sanity para el contexto Shopify actual.
+
+  @param {string} [locale] - Override (p. ej. en-US)
+
+  @example
+  {% capture sanity_locale %}{% render '_filter-locale' %}{% endcapture %}
+{% enddoc %}
+
+{%- if locale != blank -%}
+  {{- locale -}}
+{%- else -%}
+  {{- localization.language.iso_code | append: '-' | append: localization.country.iso_code -}}
+{%- endif -%}

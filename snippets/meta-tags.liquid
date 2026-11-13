@@ -1,0 +1,173 @@
+{%- liquid
+  assign seo_title = page_title | default: shop.name
+  assign seo_description = page_description | default: shop.description | default: shop.name
+  assign use_sanity_seo_title = false
+  assign use_glossary_seo_title = false
+  assign glossary_page_image = nil
+
+  if request.page_type == 'metaobject' and metaobject.system.type == 'glossary_term'
+    if metaobject.meta_title.value != blank
+      assign seo_title = metaobject.meta_title.value
+      assign use_glossary_seo_title = true
+    endif
+
+    if metaobject.meta_description.value != blank
+      assign seo_description = metaobject.meta_description.value
+    endif
+
+    if metaobject.image.value != blank
+      assign glossary_page_image = metaobject.image.value
+    endif
+  endif
+
+  if request.page_type == 'collection'
+    assign sanity_meta_title = collection.metafields['app--6007307--sanity-fields'].metatitle.value
+    assign sanity_meta_description = collection.metafields['app--6007307--sanity-fields'].metadescription.value
+
+    capture sanity_locale
+      render '_filter-locale'
+    endcapture
+    assign sanity_locale = sanity_locale | strip
+
+    if sanity_meta_title != blank
+      capture localized_meta_title
+        render '_sanity-value', items: sanity_meta_title, key_prefix: 'mt', locale: sanity_locale
+      endcapture
+      assign localized_meta_title = localized_meta_title | strip
+      if localized_meta_title != blank
+        assign seo_title = localized_meta_title
+        assign use_sanity_seo_title = true
+      endif
+    endif
+
+    if sanity_meta_description != blank
+      capture localized_meta_description
+        render '_sanity-value', items: sanity_meta_description, key_prefix: 'md', locale: sanity_locale
+      endcapture
+      assign localized_meta_description = localized_meta_description | strip
+      if localized_meta_description != blank
+        assign seo_description = localized_meta_description
+      endif
+    endif
+  endif
+
+  assign og_title = seo_title
+  assign og_url = canonical_url | default: '' | split: '?' | first | default: request.origin
+  assign og_type = 'website'
+  assign og_description = seo_description
+
+  if request.page_type == 'product'
+    assign og_type = 'product'
+  elsif request.page_type == 'article'
+    assign og_type = 'article'
+  elsif request.page_type == 'password'
+    assign og_url = request.origin
+  endif
+%}
+
+<meta
+  property="og:site_name"
+  content="{{ shop.name }}"
+>
+<meta
+  property="og:url"
+  content="{{ og_url }}"
+>
+<meta
+  property="og:title"
+  content="{{ og_title | escape }}"
+>
+<meta
+  property="og:type"
+  content="{{ og_type }}"
+>
+<meta
+  property="og:description"
+  content="{{ og_description | escape }}"
+>
+
+{%- liquid
+  assign og_image = glossary_page_image | default: page_image
+-%}
+{%- if og_image -%}
+  <meta
+    property="og:image"
+    content="https:{{ og_image | image_url }}"
+  >
+  <meta
+    property="og:image:width"
+    content="{{ og_image.width }}"
+  >
+  <meta
+    property="og:image:height"
+    content="{{ og_image.height }}"
+  >
+{%- endif -%}
+
+{%- if request.page_type == 'product' -%}
+  <meta
+    property="og:price:amount"
+    content="{{ product.price | money_without_currency | strip_html }}"
+  >
+  <meta
+    property="og:price:currency"
+    content="{{ cart.currency.iso_code }}"
+  >
+{%- endif -%}
+
+<meta
+  name="twitter:card"
+  content="summary_large_image"
+>
+<meta
+  name="twitter:title"
+  content="{{ og_title | escape }}"
+>
+<meta
+  name="twitter:description"
+  content="{{ og_description | escape }}"
+>
+
+<title>
+  {%- if use_glossary_seo_title -%}
+    {{ seo_title }}
+  {%- elsif use_sanity_seo_title -%}
+    {{ seo_title }}
+  {%- else -%}
+    {{ page_title }}
+    {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
+    {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+    {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+  {%- endif -%}
+</title>
+
+<link rel="canonical" href="{{ canonical_url | default: '' | split: '?' | first }}">
+
+{% if seo_description != blank %}
+  <meta
+    name="description"
+    content="{{ seo_description | escape }}"
+  >
+{% endif %}
+
+{% liquid
+  assign should_noindex = false
+
+  if request.page_type == 'search'
+    assign should_noindex = true
+  elsif current_page and current_page > 1
+    assign should_noindex = true
+  endif
+
+  if current_tags
+    assign should_noindex = true
+  elsif request.query_string contains 'sort_by'
+    assign should_noindex = true
+  elsif request.query_string contains 'filter'
+    assign should_noindex = true
+  endif
+%}
+
+{% if should_noindex %}
+  <meta name="robots" content="noindex,follow">
+{% endif %}

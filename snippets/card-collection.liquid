@@ -1,0 +1,56 @@
+{% comment %}
+  Renders a collection card
+
+  Accepts:
+  - card_collection: {Object} Collection Liquid object
+  - media_aspect_ratio: {String} Size of the product image card. Values are "square" and "portrait". Default is "square" (optional)
+  - columns: {Number}
+  - extend_height: {Boolean} Card height extends to available container space. Default: false (optional)
+  - wrapper_class: {String} Wrapper class for card (optional)
+  - placeholder_image: {String} Placeholder image when collection is empty (optional)
+{% endcomment %}
+
+<div class="b-card b-has-background-link" style="height: 100%;">
+  <div class="b-card-header b-has-background-link-dark">
+    <div class="b-card-header-title">
+      {%- if card_collection.title != blank -%}
+        <a href="{{ card_collection.url }}" class="b-is-ghost">
+          <span class="b-title b-is-5 b-has-text-white b-is-capitalized">{{- card_collection.title | escape -}}</span>
+        </a>
+      {%- else -%}
+        <span class="b-title b-is-5 b-has-text-white b-is-capitalized">{{ 'onboarding.collection_title' | t }}</span>
+      {%- endif -%}
+    </div>
+  </div>
+  {%- if card_collection.featured_image -%}
+    <div class="b-card-image b-is-1by1">
+      <a href="{{ card_collection.url }}">
+        <figure class="b-image">
+          {{
+            card_collection.featured_image
+            | image_url: width: 350
+            | image_tag:
+              widths: '50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600',
+              loading: 'lazy',
+              preload: false
+          }}
+        </figure>
+      </a>
+    </div>
+  {%- endif -%}
+  <div class="b-card-content">
+    <div class="b-content b-has-text-light">
+      {%- if card_collection.description != blank -%}
+        {{- card_collection.description | strip_html | truncatewords: 18 -}}
+      {%- endif -%}
+    </div>
+  </div>
+  <footer class="b-card-footer">
+    <a
+      href="{{ card_collection.url }}"
+      class="b-card-footer-item b-is-button b-is-link b-is-size-5 b-is-capitalized b-has-text-link-dark"
+    >
+      Visit Collection
+    </a>
+  </footer>
+</div>

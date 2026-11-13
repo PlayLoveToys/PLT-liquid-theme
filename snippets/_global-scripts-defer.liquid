@@ -1,0 +1,15 @@
+<!-- DEFER JS SCRIPTS -->
+{%- if localization.available_countries.size > 1 or localization.available_languages.size > 1 -%}
+  <script src="{{ 'localization-form.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+{% render '_global-constants' %}
+<script src="{{ 'pubsub.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
+
+<script src="{{ 'details-disclosure.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'details-modal.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'search-form.js' | asset_url }}" defer="defer"></script>
+
+{%- if settings.animations_reveal_on_scroll -%}
+  <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}

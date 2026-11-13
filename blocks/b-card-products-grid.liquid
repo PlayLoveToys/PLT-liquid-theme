@@ -1,0 +1,53 @@
+<div class="b-column b-is-3-desktop b-is-6-tablet">
+  {% render 'c-card-products-grid', block: block %}
+</div>
+
+{% schema %}
+{
+  "name": "b-card-products-grid",
+  "settings": [
+    {
+      "type": "product_list",
+      "id": "product_list",
+      "label": "Products",
+      "info": "Select products to display in the grid"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Used for default CTA URL and title if not overridden"
+    },
+    {
+      "type": "text",
+      "id": "products_card_title",
+      "label": "Card Title",
+      "info": "Override the collection title"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA Text",
+      "default": "View All"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "CTA URL",
+      "info": "Override the collection URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "priority",
+      "label": "Preload image",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "b-card-products-grid",
+      "category": "b-Blocks"
+    }
+  ]
+}
+{% endschema %}

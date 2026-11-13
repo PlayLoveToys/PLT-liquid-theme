@@ -1,0 +1,80 @@
+{%- liquid
+  assign after_page_content = section.settings.after_page_content
+-%}
+
+{%- if after_page_content != blank -%}
+  {%- style -%}
+    .section-{{ section.id }}--richtext .responsive-figure {
+      max-width: {{ section.settings.content_width }}px;
+    }
+
+    .section-{{ section.id }}--richtext-wrapper {
+      max-width: {{ section.settings.content_width }}px;
+      padding: {{ section.settings.content_padding }}px;
+    }
+  {%- endstyle -%}
+
+  <div
+    class="page-width section-{{ section.id }}--richtext-wrapper"
+  >
+    <div class="rte section-{{ section.id }}--richtext">
+      {%- if section.settings.as_html -%}
+        {{ after_page_content }}
+      {%- else -%}
+        {{ after_page_content | escape }}
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "After Page Richtext",
+  "class": "section",
+  "tag": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "after_page_content",
+      "label": "Content",
+      "info": "Add your rich text content here. Can include HTML."
+    },
+    {
+      "type": "checkbox",
+      "id": "as_html",
+      "label": "Render as HTML",
+      "default": true,
+      "info": "If checked, the content will be rendered as HTML. Uncheck to display raw text and escape HTML tags for security."
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Content Width (px)",
+      "min": 300,
+      "max": 1600,
+      "step": 100,
+      "default": 1600,
+      "info": "Set the maximum width of the content container."
+    },
+    {
+      "type": "range",
+      "id": "content_padding",
+      "label": "Content Padding (px)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 20,
+      "info": "Set the padding around the content."
+    }
+  ],
+  "presets": [
+    {
+      "name": "After Page Richtext",
+      "category": "Text"
+    }
+  ]
+}
+{% endschema %}

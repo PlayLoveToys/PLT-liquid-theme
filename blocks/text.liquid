@@ -1,0 +1,402 @@
+{% render 'text' %}
+
+{% schema %}
+{
+  "name": "text",
+  "tag": null,
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "text",
+      "default": "<p>Share information about your brand with your customers. Describe a product, make announcements, or welcome customers to your store.</p>"
+    },
+    {
+      "type": "header",
+      "content": "layout"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "fit"
+        },
+        {
+          "value": "100%",
+          "label": "fill"
+        }
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "select",
+      "id": "max_width",
+      "label": "max_width",
+      "options": [
+        {
+          "value": "narrow",
+          "label": "narrow"
+        },
+        {
+          "value": "normal",
+          "label": "normal"
+        },
+        {
+          "value": "none",
+          "label": "none"
+        }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "alignment",
+      "default": "left",
+      "visible_if": "{{ block.settings.width == '100%' }}"
+    },
+    {
+      "type": "header",
+      "content": "typography"
+    },
+    {
+      "type": "select",
+      "id": "type_preset",
+      "label": "preset",
+      "options": [
+        {
+          "value": "rte",
+          "label": "default"
+        },
+        {
+          "value": "paragraph",
+          "label": "paragraph"
+        },
+        {
+          "value": "h1",
+          "label": "h1"
+        },
+        {
+          "value": "h2",
+          "label": "h2"
+        },
+        {
+          "value": "h3",
+          "label": "h3"
+        },
+        {
+          "value": "h4",
+          "label": "h4"
+        },
+        {
+          "value": "h5",
+          "label": "h5"
+        },
+        {
+          "value": "h6",
+          "label": "h6"
+        },
+        {
+          "value": "custom",
+          "label": "custom"
+        }
+      ],
+      "default": "rte",
+      "info": "Edit presets in theme settings"
+    },
+    {
+      "type": "select",
+      "id": "font",
+      "label": "font",
+      "options": [
+        {
+          "value": "var(--font-body--family)",
+          "label": "body"
+        },
+        {
+          "value": "var(--font-subheading--family)",
+          "label": "subheading"
+        },
+        {
+          "value": "var(--font-heading--family)",
+          "label": "heading"
+        },
+        {
+          "value": "var(--font-accent--family)",
+          "label": "accent"
+        }
+      ],
+      "default": "var(--font-body--family)",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "font_size",
+      "label": "size",
+      "options": [
+        {
+          "value": "",
+          "label": "default"
+        },
+        {
+          "value": "0.625rem",
+          "label": "10px"
+        },
+        {
+          "value": "0.75rem",
+          "label": "12px"
+        },
+        {
+          "value": "0.875rem",
+          "label": "14px"
+        },
+        {
+          "value": "1rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.125rem",
+          "label": "18px"
+        },
+        {
+          "value": "1.25rem",
+          "label": "20px"
+        },
+        {
+          "value": "1.5rem",
+          "label": "24px"
+        },
+        {
+          "value": "2rem",
+          "label": "32px"
+        },
+        {
+          "value": "2.5rem",
+          "label": "40px"
+        },
+        {
+          "value": "3rem",
+          "label": "48px"
+        },
+        {
+          "value": "3.5rem",
+          "label": "56px"
+        },
+        {
+          "value": "4.5rem",
+          "label": "72px"
+        },
+        {
+          "value": "5.5rem",
+          "label": "88px"
+        },
+        {
+          "value": "7.5rem",
+          "label": "120px"
+        },
+        {
+          "value": "9.5rem",
+          "label": "152px"
+        },
+        {
+          "value": "11.5rem",
+          "label": "184px"
+        }
+      ],
+      "default": "1rem",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "line_height",
+      "label": "line_height",
+      "options": [
+        {
+          "value": "tight",
+          "label": "tight"
+        },
+        {
+          "value": "normal",
+          "label": "normal"
+        },
+        {
+          "value": "loose",
+          "label": "loose"
+        }
+      ],
+      "default": "normal",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "letter_spacing",
+      "label": "letter_spacing",
+      "options": [
+        {
+          "value": "tight",
+          "label": "tight"
+        },
+        {
+          "value": "normal",
+          "label": "normal"
+        },
+        {
+          "value": "loose",
+          "label": "loose"
+        }
+      ],
+      "default": "normal",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "case",
+      "label": "case",
+      "options": [
+        {
+          "value": "none",
+          "label": "default"
+        },
+        {
+          "value": "uppercase",
+          "label": "uppercase"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "wrap",
+      "label": "wrap",
+      "options": [
+        {
+          "value": "pretty",
+          "label": "pretty"
+        },
+        {
+          "value": "balance",
+          "label": "balance"
+        },
+        {
+          "value": "nowrap",
+          "label": "none"
+        }
+      ],
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "color",
+      "label": "color",
+      "options": [
+        {
+          "value": "var(--color-foreground)",
+          "label": "text"
+        },
+        {
+          "value": "var(--color-foreground-heading)",
+          "label": "heading"
+        },
+        {
+          "value": "var(--color-primary)",
+          "label": "link"
+        }
+      ],
+      "default": "var(--color-foreground)",
+      "visible_if": "{{ block.settings.type_preset != 'rte' }}"
+    },
+    {
+      "type": "header",
+      "content": "appearance"
+    },
+    {
+      "type": "checkbox",
+      "id": "background",
+      "label": "background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "background_color",
+      "alpha": true,
+      "default": "#00000026",
+      "visible_if": "{{ block.settings.background }}"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "corner_radius",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "visible_if": "{{ block.settings.background }}"
+    },
+    {
+      "type": "header",
+      "content": "padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "text",
+      "category": "basic",
+      "settings": {
+        "text": "<p>We make things that work better and last longer. Our products solve real problems with clean design and honest materials.</p>"
+      }
+    },
+    {
+      "name": "heading",
+      "category": "basic",
+      "settings": {
+        "text": "<h2>New arrivals</h2>"
+      }
+    }
+  ]
+}
+{% endschema %}

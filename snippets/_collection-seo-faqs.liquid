@@ -1,0 +1,112 @@
+{% doc %}
+  Renderiza la sección FAQ localizada desde el metafield Sanity faqs.
+
+  @param {object} faqs - Objeto faqs.value con title e items
+  @param {string} [locale] - Tag IETF de locale (p. ej. en-US)
+
+  @example
+  {% render '_collection-seo-faqs', faqs: seo_faqs, locale: sanity_locale %}
+{% enddoc %}
+
+{% liquid
+  capture localized_faq_title
+    render '_sanity-value', items: faqs.title, locale: locale
+  endcapture
+  assign localized_faq_title = localized_faq_title | strip
+  assign icon_fold_svg = 'm356-160-56-56 180-180 180 180-56 56-124-124-124 124Zm124-404L300-744l56-56 124 124 124-124 56 56-180 180Z'
+  assign icon_unfold_svg = 'M480-120 300-300l58-58 122 122 122-122 58 58-180 180ZM358-598l-58-58 180-180 180 180-58 58-122-122-122 122Z'
+%}
+
+{% if localized_faq_title != blank or faqs.items.size > 0 %}
+  {% if faqs.items.size > 0 %}
+    {% assign faq_schema_started = false %}
+    {% capture faq_schema_entities %}
+      {% for faq_item in faqs.items %}
+        {% liquid
+          capture localized_question
+            render '_sanity-value', items: faq_item.question, locale: locale
+          endcapture
+          assign localized_question = localized_question | strip
+
+          capture localized_answer
+            render '_sanity-value', items: faq_item.answer, locale: locale
+          endcapture
+          assign localized_answer = localized_answer | strip
+        %}
+
+        {% if localized_question != blank and localized_answer != blank %}
+          {%- if faq_schema_started -%},{%- endif -%}
+          {
+            "@type": "Question",
+            "name": {{ localized_question | json }},
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": {{ localized_answer | json }}
+            }
+          }
+          {% assign faq_schema_started = true %}
+        {% endif %}
+      {% endfor %}
+    {% endcapture %}
+
+    {% assign faq_schema_entities_stripped = faq_schema_entities | strip %}
+    {% if faq_schema_entities_stripped != blank %}
+      <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [{{ faq_schema_entities_stripped }}]
+        }
+      </script>
+    {% endif %}
+  {% endif %}
+
+  {% if localized_faq_title != blank %}
+    <h2 class="b-title b-is-4 b-has-text-primary">
+      {{ localized_faq_title }}
+    </h2>
+  {% endif %}
+
+  {% if faqs.items.size > 0 %}
+    <div class="b-content">
+      {% for faq_item in faqs.items %}
+        {% liquid
+          capture localized_question
+            render '_sanity-value', items: faq_item.question, locale: locale
+          endcapture
+          assign localized_question = localized_question | strip
+
+          capture localized_answer
+            render '_sanity-value', items: faq_item.answer, locale: locale
+          endcapture
+          assign localized_answer = localized_answer | strip
+        %}
+
+        {% if localized_question != blank and localized_answer != blank %}
+          <div
+            x-data="
+              {
+                open: false,
+                fold_svg: '{{ icon_fold_svg }}',
+                unfold_svg: '{{ icon_unfold_svg }}'
+              }
+            "
+            class="b-box b-mb-4"
+          >
+            <div class="b-title b-is-5" @click="open = !open">
+              <span class="b-icon b-is-small b-has-text-link">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                  <path x-bind:d="open ? fold_svg : unfold_svg"/>
+                </svg>
+              </span>
+              <span>{{ localized_question }}</span>
+            </div>
+            <div class="b-content" x-show="open">
+              <p>{{ localized_answer }}</p>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endif %}

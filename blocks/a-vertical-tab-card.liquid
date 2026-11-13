@@ -1,0 +1,86 @@
+<div class="b-card b-card-horizontal">
+  <!-- Pestaña Vertical -->
+  <header
+    class="b-card-header b-header-vertical {{ block.settings.tab_color }} b-has-text-white"
+  >
+    <div class="b-header-content-rotate">
+      <p class="b-is-uppercase b-has-text-weight-bold">
+        {{ block.settings.tab_title }}
+      </p>
+    </div>
+  </header>
+
+  <!-- Contenido -->
+  <div class="b-card-content">
+    <div class="b-content">
+      {% if block.settings.content_title != blank %}
+        <h3 class="b-title b-is-4">{{ block.settings.content_title }}</h3>
+      {% endif %}
+
+      {% if block.settings.content_text != blank %}
+        <p>{{ block.settings.content_text }}</p>
+      {% endif %}
+
+      {% if block.settings.image != blank %}
+        <figure class="b-image">
+          {{
+            block.settings.image
+            | image_url: height: 140, pad_color: 'ffffff'
+            | image_tag:
+              widths: '50, 80, 100, 120, 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 550, 600',
+              preload: block.settings.priority
+          }}
+        </figure>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Vertical Tab Card",
+
+  "settings": [
+    {
+      "type": "text",
+      "id": "tab_title",
+      "label": "Título de la pestaña vertical",
+      "default": "Título Vertical"
+    },
+    {
+      "type": "select",
+      "id": "tab_color",
+      "label": "Color de pestaña",
+      "default": "b-has-background-info",
+      "options": [
+        { "value": "b-has-background-info", "label": "Info" },
+        { "value": "b-has-background-primary", "label": "Primary" },
+        { "value": "b-has-background-danger", "label": "Danger" },
+        { "value": "b-has-background-link", "label": "Link" },
+        { "value": "b-has-background-dark", "label": "Dark" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "content_title",
+      "label": "Título del contenido"
+    },
+    {
+      "type": "textarea",
+      "id": "content_text",
+      "label": "Texto del contenido"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Imagen opcional"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Vertical Tab Card",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

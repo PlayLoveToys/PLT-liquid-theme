@@ -1,0 +1,305 @@
+{% if block.settings.text_content != blank %}
+  {% liquid
+    assign alignment_settings = 'text_alignment_mobile,text_alignment_tablet,text_alignment_desktop,text_alignment_widescreen,text_alignment_fullhd' | split: ','
+    assign size_settings = 'text_size_mobile,text_size_tablet,text_size_desktop,text_size_widescreen,text_size_fullhd' | split: ','
+
+    assign alignment_classes = ''
+    assign size_classes = ''
+
+    for setting in alignment_settings
+      assign value = block.settings[setting]
+      if value != ''
+        assign alignment_classes = alignment_classes | append: ' ' | append: value
+      endif
+    endfor
+
+    for setting in size_settings
+      assign value = block.settings[setting]
+      if value != ''
+        assign size_classes = size_classes | append: ' ' | append: value
+      endif
+    endfor
+  %}
+
+  <{{ block.settings.text_htag | default: 'p' }}
+    class="aa-styled-text aa-styled-text-{{ block.id }}{{ alignment_classes }}{{ size_classes }}"
+    {{ block.shopify_attributes }}
+  >
+    {{ block.settings.text_content }}
+  </{{ block.settings.text_htag | default: 'p' }}>
+{% endif %}
+
+{% style %}
+  {{ block.settings.text_font | font_face }}
+
+  {% liquid
+    assign text_mode = block.settings.text_color_mode | default: 'solid'
+    assign text_is_gradient = false
+
+    if text_mode == 'gradient'
+      assign text_is_gradient = true
+    endif
+
+    assign text_color_gradient = block.settings.text_color_gradient | default: 'linear-gradient(90deg, #ff6b6b, #4ecdc4)'
+    assign text_color_solid = block.settings.text_color_solid | default: '#111111'
+
+    assign text_font_family = block.settings.text_font.family | default: 'Inter'
+    assign text_font_fallback = block.settings.text_font.fallback_families | default: 'sans-serif'
+    assign text_font_weight = block.settings.text_font.weight | default: '400'
+    assign text_font_style = block.settings.text_font.style | default: 'normal'
+  %}
+
+  .aa-styled-text-{{ block.id }} {
+    font-family: {{ text_font_family }}, {{ text_font_fallback }};
+    font-weight: {{ text_font_weight }};
+    font-style: {{ text_font_style }};
+    margin: 0;
+    {% if text_is_gradient %}
+      background-image: {{ text_color_gradient }};
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+    {% else %}
+      background-image: none;
+      -webkit-background-clip: border-box;
+      background-clip: border-box;
+      -webkit-text-fill-color: initial;
+      color: {{ text_color_solid }};
+    {% endif %}
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "AA Styled Text Block",
+  "tag": "block",
+  "class": "AA Blocks",
+
+  "settings": [
+    { "type": "text", "id": "text_content", "label": "Text Content", "default": "Your styled text here" },
+
+    { "type": "header", "content": "Text Settings" },
+    {
+      "type": "select",
+      "id": "text_htag",
+      "label": "Text HTML Tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" },
+        { "value": "p", "label": "Paragraph" },
+        { "value": "span", "label": "Span" }
+      ],
+      "default": "h2"
+    },
+
+    { "type": "font_picker", "id": "text_font", "label": "Text Font", "default": "assistant_n4" },
+
+    {
+      "type": "header",
+      "content": "Responsive Text Alignment"
+    },
+
+    {
+      "type": "paragraph",
+      "content": "Control text alignment for different screen sizes using Bulma's responsive alignment classes."
+    },
+
+    {
+      "type": "select",
+      "id": "text_alignment_mobile",
+      "label": "Mobile (up to 768px)",
+      "options": [
+        { "value": "", "label": "Default" },
+        { "value": "b-has-text-centered-mobile", "label": "Centered" },
+        { "value": "b-has-text-justified-mobile", "label": "Justified" },
+        { "value": "b-has-text-left-mobile", "label": "Left" },
+        { "value": "b-has-text-right-mobile", "label": "Right" }
+      ],
+      "default": ""
+    },
+
+    {
+      "type": "select",
+      "id": "text_alignment_tablet",
+      "label": "Tablet (769px+)",
+      "options": [
+        { "value": "", "label": "Default" },
+        { "value": "b-has-text-centered-tablet", "label": "Centered" },
+        { "value": "b-has-text-justified-tablet", "label": "Justified" },
+        { "value": "b-has-text-left-tablet", "label": "Left" },
+        { "value": "b-has-text-right-tablet", "label": "Right" }
+      ],
+      "default": ""
+    },
+
+    {
+      "type": "select",
+      "id": "text_alignment_desktop",
+      "label": "Desktop (1024px+)",
+      "options": [
+        { "value": "", "label": "Default" },
+        { "value": "b-has-text-centered-desktop", "label": "Centered" },
+        { "value": "b-has-text-justified-desktop", "label": "Justified" },
+        { "value": "b-has-text-left-desktop", "label": "Left" },
+        { "value": "b-has-text-right-desktop", "label": "Right" }
+      ],
+      "default": ""
+    },
+
+    {
+      "type": "select",
+      "id": "text_alignment_widescreen",
+      "label": "Widescreen (1216px+)",
+      "options": [
+        { "value": "", "label": "Default" },
+        { "value": "b-has-text-centered-widescreen", "label": "Centered" },
+        { "value": "b-has-text-justified-widescreen", "label": "Justified" },
+        { "value": "b-has-text-left-widescreen", "label": "Left" },
+        { "value": "b-has-text-right-widescreen", "label": "Right" }
+      ],
+      "default": ""
+    },
+
+    {
+      "type": "select",
+      "id": "text_alignment_fullhd",
+      "label": "Full HD (1408px+)",
+      "options": [
+        { "value": "", "label": "Default" },
+        { "value": "b-has-text-centered-fullhd", "label": "Centered" },
+        { "value": "b-has-text-justified-fullhd", "label": "Justified" },
+        { "value": "b-has-text-left-fullhd", "label": "Left" },
+        { "value": "b-has-text-right-fullhd", "label": "Right" }
+      ],
+      "default": ""
+    },
+
+    {
+      "type": "header",
+      "content": "Responsive Font Sizes"
+    },
+
+    {
+      "type": "paragraph",
+      "content": "Control font sizes for different screen sizes using Bulma's typography scale."
+    },
+
+    {
+      "type": "select",
+      "id": "text_size_mobile",
+      "label": "Mobile Size (up to 768px)",
+      "options": [
+        { "value": "", "label": "Default" },
+        { "value": "b-is-size-1-mobile", "label": "Size 1 (3rem)" },
+        { "value": "b-is-size-2-mobile", "label": "Size 2 (2.5rem)" },
+        { "value": "b-is-size-3-mobile", "label": "Size 3 (2rem)" },
+        { "value": "b-is-size-4-mobile", "label": "Size 4 (1.5rem)" },
+        { "value": "b-is-size-5-mobile", "label": "Size 5 (1.25rem)" },
+        { "value": "b-is-size-6-mobile", "label": "Size 6 (1rem)" },
+        { "value": "b-is-size-7-mobile", "label": "Size 7 (0.75rem)" }
+      ],
+      "default": ""
+    },
+
+    {
+      "type": "select",
+      "id": "text_size_tablet",
+      "label": "Tablet Size (769px+)",
+      "options": [
+        { "value": "", "label": "Default" },
+        { "value": "b-is-size-1-tablet", "label": "Size 1 (3rem)" },
+        { "value": "b-is-size-2-tablet", "label": "Size 2 (2.5rem)" },
+        { "value": "b-is-size-3-tablet", "label": "Size 3 (2rem)" },
+        { "value": "b-is-size-4-tablet", "label": "Size 4 (1.5rem)" },
+        { "value": "b-is-size-5-tablet", "label": "Size 5 (1.25rem)" },
+        { "value": "b-is-size-6-tablet", "label": "Size 6 (1rem)" },
+        { "value": "b-is-size-7-tablet", "label": "Size 7 (0.75rem)" }
+      ],
+      "default": ""
+    },
+
+    {
+      "type": "select",
+      "id": "text_size_desktop",
+      "label": "Desktop Size (1024px+)",
+      "options": [
+        { "value": "", "label": "Default" },
+        { "value": "b-is-size-1-desktop", "label": "Size 1 (3rem)" },
+        { "value": "b-is-size-2-desktop", "label": "Size 2 (2.5rem)" },
+        { "value": "b-is-size-3-desktop", "label": "Size 3 (2rem)" },
+        { "value": "b-is-size-4-desktop", "label": "Size 4 (1.5rem)" },
+        { "value": "b-is-size-5-desktop", "label": "Size 5 (1.25rem)" },
+        { "value": "b-is-size-6-desktop", "label": "Size 6 (1rem)" },
+        { "value": "b-is-size-7-desktop", "label": "Size 7 (0.75rem)" }
+      ],
+      "default": ""
+    },
+
+    {
+      "type": "select",
+      "id": "text_size_widescreen",
+      "label": "Widescreen Size (1216px+)",
+      "options": [
+        { "value": "", "label": "Default" },
+        { "value": "b-is-size-1-widescreen", "label": "Size 1 (3rem)" },
+        { "value": "b-is-size-2-widescreen", "label": "Size 2 (2.5rem)" },
+        { "value": "b-is-size-3-widescreen", "label": "Size 3 (2rem)" },
+        { "value": "b-is-size-4-widescreen", "label": "Size 4 (1.5rem)" },
+        { "value": "b-is-size-5-widescreen", "label": "Size 5 (1.25rem)" },
+        { "value": "b-is-size-6-widescreen", "label": "Size 6 (1rem)" },
+        { "value": "b-is-size-7-widescreen", "label": "Size 7 (0.75rem)" }
+      ],
+      "default": ""
+    },
+
+    {
+      "type": "select",
+      "id": "text_size_fullhd",
+      "label": "Full HD Size (1408px+)",
+      "options": [
+        { "value": "", "label": "Default" },
+        { "value": "b-is-size-1-fullhd", "label": "Size 1 (3rem)" },
+        { "value": "b-is-size-2-fullhd", "label": "Size 2 (2.5rem)" },
+        { "value": "b-is-size-3-fullhd", "label": "Size 3 (2rem)" },
+        { "value": "b-is-size-4-fullhd", "label": "Size 4 (1.5rem)" },
+        { "value": "b-is-size-5-fullhd", "label": "Size 5 (1.25rem)" },
+        { "value": "b-is-size-6-fullhd", "label": "Size 6 (1rem)" },
+        { "value": "b-is-size-7-fullhd", "label": "Size 7 (0.75rem)" }
+      ],
+      "default": ""
+    },
+
+    {
+      "type": "select",
+      "id": "text_color_mode",
+      "label": "Text Color Mode",
+      "options": [
+        { "value": "gradient", "label": "Gradient" },
+        { "value": "solid", "label": "Solid" }
+      ],
+      "default": "solid"
+    },
+
+    {
+      "type": "color_background",
+      "id": "text_color_gradient",
+      "label": "Text Gradient Color",
+      "default": "linear-gradient(90deg, #ff6b6b, #4ecdc4)"
+    },
+
+    { "type": "color", "id": "text_color_solid", "label": "Text Solid Color", "default": "#111111" }
+  ],
+
+  "presets": [
+    {
+      "name": "aa-styled-text-block",
+      "category": "AA Blocks"
+    }
+  ]
+}
+{% endschema %}

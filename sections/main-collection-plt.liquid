@@ -1,0 +1,180 @@
+<div
+  class="b-container b-px-3 b-py-5"
+  x-data="{ isMobile: window.innerWidth < 769 }"
+  x-init="window.addEventListener('resize', () => isMobile = window.innerWidth < 769)"
+>
+  <!-- Título de colección -->
+  <h1 class="b-title is-3 b-mb-5">
+    {{ collection.title }}
+  </h1>
+
+  <!-- Web Component: Cargar la colección -->
+  <shopify-context type="collection" handle="{{ collection.handle }}">
+    <template>
+      <!-- Lista de productos -->
+      <shopify-list-context
+        type="product"
+        query="collection.products"
+        first="36"
+      >
+        <template>
+          <!-- Columna del producto -->
+          <div class="b-column is-half-mobile is-one-third-desktop b-mb-5">
+            <!-- CARD PLT -->
+            <div
+              class="b-has-image-overlay b-card-image b-p-0"
+              :class="
+                isMobile
+                ? 'b-is-flex b-flex-row b-gap-3'
+                : 'b-is-flex b-flex-column'
+              "
+            >
+              <!-- IMAGEN -->
+              <figure
+                class="b-image b-is-1by1"
+                :class="isMobile ? 'b-mr-2' : ''"
+                style="overflow:hidden; border-radius:0.75rem;"
+              >
+                <shopify-media
+                  max-images="1"
+                  width="300"
+                  height="300"
+                  query="product.featuredImage"
+                ></shopify-media>
+              </figure>
+
+              <!-- DETALLES -->
+              <div class="b-flex-grow-1 b-py-2">
+                <!-- Título -->
+                <h3 class="b-title is-6 b-mb-1">
+                  <shopify-data query="product.title"></shopify-data>
+                </h3>
+
+                <!-- Precio -->
+                <p class="b-has-text-weight-bold">
+                  <shopify-money query="product.selectedOrFirstAvailableVariant.price"></shopify-money>
+                </p>
+
+                <!-- Tipo de producto (opcional) -->
+                <p class="b-is-size-7 b-has-text-grey-dark">
+                  <shopify-data query="product.productType"></shopify-data>
+                </p>
+
+                <!-- Quick View -->
+                <button
+                  class="b-button b-is-small b-is-primary b-mt-2"
+                  @click="
+                    $refs.modalContext.update(event);
+                    document.getElementById('plt-product-modal').showModal();
+                  "
+                >
+                  Quick View
+                </button>
+              </div>
+              <!-- BADGE SALE dinamico PLT -->
+              <span
+                class="b-tag-bottom-right b-badge-pill-primary"
+                shopify-attr--hidden="!(product.selectedOrFirstAvailableVariant.compareAtPrice.amount > product.selectedOrFirstAvailableVariant.price.amount)"
+              >
+                Sale
+              </span>
+            </div>
+          </div>
+        </template>
+      </shopify-list-context>
+    </template>
+  </shopify-context>
+</div>
+
+<!-- MODAL QUICK VIEW PLT -->
+<dialog
+  id="plt-product-modal"
+  class="b-box"
+  style="padding:0; border-radius:1rem; width:95%; max-width:720px; border:0;"
+>
+  <div class="b-p-4 b-relative">
+    <!-- Cerrar -->
+    <button
+      class="b-delete"
+      style="position:absolute; top:1rem; right:1rem;"
+      onclick="document.getElementById('plt-product-modal').close();"
+    ></button>
+
+    <!-- CONTEXTO DINÁMICO -->
+    <shopify-context
+      id="modalContext"
+      x-ref="modalContext"
+      type="product"
+      wait-for-update
+    >
+      <template>
+        <div class="b-columns b-is-variable b-4 b-is-vcentered">
+          <!-- Imagen -->
+          <div class="b-column is-half">
+            <shopify-media
+              max-images="1"
+              width="500"
+              height="500"
+              query="product.selectedOrFirstAvailableVariant.image"
+            ></shopify-media>
+          </div>
+
+          <!-- Info -->
+          <div class="b-column is-half">
+            <h2 class="b-title is-4">
+              <shopify-data query="product.title"></shopify-data>
+            </h2>
+
+            <p class="b-has-text-weight-bold b-mb-2">
+              <shopify-money query="product.selectedOrFirstAvailableVariant.price"></shopify-money>
+            </p>
+
+            <shopify-money
+              class="b-has-text-grey-dark b-is-size-7"
+              query="product.selectedOrFirstAvailableVariant.compareAtPrice"
+            ></shopify-money>
+
+            <!-- Selector de variantes -->
+            <shopify-variant-selector class="b-mt-3"></shopify-variant-selector>
+
+            <!-- Botones -->
+            <div class="b-mt-4 b-is-flex b-gap-3 b-flex-column">
+              <button
+                class="b-button b-is-primary"
+                onclick="document.querySelector('shopify-cart').addLine(event).showModal();"
+                shopify-attr--disabled="!product.selectedOrFirstAvailableVariant.availableForSale"
+              >
+                Add to cart
+              </button>
+
+              <button
+                class="b-button b-is-light"
+                onclick="document.querySelector('shopify-store').buyNow(event)"
+                shopify-attr--disabled="!product.selectedOrFirstAvailableVariant.availableForSale"
+              >
+                Buy Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="b-mt-4 b-content">
+          <shopify-data query="product.descriptionHtml"></shopify-data>
+        </div>
+      </template>
+    </shopify-context>
+  </div>
+</dialog>
+
+{% schema %}
+{
+  "name": "Collection PLT",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Collection PLT"
+    }
+  ]
+}
+{% endschema %}

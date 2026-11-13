@@ -1,0 +1,159 @@
+{% doc %}
+  Renders external links from glossary_term.external_links JSON field.
+  @example
+  {% content_for 'block', type: 'glossary-term-external-links', id: 'external-links' %}
+{% enddoc %}
+
+{% liquid
+  assign ai_gen_id = block.id | replace: '_', '' | downcase
+  assign external_links = metaobject.external_links.value
+%}
+
+{% if external_links != blank and external_links.size > 0 %}
+  {% style %}
+    .glossary-external-{{ ai_gen_id }} {
+      margin: {{ block.settings.margin_top }}px auto {{ block.settings.margin_bottom }}px;
+      max-width: {{ block.settings.container_width }}px;
+    }
+
+    .glossary-external__heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size }}px;
+      color: {{ block.settings.heading_color }};
+      margin-bottom: 16px;
+    }
+
+    .glossary-external__list-{{ ai_gen_id }} {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .glossary-external__item-{{ ai_gen_id }} {
+      margin-bottom: 10px;
+    }
+
+    .glossary-external__link-{{ ai_gen_id }} {
+      color: {{ block.settings.link_color }};
+      text-decoration: underline;
+      font-size: {{ block.settings.link_font_size }}px;
+      transition: color 0.2s ease;
+    }
+
+    .glossary-external__link-{{ ai_gen_id }}:hover,
+    .glossary-external__link-{{ ai_gen_id }}:focus {
+      color: {{ block.settings.link_hover_color }};
+    }
+  {% endstyle %}
+
+  <div class="glossary-external-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+    {% if block.settings.heading != blank %}
+      <h2 class="glossary-external__heading-{{ ai_gen_id }} b-title">
+        {{ block.settings.heading }}
+      </h2>
+    {% endif %}
+
+    <ul class="glossary-external__list-{{ ai_gen_id }}">
+      {% for link in external_links %}
+        {% if link.url != blank and link.label != blank %}
+          <li class="glossary-external__item-{{ ai_gen_id }}">
+            <a
+              href="{{ link.url }}"
+              class="glossary-external__link-{{ ai_gen_id }} b-link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ link.label }}
+            </a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Glossary external links",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "External resources"
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "min": 600,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "label": "Container width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 16,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading size",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link color",
+      "default": "#533278"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link hover color",
+      "default": "#f4436c"
+    },
+    {
+      "type": "range",
+      "id": "link_font_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Link font size",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Top margin",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom margin",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Glossary external links"
+    }
+  ]
+}
+{% endschema %}

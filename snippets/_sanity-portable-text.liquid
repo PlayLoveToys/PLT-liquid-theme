@@ -1,0 +1,46 @@
+{% doc %}
+  Resuelve el Portable Text localizado de un array internacionalizado de Sanity y lo renderiza.
+
+  @param {object} items - Array de internationalizedArray*Value
+  @param {string} [key_prefix] - Prefijo para fallback por _key
+  @param {string} [locale] - Override de locale IETF (p. ej. en-US)
+
+  @example
+  {% capture sanity_locale %}{% render '_filter-locale' %}{% endcapture %}
+  {% render '_sanity-portable-text',
+    items: after_page_content,
+    key_prefix: 'body',
+    locale: sanity_locale
+  %}
+{% enddoc %}
+
+{% liquid
+  assign resolved = blank
+
+  unless items == blank
+    if locale != blank
+      assign locale_tag = locale
+    else
+      assign locale_tag = localization.language.iso_code | append: '-' | append: localization.country.iso_code
+    endif
+
+    assign item = items | find: 'language', locale_tag
+
+    if item == blank
+      if key_prefix != blank
+        assign target_key = key_prefix | append: '-' | append: localization.language.iso_code | append: '-' | append: localization.country.iso_code | downcase
+        assign item = items | find: '_key', target_key
+      endif
+    endif
+
+    if item != blank
+      assign resolved = item.value
+    elsif items.size > 0
+      assign resolved = items.first.value
+    endif
+  endunless
+%}
+
+{%- if resolved != blank -%}
+  {%- render 'portable-text', portableText: resolved -%}
+{%- endif -%}

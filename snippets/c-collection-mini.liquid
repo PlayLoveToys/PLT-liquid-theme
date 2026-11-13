@@ -1,0 +1,29 @@
+{% liquid
+  assign image_class = ''
+  if block.settings.priority_mobile
+    assign image_class = image_class | append: ' image-priority-mobile-' | append: block.id
+  endif
+  if block.settings.priority_desktop
+    assign image_class = image_class | append: ' image-priority-desktop-' | append: block.id
+  endif
+%}
+
+<div class="b-cell b-has-background-white b-has-radius-small" {{ block.shopify_attributes }}>
+  <a href="{{ collection.url }}">
+    <figure class="b-image b-is-1by1">
+      {{
+        collection.image
+        | image_url: width: 140
+        | image_tag:
+          widths: '50, 80, 100, 120, 140, 160, 180, 200',
+          loading: 'lazy',
+          fetchpriority: 'low',
+          preload: false,
+          class: image_class
+      }}
+    </figure>
+    <p class="b-is-6 b-px-1 b-has-text-left b-is-ghost b-is-capitalized">
+      {{ title }}
+    </p>
+  </a>
+</div>

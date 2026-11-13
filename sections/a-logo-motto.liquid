@@ -1,0 +1,48 @@
+{% schema %}
+{
+  "name": "AA Logo Motto",
+  "settings": [
+    { "type": "image_picker", "id": "logo", "label": "Logo" },
+    { "type": "text", "id": "motto_title", "label": "Motto Title" },
+    { "type": "text", "id": "motto", "label": "Motto" }
+  ],
+  "presets": [
+    {
+      "name": "AA Logo Motto",
+      "category": "AA Blocks"
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  @media (min-width: 769px) {
+    .logo-motto-text-{{ section.id }} {
+      margin-left: 2rem;
+    }
+  }
+</style>
+
+<section class="b-section">
+  <div class="b-box">
+    <div class="b-columns b-is-vcentered">
+      <div class="b-column b-is-3">
+        <figure class="b-image b-is-square">
+          {{
+            section.settings.logo
+            | image_url: width: 300
+            | image_tag: widths: '50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600', loading: 'lazy'
+          }}
+        </figure>
+      </div>
+      <div class="b-column b-is-8">
+        <div class="logo-motto-text-{{ section.id }}">
+          <p class="b-title b-is-6-mobile b-is-1-desktop b-is-capitalized b-has-text-primary">
+            {{ section.settings.motto_title }}
+          </p>
+          <p class="b-subtitle b-is-6-mobile b-is-4-desktop">{{ section.settings.motto }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

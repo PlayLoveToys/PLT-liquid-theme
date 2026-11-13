@@ -1,0 +1,43 @@
+<div
+  class="b-card b-has-background-info-light"
+>
+  <header class="b-card-header">
+    <p class="b-card-header-title b-is-capitalized b-title b-is-5">
+      {{ block.settings.article.title }}
+    </p>
+  </header>
+  {% if block.settings.article.image %}
+    <div class="b-card-image">
+      <figure class="b-image b-is-square">
+        {{
+          block.settings.article.image
+          | image_url: width: 400
+          | image_tag:
+            widths: '50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600',
+            loading: 'lazy',
+            preload: block.settings.priority
+        }}
+      </figure>
+    </div>
+  {% endif %}
+  {% if block.settings.show_excerpt %}
+    <div class="b-card-content b-p-2">
+      <div class="b-content">
+        {{
+          block.settings.article.excerpt
+          | default: block.settings.article.content
+          | strip_html
+          | truncatewords: block.settings.truncatewords, '...'
+        }}
+      </div>
+    </div>
+  {% endif %}
+  <footer class="b-card-footer">
+    <a
+      href="{{ block.settings.article.url }}"
+      class="b-card-footer-item b-button b-is-info b-is-outlined b-is-light b-is-size-5"
+    >
+      {{ 'general.read_more' | t }}
+    </a>
+  </footer>
+</div>

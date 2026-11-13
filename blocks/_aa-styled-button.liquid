@@ -1,0 +1,205 @@
+{% if block.settings.button_text != blank and block.settings.button_url != blank %}
+  {% liquid
+    assign button_classes = 'b-button'
+    assign alignment_classes = ''
+
+    # Size classes
+    assign button_classes = button_classes | append: ' b-is-' | append: block.settings.button_size
+
+    # Boolean style classes
+    if block.settings.b_is_outlined
+      assign button_classes = button_classes | append: ' b-is-outlined'
+    endif
+
+    if block.settings.b_is_text
+      assign button_classes = button_classes | append: ' b-is-text'
+    endif
+
+    if block.settings.b_is_ghost
+      assign button_classes = button_classes | append: ' b-is-ghost'
+    endif
+
+    if block.settings.b_is_light
+      assign button_classes = button_classes | append: ' b-is-light'
+    endif
+
+    if block.settings.b_is_responsive
+      assign button_classes = button_classes | append: ' b-is-responsive'
+    endif
+
+    if block.settings.b_is_rounded
+      assign button_classes = button_classes | append: ' b-is-rounded'
+    endif
+
+    if block.settings.b_is_fullwidth
+      assign button_classes = button_classes | append: ' b-is-fullwidth'
+    endif
+
+    # Color style classes (select/radio)
+    assign button_classes = button_classes | append: ' b-is-' | append: block.settings.button_color_style
+
+    assign alignment_settings = 'button_alignment_mobile,button_alignment_tablet,button_alignment_desktop,button_alignment_widescreen,button_alignment_fullhd' | split: ','
+
+    for setting in alignment_settings
+      assign value = block.settings[setting]
+      if value != ''
+        assign alignment_classes = alignment_classes | append: ' ' | append: value
+      endif
+    endfor
+  %}
+
+  <div class="{{ alignment_classes }}">
+    <a
+      href="{{ block.settings.button_url }}"
+      class="{{ button_classes }}"
+      {% if block.settings.button_new_tab %}
+        target="_blank" rel="noopener"
+      {% endif %}
+      {{ block.shopify_attributes }}
+    >
+      {{ block.settings.button_text }}
+    </a>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "AA Styled Button",
+  "tag": "block",
+  "class": "AA Blocks",
+
+  "settings": [
+    { "type": "text", "id": "button_text", "label": "Button Text", "default": "Click Here" },
+    { "type": "url", "id": "button_url", "label": "Button URL" },
+
+    { "type": "header", "content": "Button Settings" },
+    {
+      "type": "select",
+      "id": "button_size",
+      "label": "Button Size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "normal"
+    },
+
+    {
+      "type": "header",
+      "content": "Responsive Button Alignment"
+    },
+
+    {
+      "type": "paragraph",
+      "content": "Control button alignment for different screen sizes using Bulma's responsive alignment classes."
+    },
+
+    {
+      "type": "select",
+      "id": "button_alignment_mobile",
+      "label": "Mobile (up to 768px)",
+      "options": [
+        { "value": "", "label": "Default" },
+        { "value": "b-has-text-centered-mobile", "label": "Centered" },
+        { "value": "b-has-text-justified-mobile", "label": "Justified" },
+        { "value": "b-has-text-left-mobile", "label": "Left" },
+        { "value": "b-has-text-right-mobile", "label": "Right" }
+      ],
+      "default": ""
+    },
+
+    {
+      "type": "select",
+      "id": "button_alignment_tablet",
+      "label": "Tablet (769px+)",
+      "options": [
+        { "value": "", "label": "Default" },
+        { "value": "b-has-text-centered-tablet", "label": "Centered" },
+        { "value": "b-has-text-justified-tablet", "label": "Justified" },
+        { "value": "b-has-text-left-tablet", "label": "Left" },
+        { "value": "b-has-text-right-tablet", "label": "Right" }
+      ],
+      "default": ""
+    },
+
+    {
+      "type": "select",
+      "id": "button_alignment_desktop",
+      "label": "Desktop (1024px+)",
+      "options": [
+        { "value": "", "label": "Default" },
+        { "value": "b-has-text-centered-desktop", "label": "Centered" },
+        { "value": "b-has-text-justified-desktop", "label": "Justified" },
+        { "value": "b-has-text-left-desktop", "label": "Left" },
+        { "value": "b-has-text-right-desktop", "label": "Right" }
+      ],
+      "default": ""
+    },
+
+    {
+      "type": "select",
+      "id": "button_alignment_widescreen",
+      "label": "Widescreen (1216px+)",
+      "options": [
+        { "value": "", "label": "Default" },
+        { "value": "b-has-text-centered-widescreen", "label": "Centered" },
+        { "value": "b-has-text-justified-widescreen", "label": "Justified" },
+        { "value": "b-has-text-left-widescreen", "label": "Left" },
+        { "value": "b-has-text-right-widescreen", "label": "Right" }
+      ],
+      "default": ""
+    },
+
+    {
+      "type": "select",
+      "id": "button_alignment_fullhd",
+      "label": "Full HD (1408px+)",
+      "options": [
+        { "value": "", "label": "Default" },
+        { "value": "b-has-text-centered-fullhd", "label": "Centered" },
+        { "value": "b-has-text-justified-fullhd", "label": "Justified" },
+        { "value": "b-has-text-left-fullhd", "label": "Left" },
+        { "value": "b-has-text-right-fullhd", "label": "Right" }
+      ],
+      "default": ""
+    },
+
+    { "type": "header", "content": "Button Style Classes" },
+
+    { "type": "checkbox", "id": "b_is_outlined", "label": "Outlined", "default": false },
+    { "type": "checkbox", "id": "b_is_text", "label": "Text Style", "default": false },
+    { "type": "checkbox", "id": "b_is_ghost", "label": "Ghost", "default": false },
+    { "type": "checkbox", "id": "b_is_light", "label": "Light", "default": false },
+    { "type": "checkbox", "id": "b_is_responsive", "label": "Responsive", "default": false },
+    { "type": "checkbox", "id": "b_is_rounded", "label": "Rounded", "default": false },
+    { "type": "checkbox", "id": "b_is_fullwidth", "label": "Full Width", "default": false },
+    { "type": "checkbox", "id": "button_new_tab", "label": "Open in new tab", "default": false },
+
+    { "type": "header", "content": "Color Style" },
+
+    {
+      "type": "select",
+      "id": "button_color_style",
+      "label": "Color Style",
+      "options": [
+        { "value": "link", "label": "Link" },
+        { "value": "primary", "label": "Primary" },
+        { "value": "info", "label": "Info" },
+        { "value": "success", "label": "Success" },
+        { "value": "warning", "label": "Warning" },
+        { "value": "danger", "label": "Danger" }
+      ],
+      "default": "primary"
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "aa-styled-button",
+      "category": "AA Blocks"
+    }
+  ]
+}
+{% endschema %}

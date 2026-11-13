@@ -1,0 +1,114 @@
+{% render 'button', link: block.settings.link %}
+
+{% schema %}
+{
+  "name": "button",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "label",
+      "default": "t:text_defaults.button_label"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "link"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "open_new_tab",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "style_class",
+      "label": "style",
+      "options": [
+        {
+          "value": "button",
+          "label": "primary"
+        },
+        {
+          "value": "button-secondary",
+          "label": "secondary"
+        },
+        {
+          "value": "link",
+          "label": "link"
+        }
+      ],
+      "default": "button"
+    },
+    {
+      "type": "header",
+      "content": "size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "width_desktop",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "fit_content"
+        },
+        {
+          "value": "custom",
+          "label": "custom"
+        }
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width == \"custom\" }}"
+    },
+    {
+      "type": "select",
+      "id": "width_mobile",
+      "label": "width_mobile",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "fit_content"
+        },
+        {
+          "value": "custom",
+          "label": "custom"
+        }
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile",
+      "label": "custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_mobile == \"custom\" }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "button",
+      "category": "basic",
+      "settings": {
+        "link": "shopify://collections/all"
+      }
+    }
+  ]
+}
+{% endschema %}

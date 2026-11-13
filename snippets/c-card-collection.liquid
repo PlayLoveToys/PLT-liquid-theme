@@ -1,0 +1,36 @@
+<div class="b-card b-has-background-link" {{ block.shopify_attributes }}>
+  <header class="b-card-header">
+    <p class="b-card-header-title b-is-capitalized b-title b-is-5 b-has-text-white">
+      {{ block.settings.collection.title }}
+    </p>
+  </header>
+  {% if block.settings.collection.featured_image %}
+    <div class="b-card-image">
+      <figure class="b-image b-is-square">
+        {{
+          block.settings.collection.featured_image
+          | image_url: width: 800
+          | image_tag:
+            widths: '50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600',
+            loading: 'lazy',
+            preload: block.settings.priority
+        }}
+      </figure>
+    </div>
+  {% endif %}
+  <div class="b-card-content b-p-2">
+    {% if block.settings.show_description %}
+      <div class="b-content b-has-text-white b-is-small b-is-medium-desktop">
+        {{ block.settings.collection.description | strip_html | truncatewords: block.settings.truncatewords, '...' }}
+      </div>
+    {% endif %}
+  </div>
+  <footer class="b-card-footer">
+    <a
+      href="{{ block.settings.cta_url | default: block.settings.collection.url }}"
+      class="b-card-footer-item b-button b-is-link b-is-dark b-is-size-5 b-is-capitalized b-has-text-white"
+    >
+      {{ block.settings.cta_text }}
+    </a>
+  </footer>
+</div>

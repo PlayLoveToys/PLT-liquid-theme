@@ -1,0 +1,45 @@
+{%- assign section_size = section.settings.section_size -%}
+
+<section class="b-section {{ section_size }}">
+  {% content_for 'blocks' %}
+</section>
+
+{% schema %}
+{
+  "name": "B-Section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "section_size",
+      "label": "Section Size",
+      "options": [
+        {
+          "value": "",
+          "label": "Small"
+        },
+        {
+          "value": "b-is-medium",
+          "label": "Medium"
+        },
+        {
+          "value": "b-is-large",
+          "label": "Large"
+        }
+      ],
+      "default": ""
+    }
+  ],
+  "blocks": [{ "type": "b-header" }, { "type": "@theme" }, { "type": "@app" }],
+  "presets": [
+    {
+      "name": "B-Section",
+      "category": "b-Layout",
+      "blocks": [
+        {
+          "type": "b-header"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

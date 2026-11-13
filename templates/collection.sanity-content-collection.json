@@ -1,0 +1,329 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "banner": {
+      "type": "main-collection-banner",
+      "disabled": true,
+      "settings": {
+        "show_collection_description": false,
+        "show_collection_image": false,
+        "color_scheme": "scheme-1"
+      }
+    },
+    "custom_section_HqwefC": {
+      "type": "custom_section",
+      "blocks": {
+        "breadcrumb_QYYNhV": {
+          "type": "breadcrumb",
+          "settings": {
+            "home_text": "",
+            "show_home_icon": true,
+            "separator_style": "arrow",
+            "font_size": 18,
+            "font_weight": "500",
+            "background_color": "#f4f4f4",
+            "link_color": "#533278",
+            "link_hover_color": "#f4436c",
+            "link_hover_background": "#f4f4f4",
+            "current_color": "#533278",
+            "current_background": "#f4f4f4",
+            "separator_color": "#533278",
+            "focus_color": "#0c7489",
+            "padding_top": 4,
+            "padding_bottom": 10,
+            "item_spacing": 4,
+            "border_radius": 6
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "breadcrumb_QYYNhV"
+      ],
+      "name": "Breadcrumb",
+      "settings": {
+        "content_direction": "row",
+        "vertical_on_mobile": false,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "background_color": "#ffffff",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "content_padding_top": 0,
+        "content_padding_bottom": 0,
+        "content_padding_left": 0,
+        "content_padding_right": 0,
+        "custom_class": "custom-section-class"
+      }
+    },
+    "product-grid": {
+      "type": "main-collection-sanity",
+      "settings": {
+        "logo": "shopify://shop_images/Logo-PlayLoveToys-3by2-800x534.png"
+      }
+    },
+    "custom_section_EWcpUz": {
+      "type": "custom_section",
+      "blocks": {
+        "blog_post_display_bTAWEc": {
+          "type": "blog_post_display",
+          "name": "Blog Post Display",
+          "settings": {
+            "article": "",
+            "article_handle": "{{ closest.collection.metafields.blog.featured_article.value }}",
+            "show_image": true,
+            "show_meta": true,
+            "show_date": false,
+            "show_author": false,
+            "show_content": true,
+            "show_button": false,
+            "button_text": "Read more",
+            "date_format": "%B %d, %Y",
+            "width": 100,
+            "padding": 0,
+            "spacing": 8,
+            "border_radius": 0,
+            "image_aspect_ratio": "16/9",
+            "image_border_radius": 0,
+            "background_color": "#f4f4f4",
+            "title_color": "#533278",
+            "title_hover_color": "#555555",
+            "meta_color": "#777777",
+            "content_color": "#000000",
+            "button_color": "#000000",
+            "button_hover_color": "#555555",
+            "title_font_size": 40,
+            "title_font_weight": 800,
+            "meta_font_size": 14,
+            "content_font_size": 16,
+            "button_font_size": 16
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "blog_post_display_bTAWEc"
+      ],
+      "name": "Featured Blog",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "flex-start",
+        "gap": 0,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "background_color": "#ffffff",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "content_padding_top": 0,
+        "content_padding_bottom": 0,
+        "content_padding_left": 0,
+        "content_padding_right": 0,
+        "custom_class": "custom-section-class"
+      }
+    },
+    "collection_list_gqnGhA": {
+      "type": "collection-list",
+      "blocks": {
+        "featured_collection_MMWAwQ": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "sex-toys-for-women"
+          }
+        },
+        "featured_collection_9fx6fy": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "sex-toys-for-couples"
+          }
+        },
+        "featured_collection_tAdPtH": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "sex-toys-for-men"
+          }
+        },
+        "featured_collection_x7Yi7y": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "lubricant"
+          }
+        },
+        "featured_collection_Cwbnwt": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "erotic-games"
+          }
+        },
+        "featured_collection_bC3CHF": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "gift-sets"
+          }
+        }
+      },
+      "block_order": [
+        "featured_collection_MMWAwQ",
+        "featured_collection_9fx6fy",
+        "featured_collection_tAdPtH",
+        "featured_collection_x7Yi7y",
+        "featured_collection_Cwbnwt",
+        "featured_collection_bC3CHF"
+      ],
+      "name": "Top Categories",
+      "settings": {
+        "title": "Shop our top categories",
+        "heading_size": "h1",
+        "show_secondary_image": false,
+        "image_ratio": "square",
+        "columns_desktop": 6,
+        "color_scheme": "scheme-1",
+        "show_view_all": true,
+        "columns_mobile": "1",
+        "swipe_on_mobile": true,
+        "padding_top": 76,
+        "padding_bottom": 76
+      }
+    },
+    "featured_blog_yJYyRi": {
+      "type": "featured-blog",
+      "name": "Featured Blog",
+      "settings": {
+        "blog": "playful-connect",
+        "post_limit": 4,
+        "heading": "Blog posts",
+        "heading_size": "h2",
+        "columns_desktop": 4,
+        "show_view_all": true,
+        "show_image": true,
+        "show_date": true,
+        "show_author": false,
+        "color_scheme": "",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "after_page_content_ArzyWy": {
+      "type": "after-page-content",
+      "name": "AfterPageCont",
+      "settings": {
+        "after_page_content": "",
+        "as_html": true,
+        "content_width": 650,
+        "content_padding": 20
+      }
+    },
+    "after_page_richtext_content_nT8LrB": {
+      "type": "after-page-richtext-content",
+      "name": "After Page Richtext",
+      "settings": {
+        "after_page_content": "{{ collection.metafields.custom.afterpage_richtext | metafield_tag }}",
+        "as_html": true,
+        "content_width": 1600,
+        "content_padding": 20
+      }
+    },
+    "1779418494a438b258": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_b6c6708_AtQ7XA": {
+          "type": "ai_gen_block_b6c6708",
+          "settings": {
+            "desktop_width_percent": 100,
+            "padding": 40,
+            "border_radius": 8,
+            "background_color": "#ffffff",
+            "text_color": "#231f20",
+            "heading_color": "#231f20",
+            "link_color": "#533278",
+            "link_hover_color": "#f4436c",
+            "font_size": 16,
+            "image_border_radius": 8
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_b6c6708_AtQ7XA"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "custom_section_HqwefC",
+    "product-grid",
+    "custom_section_EWcpUz",
+    "collection_list_gqnGhA",
+    "featured_blog_yJYyRi",
+    "after_page_content_ArzyWy",
+    "after_page_richtext_content_nT8LrB",
+    "1779418494a438b258"
+  ]
+}

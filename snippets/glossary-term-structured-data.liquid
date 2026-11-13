@@ -1,0 +1,31 @@
+{% doc %}
+  DefinedTerm JSON-LD for glossary_term metaobject pages.
+{% enddoc %}
+
+{% liquid
+  assign term_name = metaobject.term.value
+  assign term_url = metaobject.system.url | default: canonical_url
+  assign term_description = metaobject.definition | metafield_text | strip_html | truncate: 300
+  assign same_as_urls = metaobject.same_as.value
+%}
+
+{% if term_name != blank %}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "DefinedTerm",
+      "name": {{ term_name | json }},
+      {% if term_description != blank %}
+      "description": {{ term_description | json }},
+      {% endif %}
+      "url": {{ term_url | json }}
+      {% if same_as_urls != blank and same_as_urls.size > 0 %}
+      ,"sameAs": [
+        {% for same_as_url in same_as_urls %}
+          {{ same_as_url | json }}{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ]
+      {% endif %}
+    }
+  </script>
+{% endif %}
