@@ -287,7 +287,8 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 | 2f gift_card badge + `snippets/button` + higiene orphans | PR #5 |
 | 2a `plt-pagination` compact + `anchor` (pin `a2c759b`) | PR #6 |
 | 2b plan JS + **JS-A** puente + sort desktop | PR #7 / #8 |
-| 2b **JS-B** `plt-filter-bar` + sort en drawer; search/sanity cableados | rama `port/ds-fase-2b-js-b` |
+| 2b **JS-B** `plt-filter-bar` + sort en drawer; search/sanity cableados | PR #9 |
+| 2b **JS-Q0** capa compat `product-info` ↔ `plt-quantity-selector` | rama `port/ds-fase-2b-js-q0` |
 
 | Bloqueado | Por qué | Para desbloquear |
 |---|---|---|
@@ -299,8 +300,8 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 | **Fase 6 CI gates** | Formalizar budgets/diff visual | Tras baseline visual real (Fase 0) |
 | **Inputs/alerts / botones globales** | Sin corte Liquid acotado | Por template en Fase 4 o snippet nuevo si se extrae |
 
-**Siguiente (prioridad):** staging de JS-A/B (filtros/sort/clear/paginación); luego **JS-C**
-(retirar Alpine del drawer) o **JS-Q0** (`product-info` ↔ quantity WC). Sin tienda: Fase 0
+**Siguiente (prioridad):** staging de JS-A/B (filtros/sort/clear/paginación); **JS-C**
+(retirar Alpine del drawer) o **JS-Q1** (quantity WC en featured/PDP; Q0 hecho). Sin tienda: Fase 0
 capturas y checklist visual del layout (fondo `html`, LCP `@import` legacy).
 
 ### Fase 3: Shell

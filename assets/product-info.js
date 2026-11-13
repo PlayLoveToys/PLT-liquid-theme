@@ -14,7 +14,7 @@ if (!customElements.get('product-info')) {
       constructor() {
         super();
 
-        this.quantityInput = this.querySelector('.quantity__input');
+        this.quantityInput = this.resolveQuantityInput();
       }
 
       connectedCallback() {
@@ -33,7 +33,107 @@ if (!customElements.get('product-info')) {
         this.preProcessHtmlCallbacks.push(callback);
       }
 
+      /**
+       * JS-Q0 compat: prefer <plt-quantity-selector> (Q1+) over Dawn .quantity__input.
+       * See docs/ds-port-2b-js-plan.md §2.2 / Q0.
+       */
+      resolveQuantityInput() {
+        return this.querySelector('plt-quantity-selector') || this.querySelector('.quantity__input');
+      }
+
+      isPltQuantitySelector(el = this.quantityInput) {
+        return Boolean(el) && el.tagName === 'PLT-QUANTITY-SELECTOR';
+      }
+
+      /** Current numeric value from Dawn input or WC `.value` prop. */
+      getQuantityValue() {
+        if (!this.quantityInput) return undefined;
+        if (this.isPltQuantitySelector()) return Number(this.quantityInput.value);
+        const parsed = Number.parseInt(this.quantityInput.value, 10);
+        return Number.isFinite(parsed) ? parsed : undefined;
+      }
+
+      /**
+       * Read cart/qty-rule metadata. Dawn stores data-* on the input; Q1 must mirror
+       * data-cart-quantity / data-min / data-max on the WC host. Falls back to props.
+       */
+      readQuantityRuleData(el = this.quantityInput) {
+        if (!el) {
+          return { cartQuantity: 0, min: 1, max: null, step: 1 };
+        }
+        const cartQuantity = el.dataset.cartQuantity ? Number.parseInt(el.dataset.cartQuantity, 10) : 0;
+        const minFromData = el.dataset.min ? Number.parseInt(el.dataset.min, 10) : null;
+        const maxFromData = el.dataset.max ? Number.parseInt(el.dataset.max, 10) : null;
+        const minProp = el.min !== '' && el.min != null ? Number.parseInt(el.min, 10) : NaN;
+        const maxProp = el.max !== '' && el.max != null ? Number.parseInt(el.max, 10) : NaN;
+        const stepProp = el.step !== '' && el.step != null ? Number.parseInt(el.step, 10) : NaN;
+        return {
+          cartQuantity: Number.isFinite(cartQuantity) ? cartQuantity : 0,
+          min: Number.isFinite(minFromData) ? minFromData : Number.isFinite(minProp) ? minProp : 1,
+          max: Number.isFinite(maxFromData) ? maxFromData : Number.isFinite(maxProp) ? maxProp : null,
+          step: Number.isFinite(stepProp) && stepProp > 0 ? stepProp : 1,
+        };
+      }
+
+      /**
+       * Write min/max/step/value. On the WC, assign properties (not only attributes) so
+       * Lit clamps; do not call setValue() — that would emit plt:quantity-change.
+       */
+      applyQuantityBounds(el, { min, max, step, value }) {
+        if (!el) return;
+        if (this.isPltQuantitySelector(el)) {
+          el.min = min;
+          el.max = max == null ? null : max;
+          if (step != null) el.step = step;
+          if (value != null) el.value = value;
+          return;
+        }
+        el.min = min;
+        if (max) {
+          el.max = max;
+        } else {
+          el.removeAttribute('max');
+        }
+        if (step != null) el.step = step;
+        if (value != null) el.value = value;
+      }
+
+      syncQuantityControlFromUpdated(current, updated) {
+        if (!current || !updated) return;
+        const dataAttrs = ['data-cart-quantity', 'data-min', 'data-max'];
+        for (const attribute of dataAttrs) {
+          const valueUpdated = updated.getAttribute(attribute);
+          if (valueUpdated !== null) {
+            current.setAttribute(attribute, valueUpdated);
+          } else {
+            current.removeAttribute(attribute);
+          }
+        }
+        if (this.isPltQuantitySelector(current)) {
+          for (const prop of ['min', 'step', 'value']) {
+            if (updated.hasAttribute(prop)) {
+              const parsed = Number.parseInt(updated.getAttribute(prop), 10);
+              if (Number.isFinite(parsed)) current[prop] = parsed;
+            }
+          }
+          if (updated.hasAttribute('max')) {
+            const parsedMax = Number.parseInt(updated.getAttribute('max'), 10);
+            current.max = Number.isFinite(parsedMax) ? parsedMax : null;
+          } else {
+            current.max = null;
+          }
+          return;
+        }
+        const stepUpdated = updated.getAttribute('step');
+        if (stepUpdated !== null) {
+          current.setAttribute('step', stepUpdated);
+        } else {
+          current.removeAttribute('step');
+        }
+      }
+
       initQuantityHandlers() {
+        this.quantityInput = this.resolveQuantityInput();
         if (!this.quantityInput) return;
 
         this.quantityForm = this.querySelector('.product-form__quantity');
@@ -311,26 +411,20 @@ if (!customElements.get('product-info')) {
       }
 
       setQuantityBoundries() {
-        const data = {
-          cartQuantity: this.quantityInput.dataset.cartQuantity ? parseInt(this.quantityInput.dataset.cartQuantity) : 0,
-          min: this.quantityInput.dataset.min ? parseInt(this.quantityInput.dataset.min) : 1,
-          max: this.quantityInput.dataset.max ? parseInt(this.quantityInput.dataset.max) : null,
-          step: this.quantityInput.step ? parseInt(this.quantityInput.step) : 1,
-        };
+        if (!this.quantityInput) return;
+        const data = this.readQuantityRuleData(this.quantityInput);
 
         let min = data.min;
         const max = data.max === null ? data.max : data.max - data.cartQuantity;
         if (max !== null) min = Math.min(min, max);
         if (data.cartQuantity >= data.min) min = Math.min(min, data.step);
 
-        this.quantityInput.min = min;
-
-        if (max) {
-          this.quantityInput.max = max;
-        } else {
-          this.quantityInput.removeAttribute('max');
-        }
-        this.quantityInput.value = min;
+        this.applyQuantityBounds(this.quantityInput, {
+          min,
+          max: max || null,
+          step: data.step,
+          value: min,
+        });
 
         publish(PUB_SUB_EVENTS.quantityUpdate, undefined);
       }
@@ -351,25 +445,21 @@ if (!customElements.get('product-info')) {
       }
 
       updateQuantityRules(sectionId, html) {
-        if (!this.quantityInput) return;
+        this.quantityInput = this.resolveQuantityInput();
+        if (!this.quantityInput || !this.quantityForm) return;
         this.setQuantityBoundries();
 
         const quantityFormUpdated = html.getElementById(`Quantity-Form-${sectionId}`);
-        const selectors = ['.quantity__input', '.quantity__rules', '.quantity__label'];
+        if (!quantityFormUpdated) return;
+
+        const controlSelector = this.isPltQuantitySelector() ? 'plt-quantity-selector' : '.quantity__input';
+        const selectors = [controlSelector, '.quantity__rules', '.quantity__label'];
         for (let selector of selectors) {
           const current = this.quantityForm.querySelector(selector);
           const updated = quantityFormUpdated.querySelector(selector);
           if (!current || !updated) continue;
-          if (selector === '.quantity__input') {
-            const attributes = ['data-cart-quantity', 'data-min', 'data-max', 'step'];
-            for (let attribute of attributes) {
-              const valueUpdated = updated.getAttribute(attribute);
-              if (valueUpdated !== null) {
-                current.setAttribute(attribute, valueUpdated);
-              } else {
-                current.removeAttribute(attribute);
-              }
-            }
+          if (selector === '.quantity__input' || selector === 'plt-quantity-selector') {
+            this.syncQuantityControlFromUpdated(current, updated);
           } else {
             current.innerHTML = updated.innerHTML;
             if (selector === '.quantity__label') {
