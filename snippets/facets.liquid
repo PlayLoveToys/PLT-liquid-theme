@@ -130,8 +130,10 @@
         %}
 
         {% comment %}
-          DS plt-filter-bar adapter only maps list + price_range. Boolean
-          storefront filters are skipped until the DS supports them.
+          Boolean filters (filter.type == boolean): gap in vendored DS adapter at pin
+          a2c759b — fixed upstream in PlayLoveToys/PLT-design-system#3 / PR #5.
+          Bump @playlovetoys/platform + npm run sync:plt before marking PR ready (no
+          hand-edits to snippets/plt-*.liquid). price-facet.liquid is legacy (JS-B); unused here.
         {% endcomment %}
       </section>
 
