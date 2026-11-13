@@ -76,14 +76,25 @@ if (!customElements.get('quick-order-list')) {
       }
 
       initVariantEventListeners() {
+        this.querySelectorAll('plt-quantity-selector').forEach((qty) => {
+          this.syncPltQuantityInputAttrs(qty);
+        });
+
         this.allInputsArray = Array.from(this.querySelectorAll('input[type="number"]'));
 
-        this.querySelectorAll('quantity-input').forEach((qty) => {
+        // JS-Q2: WC emits plt:quantity-change (buttons + typed). Dawn quantity-input: change.
+        this.querySelectorAll('plt-quantity-selector, quantity-input').forEach((qty) => {
           const debouncedOnChange = debounce(this.onChange.bind(this), BulkAdd.ASYNC_REQUEST_DELAY, true);
-          qty.addEventListener('change', (event) => {
+          const onQtyEvent = (event) => {
             this.hasPendingQuantityUpdate = true;
             debouncedOnChange(event);
-          });
+          };
+          if (qty.matches('plt-quantity-selector')) {
+            // Only plt:quantity-change — native input change also triggers setValue → same event.
+            qty.addEventListener('plt:quantity-change', onQtyEvent);
+          } else {
+            qty.addEventListener('change', onQtyEvent);
+          }
         });
 
         this.querySelectorAll('.quick-order-list-remove-button').forEach((button) => {
@@ -104,35 +115,43 @@ if (!customElements.get('quick-order-list')) {
       }
 
       onChange(event) {
-        const inputValue = parseInt(event.target.value);
-        this.cleanErrorMessageOnType(event);
+        const target = this.getQuantityInputFromEvent(event) || event.target;
+        const inputValue = parseInt(event.detail?.value ?? target.value, 10);
+        this.cleanErrorMessageOnType(target);
         if (inputValue == 0) {
-          event.target.setAttribute('value', inputValue);
-          this.startQueue(event.target.dataset.index, inputValue);
+          target.setAttribute('value', inputValue);
+          const host = target.closest?.('plt-quantity-selector');
+          if (host) host.setAttribute('value', String(inputValue));
+          this.startQueue(target.dataset.index, inputValue);
         } else {
           this.validateQuantity(event);
         }
       }
 
-      cleanErrorMessageOnType(event) {
+      cleanErrorMessageOnType(target) {
+        if (!target?.addEventListener) return;
         const handleKeydown = () => {
-          event.target.setCustomValidity(' ');
-          event.target.reportValidity();
-          event.target.removeEventListener('keydown', handleKeydown);
+          target.setCustomValidity?.(' ');
+          target.reportValidity?.();
+          target.removeEventListener('keydown', handleKeydown);
         };
 
-        event.target.addEventListener('keydown', handleKeydown);
+        target.addEventListener('keydown', handleKeydown);
       }
 
       validateInput(target) {
-        const targetValue = parseInt(target.value);
-        const targetMin = parseInt(target.dataset.min);
-        const targetStep = parseInt(target.step);
+        const input = target?.matches?.('plt-quantity-selector')
+          ? this.syncPltQuantityInputAttrs(target) || target
+          : target;
+        const targetValue = parseInt(input.value);
+        const targetMin = parseInt(input.dataset.min);
+        const targetStep = parseInt(input.step);
+        const targetMax = input.max || input.dataset?.max;
 
-        if (target.max) {
+        if (targetMax) {
           return (
             targetValue == 0 ||
-            (targetValue >= targetMin && targetValue <= parseInt(target.max) && targetValue % targetStep == 0)
+            (targetValue >= targetMin && targetValue <= parseInt(targetMax) && targetValue % targetStep == 0)
           );
         } else {
           return targetValue == 0 || (targetValue >= targetMin && targetValue % targetStep == 0);
@@ -204,8 +223,11 @@ if (!customElements.get('quick-order-list')) {
             const focusedElement = document.activeElement;
             let focusTarget = focusedElement?.dataset?.target;
             if (focusTarget?.includes('remove')) {
-              focusTarget = focusedElement.closest('quantity-popover')?.querySelector('[data-target*="increment-"]')
-                ?.dataset.target;
+              const popover = focusedElement.closest('quantity-popover');
+              // Dawn increment button, or JS-Q2 WC host data-target="quantity-input-*"
+              focusTarget =
+                popover?.querySelector('[data-target*="increment-"]')?.dataset.target ||
+                popover?.querySelector('plt-quantity-selector')?.dataset.target;
             }
 
             const total = this.getTotalBar();
@@ -224,7 +246,10 @@ if (!customElements.get('quick-order-list')) {
 
               const newFocusTarget = this.querySelector(`[data-target='${focusTarget}']`);
               if (newFocusTarget) {
-                newFocusTarget?.focus({ preventScroll: true });
+                const focusEl = newFocusTarget.matches?.('plt-quantity-selector')
+                  ? newFocusTarget.querySelector('input[type="number"]') || newFocusTarget
+                  : newFocusTarget;
+                focusEl?.focus({ preventScroll: true });
               }
 
               this.initVariantEventListeners();

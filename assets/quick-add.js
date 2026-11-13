@@ -12,8 +12,9 @@ if (!customElements.get('quick-add-modal')) {
       }
 
       hide(preventFocus = false) {
-        const cartNotification = document.querySelector('cart-notification');
-        if (cartNotification) cartNotification.setActiveElement(this.openedBy);
+        const cartHost =
+          window.PltCartDrawerHost || document.querySelector('cart-notification');
+        if (cartHost) cartHost.setActiveElement?.(this.openedBy);
         this.modalContent.innerHTML = '';
 
         if (preventFocus) this.openedBy = null;
