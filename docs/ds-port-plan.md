@@ -33,7 +33,7 @@ archivo migrado; sirven para detectar regresiones.
 | LiquidHTMLSyntaxError | 1 | `sections/after-page-content.liquid:19` cierra un `div` no abierto |
 | ImgWidthAndHeight | 1 | `sections/main-bloggle-article.liquid:365` |
 | ContentForHeaderModification | 1 | `templates/search.avada-seo.liquid` |
-| **MissingAsset** | 1 | **`sections/main-search.liquid` referencia `assets/facets.js`, que no existe** (bug previo; los filtros de búsqueda dependen de esto) |
+| **MissingAsset** | 1 | `sections/main-search.liquid` referencia `assets/facets.js`, que no existe. Es una etiqueta `<script>` obsoleta (da 404), no una función rota: los filtros los maneja Alpine (ver corte 2b) |
 
 Validación de templates (`npm run test:templates`): **40 de 42** JSON parsean en modo estricto. Fallan
 `templates/blog.json` (línea 79) y `templates/page.test.json` (línea 205) por un error de sintaxis JSON
@@ -61,7 +61,7 @@ Se registran como baseline del validador.
   404, cuenta. **Bloqueado**: requiere `shopify theme dev` contra una tienda (credenciales del merchant).
   Reutilizar `plt-frontend-liquid/tools/visual-compare`.
 - [ ] Fijar handles de fixture (producto, colección, artículo) y guardarlos en este documento.
-- [ ] Decidir sobre `facets.js` ausente (¿se restaura o la búsqueda ya no lo usa?) antes de la Fase 2.
+- [x] `facets.js` ausente: resuelto, es una etiqueta obsoleta (ver corte 2b). Se puede borrar el `<script>` de `main-search`.
 
 ### Fase 1: Tooling y tokens (sin cambio visual)
 **Hecho (2026-11-12), sin tocar `layout/` ni ningún snippet/section existente:**
@@ -126,6 +126,57 @@ Fuera del snippet compartido hay paginaciones inline que también migrar: `main-
 `theme.css` no tiene selectores de elemento globales sin capa, 0 colisiones de variables con el CSS legacy
 (246 variables propias) y las reglas del DS viven en capas, así que el CSS legacy, que no usa capas, gana
 siempre en un conflicto. Pesa 128 KB (~20 KB gz): se enlaza con el primer corte que sí funcione.
+
+> **Corrección (corte 2b):** que el legacy gane siempre protege a la tienda, pero **rompe los componentes del
+> DS**. Ver abajo.
+
+#### Corte 2b: cantidad, orden y filtros — **bloqueado por la capa de CSS legacy** (2026-11-12)
+Caso `controls` del harness (`plt-quantity-selector`, `plt-sort-select`, `plt-filter-bar`), con el CSS real:
+
+| Variante | Resultado |
+|---|---|
+| Legacy sin capa (como hoy) | **Roto**: botones −/+ de 15 px de ancho con el símbolo recortado, checkboxes como píldoras de 10×24 px |
+| Legacy en `@layer legacy` (`LEGACY_LAYER=1`) | **Correcto**: cantidad (con `−` deshabilitado en el mínimo), orden y filtros se ven bien |
+
+Causa: reglas de elemento **sin capa** del legacy ganan a las reglas **en capa** de daisyUI: `button { padding: 0 }`
+(Bulma, `b-style.css`) e `input[type="checkbox"] { width: auto }` (Dawn, `base.css`). Es el efecto inverso del
+que protege la tienda, y afectará a *cualquier* componente del DS mientras haya reset legacy sin capa.
+
+**Cómo bajar la prioridad del legacy** (el DS no puede arreglarlo: es el orden de capas del consumidor).
+No se aceptan overrides locales de CSS del DS (política upstream).
+
+| Opción | Qué es | Pros | Contras |
+|---|---|---|---|
+| A. `@import` con capa en el layout | Sustituir los `<link>` de `base.css` y `b-style.css` por `<style>@layer legacy, theme, base, components, utilities; @import url('…base.css') layer(legacy); …</style>` | Sin tocar los CSS; reversible | Cadena de peticiones extra, bloquea el render; `@import` solo en `<style>` inline con URL absoluta del CDN |
+| B. Envolver los ficheros | Añadir `@layer legacy { … }` en `base.css` y `b-style.css`/`b-style.source.css` (ninguno tiene `@import` ni `@charset`; `b-style` empieza con BOM) | Sin petición extra | Edita artefactos generados: `b-style.css` es salida de Bulma (hay `.map`), se pierde al regenerar |
+| C. Migrar por template quitando el legacy | Cargar solo `theme.css` (con preflight) en templates ya migrados | Resultado final limpio | Header/footer son compartidos y siguen en legacy: no es viable hasta migrarlos |
+
+Recomendación: **A** durante la transición (reversible y sin tocar generados), y retirar el legacy en la Fase 5.
+
+**Implementado: opción A (2026-11-12), en `layout/theme.liquid`.** El orden `@layer legacy, theme, base,
+components, utilities` se declara antes de `theme.css`; `base.css` y `b-style(.source).css` se cargan con
+`@import url(…) layer(legacy)`; `theme.css` queda enlazado. `layout/password.liquid` no se toca (no carga
+`theme.css` ni Bulma). Verificado en el harness (`LEGACY_LAYER=import`, misma sintaxis con `data:` URLs): los dos
+imports cargan en la capa `legacy`, el DS se ve bien y el markup Bulma sigue estilizado. `theme check` sin cambios
+(7 errores / 362 avisos, ninguno en el layout).
+
+**Sin verificar contra la tienda real** (hace falta `shopify theme dev`). Qué mirar ahí:
+- Cada `@import` encadena una petición y bloquea el render (2 más que antes); medir LCP/CSS bloqueante.
+- Orden de empates: antes `b-style` iba después de los `component-*.css` y ganaba empates de misma especificidad;
+  ahora los `component-*.css` (sin capa) ganan a `b-style`. Solo importa en selectores de elemento idénticos.
+- El DS fija `background-color`, `color`, `color-scheme` y `scrollbar-gutter` en `html` (ver arriba).
+- Los 128 KB de `theme.css` (~20 KB gz) cargan ya en todas las páginas aunque aún no haya componentes migrados.
+Efecto colateral medido de bajar el legacy: el DS pasa a fijar sobre `html` (no sobre `body`) `background-color`,
+`color`, `color-scheme`, `scrollbar-gutter` y el bloqueo de scroll de daisyUI. Hay que comprobarlo contra una
+página real; en el harness el fondo de la página pasó a crema (#FAF7F2).
+
+**Acoplamiento JS que sigue pendiente aunque se resuelva el CSS:**
+- Cantidad: el theme usa `<quantity-input>` (`assets/global.js`, ligado a `product-form`) en `main-product`,
+  `featured-product` y `quick-order-list-row`. Migrar implica el JS de formulario de producto.
+- Orden y filtros: no los maneja ningún `facets.js` (**corrección**: esa referencia en `main-search.liquid`
+  es una etiqueta obsoleta que da 404, y `<facet-filters-form>` no está definido). Los maneja Alpine con
+  `x-target` en el cajón `b-drawer` de `snippets/facets.liquid` (envío automático con debounce de 800 ms).
+  Migrar a `plt-filter-bar` / `plt-sort-select` implica reemplazar ese cajón.
 
 ### Fase 3: Shell
 Header (excepción documentada: se conserva, con `mega-menu.css`), footer + newsletter, carrito

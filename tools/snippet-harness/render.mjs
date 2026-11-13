@@ -47,6 +47,7 @@ engine.registerTag('doc', {
 engine.registerFilter('t', (key, ...rest) =>
   translate(key, Object.fromEntries(rest.filter(Array.isArray))),
 );
+engine.registerFilter('money_without_currency', (cents) => (Number(cents) / 100).toFixed(2));
 engine.registerFilter('asset_url', (file) => `../../../assets/${file}`);
 
 const {default: build} = await import(
@@ -59,15 +60,31 @@ const body = await build({engine});
 const bundle = fs
   .readFileSync(path.join(theme, 'assets', 'plt-web-components.bundle.js'), 'utf8')
   .replace(/<\/script/g, '<\\/script');
+// LEGACY_LAYER mirrors layout/theme.liquid (docs/ds-port-plan.md, cut 2b): the Dawn/Bulma CSS goes into a
+// cascade layer below the design system's. `1` wraps it in `@layer legacy {}`; `import` loads it through
+// `@import url(...) layer(legacy)` (data: URLs, the same syntax the layout uses with the CDN asset URL).
+const legacyLayer = process.env.LEGACY_LAYER === '1' || process.env.LEGACY_LAYER === 'import';
+const readAsset = (file) => fs.readFileSync(path.join(theme, 'assets', file), 'utf8');
+const legacyStyle = (file) => {
+  const css = readAsset(file).replace(/^\uFEFF/, '');
+  if (process.env.LEGACY_LAYER === 'import') {
+    const url = `data:text/css;base64,${Buffer.from(css).toString('base64')}`;
+    return `<style data-source="${file}">@import url('${url}') layer(legacy);</style>`;
+  }
+  return `<style data-source="${file}">${legacyLayer ? `@layer legacy {${css}}` : css}</style>`;
+};
+const styles = [
+  legacyLayer ? '<style>@layer legacy, theme, base, components, utilities;</style>' : '',
+  `<style data-source="theme.css">${readAsset('theme.css')}</style>`,
+  ...['base.css', 'b-style.css'].map(legacyStyle),
+].join('\n');
 const page = `<!doctype html>
 <html lang="en" data-theme="brand">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${name} harness</title>
-${['theme.css', 'base.css', 'b-style.css']
-  .map((file) => `<style data-source="${file}">${fs.readFileSync(path.join(theme, 'assets', file), 'utf8')}</style>`)
-  .join('\n')}
+${styles}
 <style>
   :root { --font-body-scale: 1; --font-heading-scale: 1; --font-body-family: system-ui; --b-family-primary: system-ui; }
   .case { padding: 12px 24px; border-bottom: 1px dashed #bbb; }
@@ -84,5 +101,5 @@ ${body.replace(/<script type="module" src="[^"]*"><\/script>/g, '')}
 
 const out = path.join(here, '.out');
 fs.mkdirSync(out, {recursive: true});
-fs.writeFileSync(path.join(out, `${name}.html`), page);
-process.stdout.write(`Wrote tools/snippet-harness/.out/${name}.html\n`);
+fs.writeFileSync(path.join(out, `${name}${legacyLayer ? '.layered' : ''}.html`), page);
+process.stdout.write(`Wrote tools/snippet-harness/.out/${name}${legacyLayer ? ".layered" : ""}.html\n`);
