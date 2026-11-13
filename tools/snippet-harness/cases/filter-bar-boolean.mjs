@@ -1,7 +1,6 @@
 /**
- * Boolean metafield filters (`filter.type == 'boolean'`): upstream Liquid adapter
- * maps them like list checkbox groups. Pin @playlovetoys/platform#a2c759b vendor skips
- * boolean; after DS#5 merge bump pin + `npm run sync:plt` (see PR).
+ * Boolean metafield filters (`filter.type == 'boolean'`): vendor adapter maps them
+ * like list checkbox groups (DS#5 / pin c27304c+). Banner must read PASS when synced.
  *
  * Fixture shape matches PLT-design-system `ssr-components.test.ts` (Organic Yes/No).
  */
