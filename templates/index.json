@@ -41,17 +41,17 @@
           "type": "b-card-collections-grid",
           "name": "b-card-collections-grid",
           "settings": {
-            "main_collection": "nerf",
+            "main_collection": "",
             "collections_card_title": "",
             "priority_desktop": true,
             "priority_mobile": true,
-            "collection_1": "dolls",
+            "collection_1": "g-spot-stimulation",
             "collection_1_title": "G-Spot",
-            "collection_2": "hasbro",
+            "collection_2": "clitoral-stimulators",
             "collection_2_title": "Clitoral Play",
-            "collection_3": "lego",
+            "collection_3": "discreet-travel",
             "collection_3_title": "",
-            "collection_4": "nintendo",
+            "collection_4": "wand-vibrators",
             "collection_4_title": "Vibrators",
             "collection_5": "",
             "collection_5_title": "",
@@ -129,7 +129,7 @@
           "type": "b-card-collection",
           "name": "b-Card Collection",
           "settings": {
-            "collection": "action-figures",
+            "collection": "rose-toys",
             "priority": false,
             "show_description": true,
             "truncatewords": 23,
@@ -142,28 +142,23 @@
           "type": "b-card-article",
           "name": "b-Card Article",
           "settings": {
-            "article": "news/lorem-ipsum",
+            "article": "sexual-wellness/intimate-toys-and-sex-toys",
             "priority": false,
             "show_excerpt": true,
             "truncatewords": 20
           },
           "blocks": {}
         },
-        "b_card_products_grid_EiJqaY": {
-          "type": "b-card-products-grid",
-          "name": "b-card-products-grid",
+        "b_card_collection_3Nrw3T": {
+          "type": "b-card-collection",
+          "name": "b-Card Collection",
           "settings": {
-            "product_list": [
-              "animal-zone-foam-t-rex",
-              "animal-zone-stegosaurus",
-              "dinotrux-ace-and-click-clack-character-2-pack",
-              "dinotrux-diecast-dragonflopter-vehicle"
-            ],
-            "collection": "best-sex-toys",
-            "products_card_title": "Best Sellers",
-            "cta_text": "View All",
-            "cta_url": "",
-            "priority": false
+            "collection": "for-beginners",
+            "priority": false,
+            "show_description": true,
+            "truncatewords": 23,
+            "cta_text": "{{ closest.collection.title }}",
+            "cta_url": "{{ closest.collection.url }}"
           },
           "blocks": {}
         },
@@ -171,7 +166,7 @@
           "type": "b-card-article",
           "name": "b-Card Article",
           "settings": {
-            "article": "news/sin-titulo-2",
+            "article": "sexual-fantasies-desire/unspoken-sexual-fantasies",
             "priority": false,
             "show_excerpt": true,
             "truncatewords": 20
@@ -182,7 +177,7 @@
       "block_order": [
         "b_card_collection_Rxtkhn",
         "b_card_article_PkTmz8",
-        "b_card_products_grid_EiJqaY",
+        "b_card_collection_3Nrw3T",
         "b_card_article_9HB9rf"
       ],
       "name": "a-matrix",
@@ -192,6 +187,7 @@
       "type": "a-logo-motto",
       "name": "AA Logo Motto",
       "settings": {
+        "logo": "shopify://shop_images/Logo-PlayLoveToys-3by2-800x534.png",
         "motto_title": "Embrace Your Sexual Wellness",
         "motto": "We aim to promote a philosophy centred on encouraging the public to prioritize their overall sexual health and happiness. Our dedication is to establish a safe, inclusive, and empowering environment for everyone."
       }
@@ -280,7 +276,7 @@
       "type": "featured-collection",
       "name": "Best Adult Toys",
       "settings": {
-        "collection": "action-figures",
+        "collection": "viral-picks",
         "products_to_show": 8,
         "title": "{{ section.settings.collection.title }}",
         "heading_size": "h1",
