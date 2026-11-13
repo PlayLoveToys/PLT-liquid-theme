@@ -170,8 +170,8 @@ página real; en el harness el fondo de la página pasó a crema (#FAF7F2).
   JS de formulario de producto.
 - Orden y filtros: no los maneja ningún `facets.js` (**corrección**: la referencia en `main-search.liquid`
   era una etiqueta obsoleta; **eliminada en higiene 2c**. `<facet-filters-form>` no está definido). Los
-  maneja Alpine con `x-target` en el cajón `b-drawer` de `snippets/facets.liquid` (envío automático con
-  debounce de 800 ms). Migrar a `plt-filter-bar` / `plt-sort-select` implica reemplazar ese cajón.
+  ~~manejaba Alpine con `x-target` en el cajón~~ → **JS-A/B/C:** `plt-sort-select` + `plt-filter-bar` +
+  puente `plt-section-nav`; drawer chrome = `<dialog>` nativo (sin Alpine).
 
 **Plan JS 2b (2026-11-13):** ver [`docs/ds-port-2b-js-plan.md`](./ds-port-2b-js-plan.md) — contrato
 `plt:*`, mapa call sites, puente Section Rendering vs Alpine Ajax, cortes JS-A/B/C y JS-Q*, checklist.
@@ -287,11 +287,12 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 | 2f gift_card badge + `snippets/button` + higiene orphans | PR #5 |
 | 2a `plt-pagination` compact + `anchor` (pin `a2c759b`) | PR #6 |
 | 2b plan JS + **JS-A** puente + sort desktop | PR #7 / #8 |
-| 2b **JS-B** `plt-filter-bar` + sort en drawer; search/sanity cableados | rama `port/ds-fase-2b-js-b` |
+| 2b **JS-B** `plt-filter-bar` + sort en drawer; search/sanity cableados | PR #9 |
+| 2b **JS-C** drawer `<dialog>` + bundle WC en `layout/theme.liquid` | rama `port/ds-fase-2b-js-c` |
 
 | Bloqueado | Por qué | Para desbloquear |
 |---|---|---|
-| **2b WC** resto | Alpine drawer chrome; `quantity-input`; boolean filters sin adapter DS | **JS-C** (quitar Alpine facets); **JS-Q\***; issue DS boolean si hace falta |
+| **2b WC** resto | `quantity-input`; boolean filters sin adapter DS | **JS-Q\***; issue DS boolean + pin |
 | **Fase 0 capturas** | Sin `shopify theme dev` / tienda | Credenciales merchant + handles fixture |
 | **Fase 3 shell** | Header/footer/cart/predictive search compartidos; riesgo visual alto | Tienda + capturas; decisión `cart-notification` → `plt-cart-drawer` |
 | **Fase 4 sections** | Depende de shell estable y huecos DS (Faq, Carousel, …) | Tras Fase 3 / issues DS |
@@ -299,9 +300,9 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 | **Fase 6 CI gates** | Formalizar budgets/diff visual | Tras baseline visual real (Fase 0) |
 | **Inputs/alerts / botones globales** | Sin corte Liquid acotado | Por template en Fase 4 o snippet nuevo si se extrae |
 
-**Siguiente (prioridad):** staging de JS-A/B (filtros/sort/clear/paginación); luego **JS-C**
-(retirar Alpine del drawer) o **JS-Q0** (`product-info` ↔ quantity WC). Sin tienda: Fase 0
-capturas y checklist visual del layout (fondo `html`, LCP `@import` legacy).
+**Siguiente (prioridad):** staging de JS-A/B/C (filtros/sort/clear/paginación/drawer dialog);
+**JS-Q0** (`product-info` ↔ quantity WC). Alpine `x-data` restantes: **12** archivos Liquid (Fase 5).
+Sin tienda: Fase 0 capturas y checklist visual del layout (fondo `html`, LCP `@import` legacy).
 
 ### Fase 3: Shell
 Header (excepción documentada: se conserva, con `mega-menu.css`), footer + newsletter, carrito
@@ -315,8 +316,8 @@ y `featured-product`, 1510) al final. Blocks `b-card-*` → EditorialCard / Coll
 verificación de edad.
 
 ### Fase 5: Retirar legacy
-Quitar Bulma cuando el conteo de `b-*` llegue a 0; después Alpine (14 archivos), `component-*.css`,
-loader CDN. Revisar `ai_gen_block_*`.
+Quitar Bulma cuando el conteo de `b-*` llegue a 0; después Alpine (**12** archivos Liquid con
+`x-data` tras JS-C), `component-*.css`, loader CDN. Revisar `ai_gen_block_*`.
 
 ### Fase 6: Gates de CI
 `check:plt`, `theme check` (≤ baseline), validación de templates, diff visual, presupuesto de CSS.
