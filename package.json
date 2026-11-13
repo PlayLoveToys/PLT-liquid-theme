@@ -11,7 +11,7 @@
     "harness:snippet": "node tools/snippet-harness/render.mjs"
   },
   "dependencies": {
-    "@playlovetoys/platform": "github:PlayLoveToys/PLT-design-system#b0ba29414aedfabec069599e79bf21b846c19ad0",
+    "@playlovetoys/platform": "github:PlayLoveToys/PLT-design-system#a2c759bac54965203f5078bc0cd679222f5948f2",
     "@tailwindcss/cli": "^4.3.2",
     "tailwindcss": "^4.3.2"
   },
