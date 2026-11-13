@@ -14,7 +14,7 @@ specs Playwright), no de sections: solo comparten 18 de 65 sections y 9 de 89 sn
 | Base CSS | Dawn `base.css` (80 KB) + Bulma `b-style.source.css` (650 KB) + 71 `component-*.css`; ~1,26 MB de CSS | daisyUI 5 + Tailwind 4, tokens `--plt-*`, tema `cheesecake` |
 | Markup | 492 usos de `b-*` en 52 archivos; `color-{{scheme}}` en 37; `page-width` en 44; 20 archivos con `<style>`; 99 `style=""` inline | renderers Liquid del DS + `d-*` / `theme-*` / `plt-*` |
 | JS | Alpine en 14 archivos; loader CDN de Shopify Web Components (desactivado) | Web Components Lit del DS |
-| Clases del DS hoy | Tras 2e: `d-*` en divider/breadcrumb/price + badges blog/search; `plt-product-card` / `d-card` en `card-product`; `plt-*` de WC aún no cableados en storefront (salvo ids legacy `plt-product-modal` / `plt-gradient-background`) | |
+| Clases del DS hoy | Tras 2f: `d-*` en divider/breadcrumb/price + badges blog/search/gift_card; `d-btn*` en `snippets/button`; `plt-product-card` / `d-card` en `card-product`; `plt-*` de WC aún no cableados en storefront (salvo ids legacy `plt-product-modal` / `plt-gradient-background`) | |
 | Tamaño | 65 sections, 89 snippets, 36 blocks, 47 templates | |
 
 ### Baseline de calidad (Fase 0, 2026-11-12, `shopify theme check`, CLI 3.91.0)
@@ -101,6 +101,7 @@ cancelar `plt:*` y aplicar con Section Rendering).
 `snippets/card-product-Respaldo.liquid`, `snippets/price-BK.liquid`, `assets/base-BK.css`,
 `assets/base-purged.css`. Script obsoleto a `facets.js` quitado de `sections/main-search.liquid`.
 **Higiene 2d:** borrado `snippets/card-product-new.liquid` (sin referencias).
+**Higiene 2f:** borrados `snippets/a-dummy-products.liquid` y `snippets/collection-itemlist-schema.liquid`.
 
 **Método (cada corte):** (1) renderizar el snippet real en `tools/snippet-harness` y mirarlo en el navegador
 junto al CSS real del theme; (2) solo si se ve bien, migrar y enlazar. Un cambio de apariencia hacia el
@@ -239,11 +240,68 @@ Con 2a/2b bloqueados y 2d mergeado, el siguiente corte Liquid-only de bajo acopl
 4. Predictive search: sin leftovers de badges; el precio ya usa `snippets/price.liquid` migrado
    (`show_badges: false`). La shell completa del predictive search queda en Fase 3.
 
-**Fuera de 2e:** `templates/gift_card.liquid` (`badge badge--expired`, template aislado); 2a/2b;
-Fase 3 shell; card blog completa → EditorialCard.
+**Fuera de 2e:** ~~`templates/gift_card.liquid`~~ → corte 2f; 2a/2b; Fase 3 shell; card blog
+completa → EditorialCard.
 
 **Gates (2026-11-12):** `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline (40/42);
 `shopify theme check` = **6 errores / 362 avisos** (sin regresión).
+
+#### Corte 2f: leftovers badge gift_card + button snippet + higiene — **hecho** (2026-11-12)
+Último corte Liquid-only de Fase 2 sin WC ni shell, con 2a/2b bloqueados:
+
+1. Harness `button` + `gift-card-badge` (`LEGACY_LAYER=import`).
+2. `snippets/button.liquid`: valores de setting `style_class` (`button` / `button-secondary` /
+   `link`, ids sin renombrar) → `d-btn d-btn-primary` / `d-btn-outline` / `d-btn-link` +
+   `theme-label-bold`. Se quita el `<style>` inline de `.link`. Block `blocks/button.liquid` sin
+   cambios de schema.
+3. `templates/gift_card.liquid` (`layout none`): enlace de `theme.css` + badge expirado
+   `badge badge--expired` → `d-badge theme-label-bold`; `data-theme="brand"` en `body`. Se conserva
+   `template-giftcard.css` (sigue ganando a capas del DS en selectores propios).
+4. Higiene: borrados sin referencias `snippets/a-dummy-products.liquid` y
+   `snippets/collection-itemlist-schema.liquid` (SEO ItemList duplicado; el activo es
+   `collection_structured_data.liquid`).
+
+**No limpio / aplazado a propósito:**
+- Inputs/alerts masivos (`field__input` / `form__message` / `b-input` / `b-message` / `b-notification`)
+  repartidos en login/cuenta/newsletter/footer/contact/article — no hay snippet acotado; newsletter
+  y notificaciones van con Fase 3 / forms.
+- `_aa-styled-button` (settings Bulma `b_is_*`) y botones Dawn globales (`buy-buttons`, slideshow,
+  etc.): migración masiva fuera de alcance.
+- Badges Bulma en grids de colección (`b-tag-*` / `b-badge-*` en `main-collection*`) viven dentro del
+  shell Bulma de la card → Fase 4 (colección), no un leftover aislado.
+
+**Fuera de 2f (bloqueados):** 2a (`plt-pagination` + DS#1); 2b WC (cantidad / sort / filtros + JS);
+Fase 0 capturas; Fase 3 shell; Fase 5 retirar Bulma/Alpine; Fase 6 CI gates formales.
+
+**Gates (2026-11-12):** `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline (40/42);
+`shopify theme check` = **6 errores / 362 avisos** (sin regresión).
+
+### Estado sesión (2026-11-12)
+
+Concluido lo alcanzable de Fase 2 Liquid-only en esta sesión y las previas del port:
+
+| Hecho | Evidencia |
+|---|---|
+| Fase 1 tooling + tokens + harness | PR #1 |
+| 2b CSS: `@layer legacy` + `theme.css` en layout | commit en PR #1 |
+| 2c divider / breadcrumb / price | PR #2 |
+| 2d `card-product` markup ProductCard | PR #3 |
+| 2e badges article-card / main-search | PR #4 |
+| 2f gift_card badge + `snippets/button` + higiene orphans | PR de `port/ds-fase-2f` |
+
+| Bloqueado | Por qué | Para desbloquear |
+|---|---|---|
+| **2a pagination** | Layout numérico roto (`flex: 1 1 14rem`) y sin `anchor` | Cerrar [DS#1](https://github.com/PlayLoveToys/PLT-design-system/issues/1) (compact + `anchor`), subir pin `@playlovetoys/platform`, reaplicar `plt-pagination` |
+| **2b WC** cantidad / sort / filtros | Acoplado a `quantity-input` + `product-form` / Alpine `facets` drawer | Plan JS: eventos `plt:*` + Section Rendering; reemplazar cajón Alpine |
+| **Fase 0 capturas** | Sin `shopify theme dev` / tienda | Credenciales merchant + handles fixture |
+| **Fase 3 shell** | Header/footer/cart/predictive search compartidos; riesgo visual alto | Tienda + capturas; decisión `cart-notification` → `plt-cart-drawer` |
+| **Fase 4 sections** | Depende de shell estable y huecos DS (Faq, Carousel, …) | Tras Fase 3 / issues DS |
+| **Fase 5 Bulma/Alpine** | Aún hay `b-*` y Alpine en producción | Cuando conteo `b-*` → 0 y WC 2b cableados |
+| **Fase 6 CI gates** | Formalizar budgets/diff visual | Tras baseline visual real (Fase 0) |
+| **Inputs/alerts / botones globales** | Sin corte Liquid acotado | Por template en Fase 4 o snippet nuevo si se extrae |
+
+**Siguiente cuando desbloquee (prioridad):** DS#1 → reaplicar 2a; en paralelo plan JS 2b; con tienda,
+Fase 0 capturas y checklist visual del layout (fondo `html`, LCP `@import` legacy).
 
 ### Fase 3: Shell
 Header (excepción documentada: se conserva, con `mega-menu.css`), footer + newsletter, carrito

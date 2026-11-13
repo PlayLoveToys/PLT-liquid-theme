@@ -1,12 +1,26 @@
 {%- doc -%}
   Intended for use in a block similar to the button block.
 
+  Maps merchant `style_class` setting values (Dawn class names, unchanged ids) to
+  design-system `d-btn` variants. Does not rename settings.
+
   @param {string} link - link to render
   @param {object} [block] - The block
 
   @example
   {% render 'button', link: '/collections/all' %}
 {%- enddoc -%}
+
+{%- liquid
+  case block.settings.style_class
+    when 'button-secondary'
+      assign ds_btn_class = 'd-btn d-btn-outline theme-label-bold'
+    when 'link'
+      assign ds_btn_class = 'd-btn d-btn-link theme-label-bold'
+    else
+      assign ds_btn_class = 'd-btn d-btn-primary theme-label-bold'
+  endcase
+-%}
 
 <a
   {% if link == blank %}
@@ -17,7 +31,7 @@
   {% endif %}
   class="
     size-style
-    {{ block.settings.style_class }}
+    {{ ds_btn_class }}
     {{ block.settings.style_class }}--{{ block.id }}
   "
   {%- if block.settings.open_in_new_tab -%}
@@ -28,15 +42,3 @@
 >
   {{ block.settings.label }}
 </a>
-
-<style>
-  .link {
-    text-decoration: none;
-    text-decoration-color: currentcolor;
-
-    &:hover {
-      color: var(--color-primary-hover);
-      text-decoration-color: transparent;
-    }
-  }
-</style>
