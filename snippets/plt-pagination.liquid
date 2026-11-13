@@ -1,0 +1,40 @@
+{% doc %}
+  Liquid adapter for <plt-pagination>: maps Shopify's `paginate` object to
+  the Pagination contract (the `&hellip;` gap becomes a real ellipsis, since the
+  component renders labels as text). Links stay links; without JavaScript the fallback
+  is the same list of links.
+
+  @param {paginate} paginate - From {% paginate %}
+  @param {string} [aria_label] - Default: Pagination
+  @param {string} [previous_label] - Default: Previous
+  @param {string} [next_label] - Default: Next
+  @param {string} [script_url] - Bundle URL; 'none' skips the tag
+{% enddoc %}
+{%- liquid
+  assign current_page = paginate.current_page | append: ''
+  assign bundle_url = script_url | default: ''
+  if bundle_url == blank
+    assign bundle_url = 'plt-web-components.bundle.js' | asset_url
+  endif
+-%}
+{%- capture pages_json -%}
+  [{%- for part in paginate.parts -%}{"label":{{ part.title | replace: '&hellip;', '…' | json }},"url":{% if part.is_link %}{{ part.url | json }}{% else %}null{% endif %},"current":{% if part.title == current_page %}true{% else %}false{% endif %},"disabled":{% if part.is_link or part.title == current_page %}false{% else %}true{% endif %}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]
+{%- endcapture -%}
+{%- capture labels_json -%}
+  {"nav":{{ aria_label | default: 'Pagination' | json }},"previous":{{ previous_label | default: 'Previous' | json }},"next":{{ next_label | default: 'Next' | json }}}
+{%- endcapture -%}
+<plt-pagination
+  pages="{{ pages_json | strip | escape }}"
+  {% if paginate.previous.is_link %}previous-url="{{ paginate.previous.url | escape }}"{% endif %}
+  {% if paginate.next.is_link %}next-url="{{ paginate.next.url | escape }}"{% endif %}
+  labels="{{ labels_json | strip | escape }}"
+>
+  <nav data-plt-fallback aria-label="{{ aria_label | default: 'Pagination' | escape }}">
+    {%- if paginate.previous.is_link -%}<a href="{{ paginate.previous.url | escape }}">{{ previous_label | default: 'Previous' | escape }}</a>{%- endif -%}
+    {%- for part in paginate.parts -%}
+      {%- if part.is_link -%}<a href="{{ part.url | escape }}">{{ part.title | replace: '&hellip;', '…' | escape }}</a>{%- else -%}<span{% if part.title == current_page %} aria-current="page"{% endif %}>{{ part.title | replace: '&hellip;', '…' | escape }}</span>{%- endif -%}
+    {%- endfor -%}
+    {%- if paginate.next.is_link -%}<a href="{{ paginate.next.url | escape }}">{{ next_label | default: 'Next' | escape }}</a>{%- endif -%}
+  </nav>
+</plt-pagination>
+{%- if bundle_url != 'none' -%}<script type="module" src="{{ bundle_url | escape }}"></script>{%- endif -%}

@@ -1,0 +1,12 @@
+.DS_Store
+Thumbs.db
+node_modules/
+
+# Shopify CLI
+.shopify/
+
+# Local output
+*.log
+
+# Output of tools/snippet-harness
+tools/snippet-harness/.out/

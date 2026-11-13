@@ -1,0 +1,222 @@
+/*
+ * Rules the PLT Web Components (@playlovetoys/web-components) add on top of
+ * the existing anatomy in patterns.css. Imported by base.css; importable on
+ * its own as `@playlovetoys/design-system/web-components`. --plt-* tokens
+ * fall back to daisyUI 5 theme variables.
+ */
+
+/* Server-rendered no-JS fallbacks disappear once their element is defined. */
+:is(plt-quantity-selector, plt-cart-line, plt-filter-bar, plt-sort-select, plt-pagination):defined > [data-plt-fallback] {
+  display: none;
+}
+plt-quantity-selector { display: inline-block; }
+plt-cart-line,
+plt-filter-bar,
+plt-sort-select,
+plt-pagination { display: block; }
+
+/* Quantity: a bound reached keeps the button focusable but inert. */
+.plt-quantity-selector .d-btn[aria-disabled="true"] { cursor: not-allowed; }
+
+/* Cart line: struck-through compare-at price and the busy state. */
+.plt-cart-line__compare {
+  margin-inline-end: 0.35em;
+  /* The AA-safe secondary text colour; a 55% tint of base content failed contrast. */
+  color: var(--plt-color-meta, var(--plt-color-base-content, var(--color-base-content)));
+  font-weight: 400;
+}
+.plt-cart-line[aria-busy="true"] { opacity: 0.7; }
+
+/* Cart drawer: a modal <dialog> shaped as a side sheet. */
+plt-cart-drawer { display: contents; }
+.plt-cart-drawer__dialog {
+  inset-block: 0;
+  inset-inline: auto 0;
+  width: min(24rem, 100vw);
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-inline-start: var(--plt-section-border-width, var(--border)) solid var(--plt-border-color, var(--color-base-content));
+  background: var(--plt-color-base-100, var(--color-base-100));
+  color: var(--plt-color-base-content, var(--color-base-content));
+}
+.plt-cart-drawer__dialog::backdrop {
+  background: color-mix(in oklab, var(--plt-color-neutral, var(--color-neutral)) 45%, transparent);
+}
+.plt-cart-drawer__dialog .plt-cart-lines > li:last-child .plt-cart-line { border-bottom: 0; }
+
+/* Cart drawer and line anatomy, repeated here (with daisyUI fallbacks) so a frontend
+   that does not load patterns.css still gets the layout. */
+.plt-cart-drawer__panel { display: flex; flex-direction: column; height: 100%; }
+.plt-cart-drawer__header {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem;
+  border-bottom: var(--plt-border-width, var(--border)) solid var(--plt-color-base-300, var(--color-base-300));
+}
+/* A failed cart change: a live region above the lines; takes no space while empty. */
+.plt-cart-drawer__error {
+  padding: 0.75rem 1rem;
+  background: var(--plt-color-error, var(--color-error));
+  color: var(--plt-color-error-content, var(--color-error-content));
+}
+.plt-cart-drawer__error[data-empty] { padding: 0; }
+.plt-cart-drawer__body { flex: 1; min-height: 0; overflow-y: auto; padding: 1rem; display: grid; gap: 1rem; align-content: start; }
+.plt-cart-drawer__footer {
+  display: grid; gap: 0.75rem; padding: 1rem;
+  border-top: var(--plt-border-width, var(--border)) solid var(--plt-color-base-300, var(--color-base-300));
+}
+.plt-cart-drawer__subtotal { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.plt-cart-drawer__empty { padding: 2rem 0; text-align: center; }
+.plt-cart-lines { display: grid; gap: 1rem; list-style: none; margin: 0; padding: 0; }
+.plt-cart-line {
+  display: grid; grid-template-columns: 4.5rem 1fr auto; gap: 0.75rem; align-items: start; padding-bottom: 1rem;
+  border-bottom: var(--plt-border-width, var(--border)) solid var(--plt-color-base-300, var(--color-base-300));
+}
+.plt-cart-line__media {
+  aspect-ratio: 1; overflow: hidden;
+  background: var(--plt-media-background, var(--color-base-200));
+  border: var(--plt-border-width, var(--border)) solid var(--plt-border-color, var(--color-base-content));
+}
+.plt-cart-line__media img { width: 100%; height: 100%; object-fit: var(--plt-media-fit, cover); }
+.plt-cart-line__title { margin: 0; color: var(--plt-color-primary, var(--color-primary)); }
+.plt-cart-line__meta { margin: 0.25rem 0 0; }
+.plt-cart-line__price { font-weight: 700; white-space: nowrap; }
+.plt-cart-line__controls { grid-column: 2 / -1; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.5rem; }
+
+/* Filter bar: a checkbox group for a multi-value filter, and a stacked layout for sidebars. */
+.plt-filter-bar__group { margin: 0; padding: 0; border: 0; min-width: 0; }
+.plt-filter-bar__group > legend { padding: 0; margin-block-end: 0.5rem; }
+.plt-filter-bar__options { display: grid; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+.plt-filter-bar__option { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+/* Range filters (two number inputs) and collapsible filter groups. */
+.plt-filter-bar__range { margin: 0; padding: 0; border: 0; min-width: 0; }
+.plt-filter-bar__range > legend { padding: 0; margin-block-end: 0.5rem; }
+.plt-filter-bar__bounds { display: flex; gap: 0.5rem; }
+.plt-filter-bar__bounds > input { min-width: 0; flex: 1 1 0; }
+.plt-filter-bar__details { border-bottom: var(--plt-section-border-width, var(--border)) solid var(--plt-border-color, var(--color-base-content)); padding-block: 0.5rem; }
+.plt-filter-bar__details:last-of-type { border-bottom-width: 0; }
+.plt-filter-bar__details > summary { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; cursor: pointer; padding-block: 0.25rem; list-style: none; }
+.plt-filter-bar__details > summary::-webkit-details-marker { display: none; }
+.plt-filter-bar__details > summary::after {
+  content: ""; flex: none; inline-size: 0.5rem; block-size: 0.5rem;
+  border-inline-end: 2px solid currentColor; border-block-end: 2px solid currentColor;
+  transform: rotate(45deg); transition: transform 0.15s;
+}
+.plt-filter-bar__details[open] > summary::after { transform: rotate(-135deg); }
+@media (prefers-reduced-motion: reduce) { .plt-filter-bar__details > summary::after { transition: none; } }
+.plt-filter-bar__details > summary:focus-visible { outline: 2px solid var(--plt-color-primary, var(--color-primary)); outline-offset: 2px; }
+.plt-filter-bar__details > .plt-filter-bar__field { margin-block-start: 0.5rem; }
+plt-filter-bar[orientation="vertical"] { display: flex; flex-direction: column; gap: 1.5rem; }
+plt-filter-bar[orientation="vertical"] .plt-filter-bar { display: flex; flex-direction: column; align-items: stretch; gap: 1.5rem; }
+plt-filter-bar[orientation="vertical"] .plt-filter-bar__field { min-width: 0; }
+/* Applied filters come first in a long sidebar list, not after it. */
+plt-filter-bar[orientation="vertical"] .plt-filter-bar__active { order: -1; padding-block-end: 0; }
+
+/* Filter bar: applied filters as removable chips. */
+.plt-filter-bar__active {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding-block-end: 1rem;
+}
+.plt-filter-bar__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+
+/* Gallery: the selected thumbnail and keyboard focus are visible. */
+.plt-product-detail__thumb[aria-current="true"],
+[data-plt-gallery-thumb][aria-current="true"] {
+  outline: 2px solid var(--plt-color-primary, var(--color-primary));
+  outline-offset: 2px;
+}
+.plt-product-detail__thumb:focus-visible,
+[data-plt-gallery-thumb]:focus-visible {
+  outline: 2px solid var(--plt-color-accent, var(--color-accent));
+  outline-offset: 2px;
+}
+/* A scrolling thumbnail track clips outlines that sit outside the thumbnail; draw them inside. */
+[data-plt-gallery-thumb-track] [data-plt-gallery-thumb][aria-current="true"],
+[data-plt-gallery-thumb-track] [data-plt-gallery-thumb]:focus-visible {
+  outline-offset: -2px;
+}
+
+/* Gallery slides: utility classes on a slide must not beat `hidden`. */
+[data-plt-gallery-slide][hidden] { display: none; }
+
+/* Gallery hover zoom: the element sets --plt-zoom-x/y from the pointer. Fine pointers on wide screens only. */
+[data-plt-gallery-zoom] { overflow: hidden; cursor: zoom-in; }
+@media (min-width: 1024px) and (hover: hover) {
+  [data-plt-gallery-zoom] img { transition: transform 0.15s ease-out; }
+  [data-plt-gallery-zoom]:hover img {
+    transform: scale(2);
+    transform-origin: var(--plt-zoom-x, 50%) var(--plt-zoom-y, 50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-plt-gallery-zoom] img { transition: none; }
+}
+
+/* Gallery thumbnail track scrolls without a visible scrollbar. */
+[data-plt-gallery-thumb-track] { scrollbar-width: none; -ms-overflow-style: none; }
+[data-plt-gallery-thumb-track]::-webkit-scrollbar { display: none; }
+
+/* Navbar: an open mega menu trigger reads as current. */
+.plt-navbar__links a[aria-expanded="true"] { color: var(--plt-color-primary, var(--color-primary)); }
+
+/* Navbar modal drawer: neutral shell; hosts style the panel contents. */
+dialog[data-plt-navbar-drawer] {
+  inset: 0;
+  width: min(24rem, 100vw);
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  margin-inline-end: auto;
+  padding: 0;
+  border: 0;
+  background: var(--plt-color-base-100, var(--color-base-100));
+  color: var(--plt-color-base-content, var(--color-base-content));
+}
+dialog[data-plt-navbar-drawer]::backdrop {
+  background: color-mix(in oklab, var(--plt-color-neutral, var(--color-neutral)) 45%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  dialog[data-plt-navbar-drawer] { transition: none; }
+}
+
+/* Navbar overflow ("More"): hooks hidden by the element must stay hidden whatever utility class the item carries. */
+[data-plt-navbar-item][hidden],
+[data-plt-navbar-more][hidden],
+[data-plt-navbar-more-for][hidden],
+[data-plt-navbar-more-list][hidden] { display: none; }
+[data-plt-navbar-more] { position: relative; }
+/* The open list hangs below its button instead of covering it, and grows towards the bar so it stays inside it. */
+[data-plt-navbar-more-list] {
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline-end: 0;
+  z-index: 50;
+  min-inline-size: 12rem;
+  margin: 0;
+  padding: 0.5rem;
+  list-style: none;
+  background: var(--plt-color-base-200, var(--color-base-200));
+  border: var(--plt-section-border-width, var(--plt-border-width, var(--border))) solid var(--plt-border-color, var(--color-base-content));
+}
+
+/* Pagination: the current page is a disabled button, which daisyUI greys out; keep it visibly selected. */
+.plt-pagination .d-btn.d-btn-primary:disabled {
+  background-color: var(--plt-color-primary, var(--color-primary));
+  border-color: var(--plt-color-primary, var(--color-primary));
+  color: var(--plt-color-primary-content, var(--color-primary-content));
+  opacity: 1;
+}

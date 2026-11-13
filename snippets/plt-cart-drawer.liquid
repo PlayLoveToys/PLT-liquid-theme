@@ -1,0 +1,56 @@
+{% doc %}
+  Liquid adapter for <plt-cart-drawer>: maps the Shopify `cart` object to
+  the CartDrawer contract (prices formatted with `money` here; the component
+  never computes money). The theme owns the cart: it listens to
+  plt:cart-line-change / plt:cart-line-remove, calls /cart/change.js, then
+  sets `lines` and `subtotal` on the element. Open it with `element.show()`.
+
+  @param {object} cart - Shopify cart
+  @param {string} [id] - Element id (default: plt-cart-drawer)
+  @param {string} [title] - Cart title
+  @param {string} [close_label] - Close button label
+  @param {string} [checkout_label] - Checkout link label
+  @param {string} [view_cart_label] - View-cart link label
+  @param {string} [empty_label] - Empty-cart message
+  @param {string} [subtotal_label] - Subtotal label
+  @param {string} [remove_label] - Line removal label prefix
+  @param {string} [decrease_label] - Quantity decrease button label
+  @param {string} [increase_label] - Quantity increase button label
+  @param {string} [quantity_label] - Quantity input label
+  @param {string} [script_url] - Bundle URL; 'none' skips the tag
+{% enddoc %}
+{%- liquid
+  assign bundle_url = script_url | default: ''
+  if bundle_url == blank
+    assign bundle_url = 'plt-web-components.bundle.js' | asset_url
+  endif
+-%}
+{%- capture lines_json -%}
+  [
+  {%- for item in cart.items -%}
+    {%- liquid
+      assign variant_title = ''
+      unless item.product.has_only_default_variant
+        assign variant_title = item.variant.title
+      endunless
+      assign compare = ''
+      if item.original_line_price > item.final_line_price
+        assign compare = item.original_line_price | money
+      endif
+    -%}
+    {"id":{{ item.key | json }},"title":{{ item.product.title | json }},"url":{{ item.url | json }},"imageUrl":{% if item.image %}{{ item.image | image_url: width: 160 | json }}{% else %}null{% endif %},"imageAlt":{{ item.product.title | json }},"variantTitle":{% if variant_title != blank %}{{ variant_title | json }}{% else %}null{% endif %},"quantity":{{ item.quantity | json }},"price":{{ item.final_line_price | money | json }},"compareAtPrice":{% if compare != blank %}{{ compare | json }}{% else %}null{% endif %}}{%- unless forloop.last -%},{%- endunless -%}
+  {%- endfor -%}
+  ]
+{%- endcapture -%}
+{%- capture labels_json -%}
+  {"title":{{ title | default: 'Cart' | json }},"close":{{ close_label | default: 'Close cart' | json }},"checkout":{{ checkout_label | default: 'Checkout' | json }},"viewCart":{{ view_cart_label | default: 'View cart' | json }},"empty":{{ empty_label | default: 'Your cart is empty.' | json }},"subtotal":{{ subtotal_label | default: 'Subtotal' | json }},"remove":{{ remove_label | default: 'Remove' | json }},"decrease":{{ decrease_label | default: 'Decrease quantity' | json }},"increase":{{ increase_label | default: 'Increase quantity' | json }},"quantity":{{ quantity_label | default: 'Quantity' | json }}}
+{%- endcapture -%}
+<plt-cart-drawer
+  id="{{ id | default: 'plt-cart-drawer' | escape }}"
+  lines="{{ lines_json | strip | escape }}"
+  subtotal="{{ cart.total_price | money | escape }}"
+  checkout-url="/checkout"
+  cart-url="{{ routes.cart_url | escape }}"
+  labels="{{ labels_json | strip | escape }}"
+></plt-cart-drawer>
+{%- if bundle_url != 'none' -%}<script type="module" src="{{ bundle_url | escape }}"></script>{%- endif -%}

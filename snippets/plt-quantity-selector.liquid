@@ -1,0 +1,44 @@
+{% doc %}
+  Liquid adapter for <plt-quantity-selector>. Without JavaScript the
+  fallback is a plain number input with the same name.
+
+  @param {number} [value] - Default 1
+  @param {number} [min] - Default 1
+  @param {number} [max] - Optional upper bound (e.g. inventory)
+  @param {number} [step] - Increment (default 1), e.g. variant.quantity_rule.increment
+  @param {string} [name] - Form field name (default: quantity)
+  @param {string} [decrease_label]
+  @param {string} [increase_label]
+  @param {string} [quantity_label]
+  @param {string} [script_url] - Bundle URL; 'none' skips the tag
+{% enddoc %}
+{%- liquid
+  assign qty = value | default: 1
+  assign qty_min = min | default: 1
+  assign qty_step = step | default: 1
+  assign field_name = name | default: 'quantity'
+  capture labels_json
+    echo '{"decrease":'
+    echo decrease_label | default: 'Decrease quantity' | json
+    echo ',"increase":'
+    echo increase_label | default: 'Increase quantity' | json
+    echo ',"quantity":'
+    echo quantity_label | default: 'Quantity' | json
+    echo '}'
+  endcapture
+  assign bundle_url = script_url | default: ''
+  if bundle_url == blank
+    assign bundle_url = 'plt-web-components.bundle.js' | asset_url
+  endif
+-%}
+<plt-quantity-selector
+  value="{{ qty | escape }}"
+  min="{{ qty_min | escape }}"
+  step="{{ qty_step | escape }}"
+  {% if max != blank %}max="{{ max | escape }}"{% endif %}
+  name="{{ field_name | escape }}"
+  labels="{{ labels_json | escape }}"
+>
+  <input data-plt-fallback class="d-input" type="number" name="{{ field_name | escape }}" value="{{ qty | escape }}" min="{{ qty_min | escape }}" step="{{ qty_step | escape }}"{% if max != blank %} max="{{ max | escape }}"{% endif %} aria-label="{{ quantity_label | default: 'Quantity' | escape }}">
+</plt-quantity-selector>
+{%- if bundle_url != 'none' -%}<script type="module" src="{{ bundle_url | escape }}"></script>{%- endif -%}

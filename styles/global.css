@@ -1,0 +1,25 @@
+/*
+ * Design-system entry point. Compiled to assets/theme.css by `npm run build:css`.
+ *
+ * Phase 1 (docs/ds-port-plan.md): the legacy Dawn/Bulma CSS is still the base,
+ * so Tailwind's preflight is intentionally NOT imported. Only the theme tokens
+ * and utilities are layered in; preflight returns once Bulma is retired.
+ *
+ * Canonical theme: design-system `cheesecake` (mirror of the Liquid `brand`
+ * daisyUI theme). Do not redeclare @plugin "daisyui/theme" or @utility
+ * theme-* here; fix shared styles upstream and bump the pin in package.json.
+ */
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@source "../layout/**/*.liquid";
+@source "../sections/**/*.liquid";
+@source "../snippets/**/*.liquid";
+@source "../blocks/**/*.liquid";
+@source "../templates/**/*.liquid";
+@source "../node_modules/@playlovetoys/platform/packages/web-components/dist";
+@source "../node_modules/@playlovetoys/platform/packages/web-components/adapters/liquid";
+
+@import "@playlovetoys/platform/packages/design-system/themes/cheesecake.css";

@@ -1,0 +1,51 @@
+{% doc %}
+  Liquid adapter for <plt-sort-select>: maps `collection.sort_options` and
+  the current sort to the SortSelect contract (Shopify's `sort_by` param).
+  Without JavaScript the fallback form has a submit button.
+
+  @param {object[]} options - collection.sort_options
+  @param {string} [current] - collection.sort_by | default: collection.default_sort_by
+  @param {string} [label] - Default: Sort by
+  @param {string} [apply_label]
+  @param {filter[]} [filters] - Active Shopify collection/search filters (list values and price range bounds are preserved)
+  @param {string} [search_terms] - Preserved Shopify search query (`q`)
+  @param {string} [action] - Form action (default: current page)
+  @param {string} [script_url] - Bundle URL; 'none' skips the tag
+{% enddoc %}
+{%- liquid
+  assign label_text = label | default: 'Sort by'
+  assign apply_text = apply_label | default: 'Apply'
+  assign bundle_url = script_url | default: ''
+  if bundle_url == blank
+    assign bundle_url = 'plt-web-components.bundle.js' | asset_url
+  endif
+-%}
+{%- capture options_json -%}
+  [{%- for option in options -%}{"label":{{ option.name | json }},"value":{{ option.value | json }},"selected":{% if option.value == current %}true{% else %}false{% endif %}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]
+{%- endcapture -%}
+{%- capture preserve_json -%}
+  {"q":{{ search_terms | default: '' | json }}
+  {%- for filter in filters -%}
+    {%- if filter.type == 'list' -%}
+      ,{{ filter.param_name | json }}:[{%- assign first_active = true -%}{%- for value in filter.values -%}{%- if value.active -%}{%- unless first_active -%},{%- endunless -%}{{ value.value | json }}{%- assign first_active = false -%}{%- endif -%}{%- endfor -%}]
+    {%- elsif filter.type == 'price_range' -%}
+      {%- if filter.min_value.value != blank -%},{{ filter.min_value.param_name | json }}:{{ filter.min_value.value | append: '' | json }}{%- endif -%}
+      {%- if filter.max_value.value != blank -%},{{ filter.max_value.param_name | json }}:{{ filter.max_value.value | append: '' | json }}{%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}}
+{%- endcapture -%}
+<plt-sort-select name="sort_by" label="{{ label_text | escape }}" action="{{ action | escape }}" apply-label="{{ apply_text | escape }}" preserve="{{ preserve_json | strip | escape }}" options="{{ options_json | strip | escape }}">
+  <form data-plt-fallback class="plt-sort-select" action="{{ action | escape }}" method="get">
+    {%- if search_terms != blank -%}<input type="hidden" name="q" value="{{ search_terms | escape }}">{%- endif -%}
+    {%- for filter in filters -%}{%- if filter.type == 'list' -%}{%- for value in filter.values -%}{%- if value.active -%}<input type="hidden" name="{{ filter.param_name | escape }}" value="{{ value.value | escape }}">{%- endif -%}{%- endfor -%}{%- elsif filter.type == 'price_range' -%}{%- if filter.min_value.value != blank -%}<input type="hidden" name="{{ filter.min_value.param_name | escape }}" value="{{ filter.min_value.value | escape }}">{%- endif -%}{%- if filter.max_value.value != blank -%}<input type="hidden" name="{{ filter.max_value.param_name | escape }}" value="{{ filter.max_value.value | escape }}">{%- endif -%}{%- endif -%}{%- endfor -%}
+    <label class="theme-label-bold">{{ label_text | escape }}
+      <select class="d-select" name="sort_by">
+        {%- for option in options -%}
+          <option value="{{ option.value | escape }}"{% if option.value == current %} selected{% endif %}>{{ option.name | escape }}</option>
+        {%- endfor -%}
+      </select>
+    </label>
+    <button type="submit" class="d-btn d-btn-outline theme-label-bold">{{ apply_text | escape }}</button>
+  </form>
+</plt-sort-select>
+{%- if bundle_url != 'none' -%}<script type="module" src="{{ bundle_url | escape }}"></script>{%- endif -%}

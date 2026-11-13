@@ -1,0 +1,14 @@
+{% doc %}
+  Loads every PLT Web Component (@playlovetoys/web-components) once.
+  Needed by renderers whose behaviour is a Web Component: product-detail
+  (<plt-product-gallery>), product-quick-view (<plt-quick-view>) and navbar
+  (<plt-navbar>). Data snippets (plt-variant-picker, plt-cart-drawer, …) load
+  the same bundle themselves; module scripts with one URL run once.
+
+  Copy dist/plt-web-components.bundle.js to the theme's assets/ folder.
+
+  @param {string} [script_url] - Bundle URL (default: 'plt-web-components.bundle.js' | asset_url)
+{% enddoc %}
+{%- assign bundle_url = script_url | default: '' -%}
+{%- if bundle_url == blank -%}{%- assign bundle_url = 'plt-web-components.bundle.js' | asset_url -%}{%- endif -%}
+<script type="module" src="{{ bundle_url | escape }}"></script>
