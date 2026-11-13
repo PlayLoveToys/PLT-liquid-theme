@@ -1,4 +1,21 @@
+{%- comment -%}
+  Product card: DS ProductCard markup (plt-product-card) with Alpine productCard shell kept
+  for quick-add / cart error state. Does not edit DS renderers or plt-* adapters.
+{%- endcomment -%}
 {%- if card_product and card_product != empty -%}
+  {%- liquid
+    assign show_card_badge = false
+    assign badge_label = ''
+    assign badge_modifier = ''
+    if card_product.available == false
+      assign badge_label = 'products.product.sold_out' | t
+      assign show_card_badge = true
+    elsif card_product.compare_at_price > card_product.price and card_product.available
+      assign badge_label = 'products.product.on_sale' | t
+      assign badge_modifier = 'd-badge-secondary'
+      assign show_card_badge = true
+    endif
+  -%}
   <div
     class="card-wrapper product-card-wrapper"
     x-data="
@@ -9,119 +26,103 @@
       })
     "
   >
-    <div class="b-card" style="height: 100%; display: flex; flex-direction: column;">
+    <article class="d-card bg-base-100 theme-bordered theme-elevated plt-media-card plt-product-card">
       {%- if card_product.featured_media -%}
-        <a href="{{ card_product.url }}" class="full-unstyled-link" tabindex="-1">
-          <div style="position: relative; z-index: 0">
-            <div class="b-card-image">
-              <figure class="b-image b-is-fullwidth b-is-1by1">
-                {%- assign card_alt = card_product.featured_media.alt | default: card_product.title -%}
-              {{
-                  card_product.featured_media
-                  | image_url: width: 300, pad_color: '000'
-                  | image_tag:
-                    widths: '300, 350, 400, 450, 500, 550, 600',
-                    preload: false,
-                    loading: 'lazy',
-                    style: 'object-fit: contain;',
-                    alt: card_alt
-                }}
-              </figure>
-            </div>
-            {%- if card_product.available == false -%}
-              <span class="b-tag-bottom-right d-badge theme-label-bold">
-                {{- 'products.product.sold_out' | t -}}
-              </span>
-            {%- elsif card_product.compare_at_price > card_product.price and card_product.available -%}
-              <span class="b-tag-bottom-right d-badge d-badge-secondary theme-label-bold">
-                {{- 'products.product.on_sale' | t -}}
-              </span>
-            {%- endif -%}
-          </div>
+        <a class="plt-media-card__media" href="{{ card_product.url }}" tabindex="-1">
+          {%- assign card_alt = card_product.featured_media.alt | default: card_product.title -%}
+          {{
+            card_product.featured_media
+            | image_url: width: 600, pad_color: '000'
+            | image_tag:
+              widths: '300, 350, 400, 450, 500, 550, 600',
+              preload: false,
+              loading: 'lazy',
+              style: 'object-fit: contain;',
+              alt: card_alt
+          }}
         </a>
       {%- endif -%}
-      <div class="b-card-content b-px-2 b-is-flex b-is-flex-direction-column b-is-flex-grow-1">
-        <div class="b-content b-is-flex-grow-1">
-          <br>
-          <p class="b-title b-is-6 b-mb-2 b-has-text-black b-is-family-secondary">
-            <a href="{{ card_product.url }}" class="full-unstyled-link">
-              {{ card_product.title | escape }}
-            </a>
-          </p>
 
-          <p class="b-is-size-6 b-has-text-grey-dark-dark b-mb-2 b-subtitle">{{ card_product.vendor }}</p>
+      <div class="d-card-body plt-media-card__body">
+        {%- if show_card_badge -%}
+          <span class="d-badge{% if badge_modifier != '' %} {{ badge_modifier }}{% endif %} theme-label-bold">
+            {{- badge_label -}}
+          </span>
+        {%- endif -%}
 
-          {%- if show_rating and card_product.metafields.reviews.rating.value != blank -%}
-            {% liquid
-              assign rating_decimal = 0
-              assign decimal = card_product.metafields.reviews.rating.value.rating | modulo: 1
-              if decimal >= 0.3 and decimal <= 0.7
-                assign rating_decimal = 0.5
-              elsif decimal > 0.7
-                assign rating_decimal = 1
-              endif
-            %}
-            <div
-              class="rating b-mb-2"
-              role="img"
-              aria-label="{{ 'accessibility.star_reviews_info' | t: rating_value: card_product.metafields.reviews.rating.value, rating_max: card_product.metafields.reviews.rating.value.scale_max }}"
-            >
-              <span
-                aria-hidden="true"
-                class="rating-star"
-                style="--rating: {{ card_product.metafields.reviews.rating.value.rating | floor }}; --rating-max: {{ card_product.metafields.reviews.rating.value.scale_max }}; --rating-decimal: {{ rating_decimal }};"
-              ></span>
-              <span class="rating-text caption">
-                <span aria-hidden="true"> ({{ card_product.metafields.reviews.rating_count }}) </span>
-                <span class="visually-hidden">
-                  {{- card_product.metafields.reviews.rating_count }}
-                  {{ 'accessibility.total_reviews' | t -}}
-                </span>
+        <h3 class="d-card-title theme-headline-sm plt-media-card__title">
+          <a href="{{ card_product.url }}">{{ card_product.title | escape }}</a>
+        </h3>
+
+        {%- if show_vendor != false and card_product.vendor != blank -%}
+          <p class="theme-meta plt-media-card__meta">{{ card_product.vendor | escape }}</p>
+        {%- endif -%}
+
+        {%- if show_rating and card_product.metafields.reviews.rating.value != blank -%}
+          {% liquid
+            assign rating_decimal = 0
+            assign decimal = card_product.metafields.reviews.rating.value.rating | modulo: 1
+            if decimal >= 0.3 and decimal <= 0.7
+              assign rating_decimal = 0.5
+            elsif decimal > 0.7
+              assign rating_decimal = 1
+            endif
+          %}
+          <div
+            class="rating"
+            role="img"
+            aria-label="{{ 'accessibility.star_reviews_info' | t: rating_value: card_product.metafields.reviews.rating.value, rating_max: card_product.metafields.reviews.rating.value.scale_max }}"
+          >
+            <span
+              aria-hidden="true"
+              class="rating-star"
+              style="--rating: {{ card_product.metafields.reviews.rating.value.rating | floor }}; --rating-max: {{ card_product.metafields.reviews.rating.value.scale_max }}; --rating-decimal: {{ rating_decimal }};"
+            ></span>
+            <span class="rating-text caption">
+              <span aria-hidden="true">({{ card_product.metafields.reviews.rating_count }})</span>
+              <span class="visually-hidden">
+                {{- card_product.metafields.reviews.rating_count }}
+                {{ 'accessibility.total_reviews' | t -}}
               </span>
-            </div>
-          {%- endif -%}
-
-          {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
-
-          {%- if card_product.quantity_price_breaks_configured? -%}
-            <div class="b-is-size-6 b-has-text-grey-dark-dark b-mt-2">
-              <span>{{ 'products.product.volume_pricing.note' | t }}</span>
-            </div>
-          {%- endif -%}
-
-          <!-- Error Message Display -->
-          <div class="product-form__error-message-wrapper" x-show="errorMessage" x-cloak>
-            <span class="product-form__error-message" x-text="errorMessage"></span>
+            </span>
           </div>
+        {%- endif -%}
+
+        <div class="d-card-actions plt-media-card__actions">
+          {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
+        </div>
+
+        {%- if card_product.quantity_price_breaks_configured? -%}
+          <p class="theme-meta">{{ 'products.product.volume_pricing.note' | t }}</p>
+        {%- endif -%}
+
+        <div class="product-form__error-message-wrapper" x-show="errorMessage" x-cloak>
+          <span class="product-form__error-message" x-text="errorMessage"></span>
         </div>
       </div>
-    </div>
+    </article>
   </div>
 {%- else -%}
   <div class="card-wrapper product-card-wrapper">
-    <div class="b-card" style="height: 100%;">
-      <div class="b-card-image">
-        <figure class="b-image b-is-1by1">
-          {%- if placeholder_image -%}
-            {{ placeholder_image | placeholder_svg_tag: 'placeholder-svg' }}
-          {%- else -%}
-            {{ 'product-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
-          {% endif %}
-        </figure>
+    <article class="d-card bg-base-100 theme-bordered theme-elevated plt-media-card plt-product-card">
+      <div class="plt-media-card__media" aria-hidden="true">
+        {%- if placeholder_image -%}
+          {{ placeholder_image | placeholder_svg_tag: 'placeholder-svg' }}
+        {%- else -%}
+          {{ 'product-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
+        {%- endif -%}
       </div>
-      <div class="b-card-content">
-        <div class="b-content">
-          <p class="b-title b-is-5 b-mb-2">
-            <a role="link" aria-disabled="true" class="full-unstyled-link">
-              {{ 'onboarding.product_title' | t }}
-            </a>
-          </p>
-          {%- if show_vendor -%}
-            <p class="b-is-size-7 b-has-text-grey-dark b-mb-2">{{ 'products.product.vendor' | t }}</p>
-          {%- endif -%}
+      <div class="d-card-body plt-media-card__body">
+        <h3 class="d-card-title theme-headline-sm plt-media-card__title">
+          <a role="link" aria-disabled="true">{{ 'onboarding.product_title' | t }}</a>
+        </h3>
+        {%- if show_vendor -%}
+          <p class="theme-meta plt-media-card__meta">{{ 'products.product.vendor' | t }}</p>
+        {%- endif -%}
+        <div class="d-card-actions plt-media-card__actions">
           {% render 'price', placeholder: true, show_compare_at_price: true %}
         </div>
       </div>
-    </div>
+    </article>
   </div>
 {%- endif -%}

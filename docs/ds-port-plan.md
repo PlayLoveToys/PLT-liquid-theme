@@ -14,7 +14,7 @@ specs Playwright), no de sections: solo comparten 18 de 65 sections y 9 de 89 sn
 | Base CSS | Dawn `base.css` (80 KB) + Bulma `b-style.source.css` (650 KB) + 71 `component-*.css`; ~1,26 MB de CSS | daisyUI 5 + Tailwind 4, tokens `--plt-*`, tema `cheesecake` |
 | Markup | 492 usos de `b-*` en 52 archivos; `color-{{scheme}}` en 37; `page-width` en 44; 20 archivos con `<style>`; 99 `style=""` inline | renderers Liquid del DS + `d-*` / `theme-*` / `plt-*` |
 | JS | Alpine en 14 archivos; loader CDN de Shopify Web Components (desactivado) | Web Components Lit del DS |
-| Clases del DS hoy | Tras 2c: `d-*` en divider/breadcrumb/price (cards); `plt-*` de WC aún no cableados en storefront (salvo ids legacy `plt-product-modal` / `plt-gradient-background`) | |
+| Clases del DS hoy | Tras 2d: `d-*` en divider/breadcrumb/price; `plt-product-card` / `d-card` en `card-product`; `plt-*` de WC aún no cableados en storefront (salvo ids legacy `plt-product-modal` / `plt-gradient-background`) | |
 | Tamaño | 65 sections, 89 snippets, 36 blocks, 47 templates | |
 
 ### Baseline de calidad (Fase 0, 2026-11-12, `shopify theme check`, CLI 3.91.0)
@@ -100,6 +100,7 @@ cancelar `plt:*` y aplicar con Section Rendering).
 **Higiene (2026-11-12, con corte 2c):** borrados sin referencias —
 `snippets/card-product-Respaldo.liquid`, `snippets/price-BK.liquid`, `assets/base-BK.css`,
 `assets/base-purged.css`. Script obsoleto a `facets.js` quitado de `sections/main-search.liquid`.
+**Higiene 2d:** borrado `snippets/card-product-new.liquid` (sin referencias).
 
 **Método (cada corte):** (1) renderizar el snippet real en `tools/snippet-harness` y mirarlo en el navegador
 junto al CSS real del theme; (2) solo si se ve bien, migrar y enlazar. Un cambio de apariencia hacia el
@@ -203,6 +204,28 @@ breadcrumb / price.
 
 Fuera de 2c (siguen bloqueados): reaplicar 2a al subir pin DS; cablear 2b WC (eventos `plt:*` + Section
 Rendering); capturas Fase 0; Fase 3 shell.
+
+#### Corte 2d: `card-product` → markup ProductCard (estático) — **hecho** (2026-11-12)
+Con 2a aún bloqueado ([DS#1](https://github.com/PlayLoveToys/PLT-design-system/issues/1) abierto; pin
+`@playlovetoys/platform` sigue en `b0ba294`, sin variante compacta ni `anchor`), el siguiente corte viable
+sin WC ni shell es la card de producto **solo markup**:
+
+1. Harness `product-card` (`LEGACY_LAYER=import`) con regular / sale / sold-out / rating / placeholder +
+   referencia del renderer DS.
+2. `snippets/card-product.liquid` pasa de `b-card` Bulma a la estructura DS
+   (`d-card` / `plt-media-card` / `plt-product-card`, badge en body, tipografía `theme-*`). Se conserva el
+   wrapper Alpine `productCard({…})` y el nodo de `errorMessage` (quick-add / cart); no se cablea
+   `plt-quantity-selector` ni quick-add WC.
+3. Higiene: borrado `snippets/card-product-new.liquid` (sin referencias).
+
+**Fuera de 2d (siguen pendientes / bloqueados):**
+- Reaplicar 2a (`plt-pagination`) cuando DS#1 aterrice y se suba el pin.
+- 2b WC: cantidad / sort / filtros (eventos `plt:*` + Section Rendering / cajón Alpine).
+- Badges Dawn residuales en `article-card` / `main-search` (markup blog; no es ProductCard).
+- Capturas Fase 0 y Fase 3 shell (requieren tienda).
+
+**Gates (2026-11-12):** `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline (40/42);
+`shopify theme check` = **6 errores / 362 avisos** (sin regresión).
 
 ### Fase 3: Shell
 Header (excepción documentada: se conserva, con `mega-menu.css`), footer + newsletter, carrito
