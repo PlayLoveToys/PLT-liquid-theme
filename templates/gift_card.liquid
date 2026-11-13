@@ -121,10 +121,11 @@
       {% comment %}theme-check-enable AssetPreload{% endcomment %}
     {%- endunless -%}
 
+    {{ 'theme.css' | asset_url | stylesheet_tag }}
     {{ 'template-giftcard.css' | asset_url | stylesheet_tag }}
   </head>
 
-  <body class="gradient gift-card">
+  <body class="gradient gift-card" data-theme="brand">
     <header>
       <div class="gift-card__price">
         <h1>
@@ -135,7 +136,7 @@
           {% endif %}
         </h1>
         {%- if gift_card.enabled == false or gift_card.expired -%}
-          <p class="badge badge--expired">{{ 'gift_cards.issued.expired' | t }}</p>
+          <p class="d-badge theme-label-bold">{{ 'gift_cards.issued.expired' | t }}</p>
         {%- endif -%}
       </div>
       {% if gift_card.expires_on %}
