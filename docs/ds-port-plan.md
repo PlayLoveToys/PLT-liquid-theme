@@ -165,12 +165,19 @@ Efecto colateral medido de bajar el legacy: el DS pasa a fijar sobre `html` (no 
 página real; en el harness el fondo de la página pasó a crema (#FAF7F2).
 
 **Acoplamiento JS que sigue pendiente aunque se resuelva el CSS:**
-- Cantidad: el theme usa `<quantity-input>` (`assets/global.js`, ligado a `product-form`) en `main-product`,
-  `featured-product` y `quick-order-list-row`. Migrar implica el JS de formulario de producto.
+- Cantidad: el theme usa `<quantity-input>` (`assets/global.js`, ligado a `product-form` /
+  `product-info.js`) en `main-product`, `featured-product` y `quick-order-list-row`. Migrar implica el
+  JS de formulario de producto.
 - Orden y filtros: no los maneja ningún `facets.js` (**corrección**: la referencia en `main-search.liquid`
   era una etiqueta obsoleta; **eliminada en higiene 2c**. `<facet-filters-form>` no está definido). Los
   maneja Alpine con `x-target` en el cajón `b-drawer` de `snippets/facets.liquid` (envío automático con
   debounce de 800 ms). Migrar a `plt-filter-bar` / `plt-sort-select` implica reemplazar ese cajón.
+
+**Plan JS 2b (2026-11-13):** ver [`docs/ds-port-2b-js-plan.md`](./ds-port-2b-js-plan.md) — contrato
+`plt:*`, mapa call sites, puente Section Rendering vs Alpine Ajax, cortes JS-A/B/C y JS-Q*, checklist.
+**No** migrar facets ni quantity en el PR del plan: no hay call site de `plt-sort-select` aislado seguro
+(sort vive dentro del mismo form Alpine que los filtros); quantity está acoplado a `.quantity__input` /
+`product-info.js`.
 
 #### Corte 2c: divider → breadcrumb → price/badges en cards — **hecho** (2026-11-12)
 Con `theme.css` y `@layer legacy` ya en el layout, se ejecutó el PR de higiene + primitivas Liquid sin JS:
@@ -282,7 +289,7 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 
 | Bloqueado | Por qué | Para desbloquear |
 |---|---|---|
-| **2b WC** cantidad / sort / filtros | Acoplado a `quantity-input` + `product-form` / Alpine `facets` drawer | Plan JS: eventos `plt:*` + Section Rendering; reemplazar cajón Alpine |
+| **2b WC** cantidad / sort / filtros | Acoplado a `quantity-input` + `product-form` / Alpine `facets` drawer | Diseño en [`ds-port-2b-js-plan.md`](./ds-port-2b-js-plan.md); código empieza por **JS-A** (puente + sort acotado) |
 | **Fase 0 capturas** | Sin `shopify theme dev` / tienda | Credenciales merchant + handles fixture |
 | **Fase 3 shell** | Header/footer/cart/predictive search compartidos; riesgo visual alto | Tienda + capturas; decisión `cart-notification` → `plt-cart-drawer` |
 | **Fase 4 sections** | Depende de shell estable y huecos DS (Faq, Carousel, …) | Tras Fase 3 / issues DS |
@@ -290,8 +297,9 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 | **Fase 6 CI gates** | Formalizar budgets/diff visual | Tras baseline visual real (Fase 0) |
 | **Inputs/alerts / botones globales** | Sin corte Liquid acotado | Por template en Fase 4 o snippet nuevo si se extrae |
 
-**Siguiente (prioridad):** plan JS 2b; con tienda, Fase 0 capturas y checklist visual del layout
-(fondo `html`, LCP `@import` legacy).
+**Siguiente (prioridad):** implementar **JS-A** del plan 2b (puente `plt:*` → Section Rendering +
+`plt-sort-select` en un call site controlado). Bloqueado sin staging: Fase 0 capturas y checklist
+visual del layout (fondo `html`, LCP `@import` legacy).
 
 ### Fase 3: Shell
 Header (excepción documentada: se conserva, con `mega-menu.css`), footer + newsletter, carrito
