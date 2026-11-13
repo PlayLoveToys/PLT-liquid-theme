@@ -128,8 +128,13 @@ para asociar el input al ATC (`product-info.syncQuantityFormAssociation`). Conse
 Bundle: script module en la section hasta que JS-C consolide en layout. `main-product` y QOL = Q2 /
 follow-up.
 
-**Corte JS-Q2:** `snippets/quantity-input.liquid` / quick-order — requiere `name="updates[…]"` y
-listeners de `quick-order-list.js`.
+**Corte JS-Q2 — hecho (2026-11-13):** `snippets/quantity-input.liquid` → `plt-quantity-selector`
+con `name="updates[{{ variant.id }}]"` (min 0 para vaciar línea). Host lleva `data-index` /
+`data-min` / `data-cart-quantity` / `data-target` (+ class `quantity cart-quantity`).
+`BulkAdd` (`global.js`) resuelve el input del WC (`getQuantityInputFromEvent` /
+`syncPltQuantityInputAttrs`); `quick-order-list.js` escucha `plt:quantity-change`;
+`quick-add-bulk.js` acepta el mismo host (fallback Dawn). Bundle module en
+`sections/quick-order-list.liquid` hasta JS-C en layout. Sin card-product quantity.
 
 **No hacer en 2b:** cablear quantity en `card-product` / quick-add WC (explícitamente fuera de 2d).
 
@@ -215,8 +220,10 @@ Contrato del puente theme:
 - [x] Q1: `featured-product` → `plt-quantity-selector` + data-* / `data-form` en host (2026-11-13)
 - [x] Gates Q1 (2026-11-13): `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline;
   `shopify theme check` ≤ baseline (6 err / 362 warn)
-- [ ] Q2: quick-order / `updates[]`
-- [ ] No card-product quantity en 2b
+- [x] Q2: quick-order / `updates[]` via `quantity-input` → WC + BulkAdd compat (2026-11-13)
+- [x] Gates Q2 (2026-11-13): `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline;
+  `shopify theme check` ≤ baseline (6 err / 362 warn)
+- [x] No card-product quantity en 2b
 - [ ] `main-product` quantity (mismo patrón Q1; blast mayor — follow-up)
 
 ### Explicitamente fuera / bloqueado

@@ -4,17 +4,32 @@ if (!customElements.get('quick-add-bulk')) {
     class QuickAddBulk extends BulkAdd {
       constructor() {
         super();
-        this.quantity = this.querySelector('quantity-input');
+        // JS-Q2: prefer plt-quantity-selector (updates[]); keep Dawn quantity-input fallback.
+        this.quantity =
+          this.querySelector('plt-quantity-selector') || this.querySelector('quantity-input');
+        if (this.quantity?.matches?.('plt-quantity-selector')) {
+          this.syncPltQuantityInputAttrs(this.quantity);
+        }
 
         const debouncedOnChange = debounce((event) => {
-          if (parseInt(event.target.value) === 0) {
-            this.startQueue(event.target.dataset.index, parseInt(event.target.value));
+          const target = this.getQuantityInputFromEvent(event) || event.target;
+          const value = parseInt(event.detail?.value ?? target.value, 10);
+          if (value === 0) {
+            target.setAttribute('value', value);
+            const host = target.closest?.('plt-quantity-selector');
+            if (host) host.setAttribute('value', String(value));
+            this.startQueue(target.dataset.index, value);
           } else {
             this.validateQuantity(event);
           }
         }, ON_CHANGE_DEBOUNCE_TIMER);
 
-        this.addEventListener('change', debouncedOnChange.bind(this));
+        // WC: plt:quantity-change only (avoids double-fire with bubbling input change).
+        if (this.quantity?.matches?.('plt-quantity-selector')) {
+          this.quantity.addEventListener('plt:quantity-change', debouncedOnChange.bind(this));
+        } else {
+          this.addEventListener('change', debouncedOnChange.bind(this));
+        }
         this.listenForActiveInput();
         this.listenForKeydown();
         this.lastActiveInputId = null;
@@ -44,6 +59,8 @@ if (!customElements.get('quick-add-bulk')) {
       }
 
       get input() {
+        const host = this.querySelector('plt-quantity-selector');
+        if (host) return this.syncPltQuantityInputAttrs(host) || host.querySelector('input[type="number"]');
         return this.querySelector('quantity-input input');
       }
 
@@ -178,7 +195,16 @@ if (!customElements.get('quick-add-bulk')) {
         });
 
         if (this.isEnterPressed) {
-          this.querySelector(`#Quantity-${this.lastActiveInputId}`).select();
+          const restored =
+            this.querySelector(`#Quantity-${this.lastActiveInputId}`) ||
+            this.querySelector(`plt-quantity-selector[data-index="${this.lastActiveInputId}"] input[type="number"]`);
+          restored?.select?.();
+        }
+
+        this.quantity =
+          this.querySelector('plt-quantity-selector') || this.querySelector('quantity-input');
+        if (this.quantity?.matches?.('plt-quantity-selector')) {
+          this.syncPltQuantityInputAttrs(this.quantity);
         }
 
         this.listenForActiveInput();
