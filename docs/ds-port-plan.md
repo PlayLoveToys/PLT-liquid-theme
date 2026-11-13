@@ -292,10 +292,10 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 
 | Bloqueado | Por qué | Para desbloquear |
 |---|---|---|
-| **2b WC** resto | `quantity-input`; boolean filters sin adapter DS | **JS-Q\***; issue DS boolean + pin |
+| **2b WC** resto | `quantity-input`; boolean filters sin pin | **JS-Q\***; tras merge de [DS#5](https://github.com/PlayLoveToys/PLT-design-system/pull/5) → bump pin + `sync:plt` ([DS#3](https://github.com/PlayLoveToys/PLT-design-system/issues/3); **no bump antes del merge**) |
 | **Fase 0 capturas** | Sin `shopify theme dev` / tienda | Credenciales merchant + handles fixture |
 | **Fase 3 shell** | Header/footer/cart/predictive search compartidos; riesgo visual alto | Tienda + capturas; decisión `cart-notification` → `plt-cart-drawer` |
-| **Fase 4 sections** | Depende de shell estable y huecos DS (Faq, Carousel, …) | Tras Fase 3 / issues DS |
+| **Fase 4 sections** | Depende de shell estable y huecos DS (Faq, Carousel, …) | Tras Fase 3 / [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
 | **Fase 5 Bulma/Alpine** | Aún hay `b-*` y Alpine en producción | Cuando conteo `b-*` → 0 y WC 2b cableados |
 | **Fase 6 CI gates** | Formalizar budgets/diff visual | Tras baseline visual real (Fase 0) |
 | **Inputs/alerts / botones globales** | Sin corte Liquid acotado | Por template en Fase 4 o snippet nuevo si se extrae |
@@ -323,9 +323,17 @@ Quitar Bulma cuando el conteo de `b-*` llegue a 0; después Alpine (**12** archi
 `check:plt`, `theme check` (≤ baseline), validación de templates, diff visual, presupuesto de CSS.
 
 ## 4. Huecos a implementar primero en el DS
+
+Tracking (checklist, un issue): **[DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4)** —
 `Faq`, `RichText`, `Carousel`, `TrustBar`, `LinkGrid`, `ChipPills`, `LocationCard`
 (`service-area-link-list`, `location_map`), contrato de `MegaMenu`, `MarketSelector`, `Swatch`,
-`StickyAddToCart`. Abrir issue en `aavendano/plt-design-system` desde este repo por cada uno.
+`StickyAddToCart`. Inventario: `PLT-design-system` `docs/storefront-component-inventory.md`.
+
+Boolean filters (`filter.type == boolean` en `plt-filter-bar` Liquid):
+**[DS#3](https://github.com/PlayLoveToys/PLT-design-system/issues/3)** /
+PR **[DS#5](https://github.com/PlayLoveToys/PLT-design-system/pull/5)**.
+**Nota:** no subir el pin `@playlovetoys/platform` ni correr `sync:plt` en este theme hasta que
+ese PR esté mergeado en `main` del DS.
 
 ## 5. Riesgos
 - Convivencia de dos CSS: especificidad y peso durante la transición.
