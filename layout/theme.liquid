@@ -468,6 +468,13 @@
       <script src="{{ 'alpine-product-card.js' | asset_url }}" defer></script>
     {% endcomment %}
     <script defer src="{{ 'alpine-bundle.js' | asset_url }}"></script>
+    {% comment %}
+      WC bundle sitewide (same as JS-C). Cart drawer adapter passes script_url: 'none'.
+      Skip duplicating this block if JS-C (#12) is already merged into the base branch.
+    {% endcomment %}
+    <script type="module" src="{{ 'plt-web-components.bundle.js' | asset_url }}"></script>
+    <script src="{{ 'plt-section-nav.js' | asset_url }}" defer></script>
+    <script src="{{ 'plt-cart-drawer-bridge.js' | asset_url }}" defer></script>
 
     {% comment %}
       TRANSFERIR A NUEVO THEME
@@ -502,6 +509,11 @@
     </main>
 
     {% sections 'footer-group' %}
+
+    {% comment %}
+      Fase 3: cart-notification → plt-cart-drawer (mounted outside header).
+    {% endcomment %}
+    {% render 'cart-drawer' %}
 
     <ul hidden>
       <li id="a11y-refresh-page-message">{{ 'accessibility.refresh_page' | t }}</li>

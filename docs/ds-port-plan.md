@@ -288,17 +288,26 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 | 2a `plt-pagination` compact + `anchor` (pin `a2c759b`) | PR #6 |
 | 2b plan JS + **JS-A** puente + sort desktop | PR #7 / #8 |
 | 2b **JS-B** `plt-filter-bar` + sort en drawer; search/sanity cableados | PR #9 |
+<<<<<<< Updated upstream
 | 2b **JS-C** drawer `<dialog>` + bundle WC en `layout/theme.liquid` | rama `port/ds-fase-2b-js-c` |
 | 2b **JS-Q0** capa compat `product-info` ↔ `plt-quantity-selector` | rama `port/ds-fase-2b-js-q0` / PR #10 |
 | 2b **JS-Q1** quantity WC en `featured-product` | rama `port/ds-fase-2b-js-q1` / PR #13 |
 | 2b **JS-Q2** quantity WC en QOL / `updates[]` | rama `port/ds-fase-2b-js-q2` |
+=======
+| **Fase 3 shell-cart** footer/newsletter tokens + `plt-cart-drawer` + predictive defer | rama `port/ds-fase-3-shell-cart` |
+>>>>>>> Stashed changes
 
 | Bloqueado | Por qué | Para desbloquear |
 |---|---|---|
 | **2b WC** resto | `main-product` quantity; boolean filters sin pin | PDP quantity follow-up; tras merge de [DS#5](https://github.com/PlayLoveToys/PLT-design-system/pull/5) → bump pin + `sync:plt` ([DS#3](https://github.com/PlayLoveToys/PLT-design-system/issues/3); **no bump antes del merge**) |
 | **Fase 0 capturas** | Sin `shopify theme dev` / tienda | Credenciales merchant + handles fixture |
+<<<<<<< Updated upstream
 | **Fase 3 shell** | Header/footer/cart/predictive search compartidos; riesgo visual alto | Tienda + capturas; decisión `cart-notification` → `plt-cart-drawer` |
 | **Fase 4 sections** | Depende de shell estable y huecos DS (Faq, Carousel, …) | Tras Fase 3 / [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
+=======
+| **Fase 3 shell** | Header tokens (mega-menu) pendiente; predictive search diferido | Capturas + `fase-3-header`; issue DS Search si aplica |
+| **Fase 4 sections** | Depende de shell estable y huecos DS (Faq, Carousel, …) | Tras Fase 3 / issues DS |
+>>>>>>> Stashed changes
 | **Fase 5 Bulma/Alpine** | Aún hay `b-*` y Alpine en producción | Cuando conteo `b-*` → 0 y WC 2b cableados |
 | **Fase 6 CI gates** | Formalizar budgets/diff visual | Tras baseline visual real (Fase 0) |
 | **Inputs/alerts / botones globales** | Sin corte Liquid acotado | Por template en Fase 4 o snippet nuevo si se extrae |
@@ -308,8 +317,17 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 Sin tienda: Fase 0 capturas y checklist visual del layout (fondo `html`, LCP `@import` legacy).
 
 ### Fase 3: Shell
-Header (excepción documentada: se conserva, con `mega-menu.css`), footer + newsletter, carrito
-(`cart-notification` → `plt-cart-drawer`: decisión abierta), predictive search.
+- **Cart (hecho en `port/ds-fase-3-shell-cart`):** `cart-notification` → `plt-cart-drawer`
+  (`snippets/cart-drawer.liquid` + `assets/plt-cart-drawer-bridge.js`). Call sites:
+  `product-form.js`, `quick-add.js`, Alpine product card / bundle. Header no se toca;
+  el bridge intercepta `#cart-icon-bubble`. Bundle WC en layout (alineado con JS-C).
+- **Footer + newsletter (parcial):** tokens `theme-label-bold` / `d-input` / `d-btn*` sin
+  renombrar settings merchant (`color_scheme`, gradients, `newsletter_enable`, etc.).
+- **Predictive search (defer):** sin contrato DS; se conserva Alpine + Section Rendering
+  (`section_id=predictive-search`). Mínimo seguro: `theme-label-bold` en headings de
+  `sections/predictive-search.liquid`. Revisitar con header o issue DS.
+- **Header (pendiente `fase-3-header`):** excepción documentada — conservar estructura +
+  `mega-menu.css`; solo tokens/`d-*` donde no rompa mega-menu.
 
 ### Fase 4: Sections por template
 Orden: colección/búsqueda → home (`slideshow`, `image-banner`, `multicolumn`) → contenido

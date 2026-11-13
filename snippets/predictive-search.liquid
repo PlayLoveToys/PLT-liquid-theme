@@ -1,6 +1,12 @@
 {% doc %}
   Renders the predictive search input and suggestion container.
-  Uses Alpine.js for reactivity (debounce, click-outside, escape, ARIA).
+  Uses Alpine.js for reactivity (debounce, click-outside, escape, ARIA)
+  and Section Rendering (`section_id=predictive-search`).
+
+  Fase 3 defer: no hay contrato DS PredictiveSearch / SearchSuggest.
+  Shell Alpine + Bulma (`b-input` / `b-control`) se conserva; solo tokens
+  tipográficos en `sections/predictive-search.liquid` (theme-label-bold).
+  Revisitar tras issue DS o cuando el header migre (fase-3-header).
 {% enddoc %}
 
 <div class="l-header-top__search">

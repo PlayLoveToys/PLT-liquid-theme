@@ -8,11 +8,15 @@ if (!customElements.get('product-form')) {
         this.form = this.querySelector('form');
         this.variantIdInput.disabled = false;
         this.form.addEventListener('submit', this.onSubmitHandler.bind(this));
-        this.cart = document.querySelector('cart-notification');
         this.submitButton = this.querySelector('[type="submit"]');
         this.submitButtonText = this.submitButton.querySelector('span');
 
         this.hideErrors = this.dataset.hideErrors === 'true';
+      }
+
+      /** plt-cart-drawer host (Fase 3) or legacy cart-notification CE. */
+      getCartHost() {
+        return window.PltCartDrawerHost || document.querySelector('cart-notification') || null;
       }
 
       onSubmitHandler(evt) {
@@ -30,13 +34,17 @@ if (!customElements.get('product-form')) {
         delete config.headers['Content-Type'];
 
         const formData = new FormData(this.form);
-        if (this.cart) {
-          formData.append(
-            'sections',
-            this.cart.getSectionsToRender().map((section) => section.id)
-          );
-          formData.append('sections_url', window.location.pathname);
-          this.cart.setActiveElement(document.activeElement);
+        const cart = this.getCartHost();
+        if (cart) {
+          const sections = cart.getSectionsToRender?.() || [];
+          if (sections.length) {
+            formData.append(
+              'sections',
+              sections.map((section) => section.id)
+            );
+            formData.append('sections_url', window.location.pathname);
+          }
+          cart.setActiveElement?.(document.activeElement);
         }
         config.body = formData;
 
@@ -59,7 +67,7 @@ if (!customElements.get('product-form')) {
               soldOutMessage.classList.remove('hidden');
               this.error = true;
               return;
-            } else if (!this.cart) {
+            } else if (!cart) {
               window.location = window.routes.cart_url;
               return;
             }
@@ -80,8 +88,8 @@ if (!customElements.get('product-form')) {
                 'modalClosed',
                 () => {
                   setTimeout(() => {
-                    CartPerformance.measure("add:paint-updated-sections", () => {
-                      this.cart.renderContents(response);
+                    CartPerformance.measure('add:paint-updated-sections', () => {
+                      cart.renderContents(response);
                     });
                   });
                 },
@@ -89,8 +97,8 @@ if (!customElements.get('product-form')) {
               );
               quickAddModal.hide(true);
             } else {
-              CartPerformance.measure("add:paint-updated-sections", () => {
-                this.cart.renderContents(response);
+              CartPerformance.measure('add:paint-updated-sections', () => {
+                cart.renderContents(response);
               });
             }
           })
@@ -99,11 +107,11 @@ if (!customElements.get('product-form')) {
           })
           .finally(() => {
             this.submitButton.classList.remove('loading');
-            if (this.cart && this.cart.classList.contains('is-empty')) this.cart.classList.remove('is-empty');
+            if (cart && cart.classList?.contains('is-empty')) cart.classList.remove('is-empty');
             if (!this.error) this.submitButton.removeAttribute('aria-disabled');
             this.querySelector('.loading__spinner').classList.add('hidden');
 
-            CartPerformance.measureFromEvent("add:user-action", evt);
+            CartPerformance.measureFromEvent('add:user-action', evt);
           });
       }
 

@@ -230,7 +230,8 @@ Contrato del puente theme:
 
 - [ ] Migración masiva de `facets.liquid` en un solo PR
 - [ ] Editar a mano `snippets/plt-*.liquid` vendor (solo `npm run sync:plt`)
-- [ ] `plt-cart-drawer` / cart quantity (Fase 3)
+- [x] `plt-cart-drawer` cableado (Fase 3 shell-cart); quantity en líneas del drawer vía WC
+- [ ] Quantity Dawn en página `/cart` (follow-up / Q2 si aplica)
 - [ ] `plt-variant-picker` en PDP (corte propio)
 - [ ] Fase 0 capturas sin credenciales merchant
 
