@@ -29,11 +29,11 @@
               </figure>
             </div>
             {%- if card_product.available == false -%}
-              <span class="b-tag-bottom-right b-badge-info">
+              <span class="b-tag-bottom-right d-badge theme-label-bold">
                 {{- 'products.product.sold_out' | t -}}
               </span>
             {%- elsif card_product.compare_at_price > card_product.price and card_product.available -%}
-              <span class="b-tag-bottom-right b-badge-link">
+              <span class="b-tag-bottom-right d-badge d-badge-secondary theme-label-bold">
                 {{- 'products.product.on_sale' | t -}}
               </span>
             {%- endif -%}
