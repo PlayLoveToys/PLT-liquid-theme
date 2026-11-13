@@ -120,8 +120,13 @@ Bulma hasta Fase 5.
 
 Contrato para **Q1** (markup): conservar `#Quantity-Form-{{ section.id }}`, `.product-form__quantity`, `.quantity__rules`, `.quantity__label`. Sustituir `<quantity-input>` + `.quantity__input` por `render 'plt-quantity-selector'` con `name: 'quantity'`, `script_url: 'none'` si el bundle va en layout, y **espejar** en el host del WC: `data-cart-quantity`, `data-min`, `data-max` además de `min`/`max`/`step`/`value` (Liquid del variant `quantity_rule` + `cart_qty`). Sin eso, `setQuantityBoundries()` no puede restar qty en carrito.
 
-**Corte JS-Q1:** `featured-product` **o** un bloque quantity del PDP detrás de setting — nunca QOL
-primero. Depende de Q0 (este PR).
+**Corte JS-Q1 — hecho (2026-11-13):** `sections/featured-product.liquid` usa
+`render 'plt-quantity-selector'` (`name: 'quantity'`, `script_url: 'none'`). Host del WC lleva
+`data-cart-quantity` / `data-min` / `data-max` + props `min`/`max`/`step`/`value`, y `data-form`
+para asociar el input al ATC (`product-info.syncQuantityFormAssociation`). Conserva
+`#Quantity-Form-{{ section.id }}`, `.product-form__quantity`, `.quantity__rules`, `.quantity__label`.
+Bundle: script module en la section hasta que JS-C consolide en layout. `main-product` y QOL = Q2 /
+follow-up.
 
 **Corte JS-Q2:** `snippets/quantity-input.liquid` / quick-order — requiere `name="updates[…]"` y
 listeners de `quick-order-list.js`.
@@ -207,9 +212,12 @@ Contrato del puente theme:
 - [x] Q0: capa compat `product-info` ↔ WC (2026-11-13; sin markup PDP)
 - [x] Gates Q0 (2026-11-13): `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline;
   `shopify theme check` ≤ baseline (6 err / 362 warn; sin Liquid nuevo)
-- [ ] Q1: un PDP / featured (`plt-quantity-selector` + data-* en host; ver §2.2)
+- [x] Q1: `featured-product` → `plt-quantity-selector` + data-* / `data-form` en host (2026-11-13)
+- [x] Gates Q1 (2026-11-13): `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline;
+  `shopify theme check` ≤ baseline (6 err / 362 warn)
 - [ ] Q2: quick-order / `updates[]`
 - [ ] No card-product quantity en 2b
+- [ ] `main-product` quantity (mismo patrón Q1; blast mayor — follow-up)
 
 ### Explicitamente fuera / bloqueado
 

@@ -288,11 +288,12 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 | 2a `plt-pagination` compact + `anchor` (pin `a2c759b`) | PR #6 |
 | 2b plan JS + **JS-A** puente + sort desktop | PR #7 / #8 |
 | 2b **JS-B** `plt-filter-bar` + sort en drawer; search/sanity cableados | PR #9 |
-| 2b **JS-Q0** capa compat `product-info` ↔ `plt-quantity-selector` | rama `port/ds-fase-2b-js-q0` |
+| 2b **JS-Q0** capa compat `product-info` ↔ `plt-quantity-selector` | rama `port/ds-fase-2b-js-q0` / PR #10 |
+| 2b **JS-Q1** quantity WC en `featured-product` | rama `port/ds-fase-2b-js-q1` |
 
 | Bloqueado | Por qué | Para desbloquear |
 |---|---|---|
-| **2b WC** resto | Alpine drawer chrome; `quantity-input`; boolean filters sin adapter DS | **JS-C** (quitar Alpine facets); **JS-Q\***; issue DS boolean si hace falta |
+| **2b WC** resto | Alpine drawer chrome; QOL/`updates[]`; boolean filters sin adapter DS; `main-product` quantity | **JS-C**; **JS-Q2**; issue DS boolean + pin; PDP quantity follow-up |
 | **Fase 0 capturas** | Sin `shopify theme dev` / tienda | Credenciales merchant + handles fixture |
 | **Fase 3 shell** | Header/footer/cart/predictive search compartidos; riesgo visual alto | Tienda + capturas; decisión `cart-notification` → `plt-cart-drawer` |
 | **Fase 4 sections** | Depende de shell estable y huecos DS (Faq, Carousel, …) | Tras Fase 3 / issues DS |
@@ -301,7 +302,7 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 | **Inputs/alerts / botones globales** | Sin corte Liquid acotado | Por template en Fase 4 o snippet nuevo si se extrae |
 
 **Siguiente (prioridad):** staging de JS-A/B (filtros/sort/clear/paginación); **JS-C**
-(retirar Alpine del drawer) o **JS-Q1** (quantity WC en featured/PDP; Q0 hecho). Sin tienda: Fase 0
+(retirar Alpine del drawer / bundle en layout); **JS-Q2** (QOL / `updates[]`). Sin tienda: Fase 0
 capturas y checklist visual del layout (fondo `html`, LCP `@import` legacy).
 
 ### Fase 3: Shell
