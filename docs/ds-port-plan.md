@@ -14,7 +14,7 @@ specs Playwright), no de sections: solo comparten 18 de 65 sections y 9 de 89 sn
 | Base CSS | Dawn `base.css` (80 KB) + Bulma `b-style.source.css` (650 KB) + 71 `component-*.css`; ~1,26 MB de CSS | daisyUI 5 + Tailwind 4, tokens `--plt-*`, tema `cheesecake` |
 | Markup | 492 usos de `b-*` en 52 archivos; `color-{{scheme}}` en 37; `page-width` en 44; 20 archivos con `<style>`; 99 `style=""` inline | renderers Liquid del DS + `d-*` / `theme-*` / `plt-*` |
 | JS | Alpine en 14 archivos; loader CDN de Shopify Web Components (desactivado) | Web Components Lit del DS |
-| Clases del DS hoy | Tras 2d: `d-*` en divider/breadcrumb/price; `plt-product-card` / `d-card` en `card-product`; `plt-*` de WC aún no cableados en storefront (salvo ids legacy `plt-product-modal` / `plt-gradient-background`) | |
+| Clases del DS hoy | Tras 2e: `d-*` en divider/breadcrumb/price + badges blog/search; `plt-product-card` / `d-card` en `card-product`; `plt-*` de WC aún no cableados en storefront (salvo ids legacy `plt-product-modal` / `plt-gradient-background`) | |
 | Tamaño | 65 sections, 89 snippets, 36 blocks, 47 templates | |
 
 ### Baseline de calidad (Fase 0, 2026-11-12, `shopify theme check`, CLI 3.91.0)
@@ -221,8 +221,26 @@ sin WC ni shell es la card de producto **solo markup**:
 **Fuera de 2d (siguen pendientes / bloqueados):**
 - Reaplicar 2a (`plt-pagination`) cuando DS#1 aterrice y se suba el pin.
 - 2b WC: cantidad / sort / filtros (eventos `plt:*` + Section Rendering / cajón Alpine).
-- Badges Dawn residuales en `article-card` / `main-search` (markup blog; no es ProductCard).
+- ~~Badges Dawn residuales en `article-card` / `main-search`~~ → corte 2e.
 - Capturas Fase 0 y Fase 3 shell (requieren tienda).
+
+**Gates (2026-11-12):** `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline (40/42);
+`shopify theme check` = **6 errores / 362 avisos** (sin regresión).
+
+#### Corte 2e: badges blog/search → `d-badge` — **hecho** (2026-11-12)
+Con 2a/2b bloqueados y 2d mergeado, el siguiente corte Liquid-only de bajo acoplamiento:
+
+1. Harness `article-card` (`LEGACY_LAYER=import`) con badge on/off + badge de página (markup
+   `main-search`) + referencia `d-badge`.
+2. `snippets/article-card.liquid`: `badge color-{{ schemes }}` → `d-badge theme-label-bold` (dos
+   ocurrencias del shell Dawn). Se conserva `card__badge` + `settings.badge_position` y el resto del
+   markup Dawn (`card` / `article-card`); **no** se migra a EditorialCard (Fase 4).
+3. `sections/main-search.liquid`: badge de resultados tipo `page` al mismo patrón.
+4. Predictive search: sin leftovers de badges; el precio ya usa `snippets/price.liquid` migrado
+   (`show_badges: false`). La shell completa del predictive search queda en Fase 3.
+
+**Fuera de 2e:** `templates/gift_card.liquid` (`badge badge--expired`, template aislado); 2a/2b;
+Fase 3 shell; card blog completa → EditorialCard.
 
 **Gates (2026-11-12):** `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline (40/42);
 `shopify theme check` = **6 errores / 362 avisos** (sin regresión).
