@@ -86,6 +86,7 @@ if (!customElements.get('product-info')) {
           el.max = max == null ? null : max;
           if (step != null) el.step = step;
           if (value != null) el.value = value;
+          this.syncQuantityFormAssociation(el);
           return;
         }
         el.min = min;
@@ -98,14 +99,31 @@ if (!customElements.get('product-info')) {
         if (value != null) el.value = value;
       }
 
+      /**
+       * Q1: WC input is outside <form>; host data-form carries product_form_id so ATC
+       * FormData includes quantity (Dawn used form= on .quantity__input).
+       */
+      syncQuantityFormAssociation(el = this.quantityInput) {
+        if (!this.isPltQuantitySelector(el)) return;
+        const formId = el.getAttribute('data-form');
+        if (!formId) return;
+        const wire = () => {
+          el.querySelectorAll('input[type="number"]').forEach((input) => {
+            input.setAttribute('form', formId);
+          });
+        };
+        wire();
+        queueMicrotask(wire);
+      }
+
       syncQuantityControlFromUpdated(current, updated) {
         if (!current || !updated) return;
-        const dataAttrs = ['data-cart-quantity', 'data-min', 'data-max'];
+        const dataAttrs = ['data-cart-quantity', 'data-min', 'data-max', 'data-form'];
         for (const attribute of dataAttrs) {
           const valueUpdated = updated.getAttribute(attribute);
           if (valueUpdated !== null) {
             current.setAttribute(attribute, valueUpdated);
-          } else {
+          } else if (attribute !== 'data-form') {
             current.removeAttribute(attribute);
           }
         }
@@ -122,6 +140,7 @@ if (!customElements.get('product-info')) {
           } else {
             current.max = null;
           }
+          this.syncQuantityFormAssociation(current);
           return;
         }
         const stepUpdated = updated.getAttribute('step');
@@ -139,6 +158,7 @@ if (!customElements.get('product-info')) {
         this.quantityForm = this.querySelector('.product-form__quantity');
         if (!this.quantityForm) return;
 
+        this.syncQuantityFormAssociation();
         this.setQuantityBoundries();
         if (!this.dataset.originalSection) {
           this.cartUpdateUnsubscriber = subscribe(PUB_SUB_EVENTS.cartUpdate, this.fetchQuantityRules.bind(this));

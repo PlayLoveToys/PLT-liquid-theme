@@ -1257,33 +1257,93 @@ class BulkAdd extends HTMLElement {
     return this._requestStarted;
   }
 
+  /**
+   * JS-Q2: resolve the number input for Dawn <quantity-input> or <plt-quantity-selector>.
+   * plt:quantity-change targets the host; BulkAdd APIs need the inner <input>.
+   */
+  getQuantityInputFromEvent(event) {
+    const host =
+      event?.currentTarget?.matches?.('plt-quantity-selector')
+        ? event.currentTarget
+        : event?.target?.closest?.('plt-quantity-selector');
+    if (host) {
+      const input = host.querySelector('input[type="number"]');
+      if (input) {
+        this.syncPltQuantityInputAttrs(host, input);
+        if (event?.type === 'plt:quantity-change' && event.detail?.value != null) {
+          // Keep attribute mirror in sync for resetQuantityInput / committed value.
+          input.value = String(event.detail.value);
+        }
+        return input;
+      }
+      return host;
+    }
+    return event?.target;
+  }
+
+  syncPltQuantityInputAttrs(host, input = host?.querySelector?.('input[type="number"]')) {
+    if (!host || !input) return input;
+    const index = host.dataset.index;
+    if (index) {
+      input.id = `Quantity-${index}`;
+      input.dataset.index = index;
+      input.dataset.target = host.dataset.target || `quantity-input-${index}`;
+      if (host.dataset.quantityVariantId) {
+        input.dataset.quantityVariantId = host.dataset.quantityVariantId;
+      }
+    }
+    if (host.dataset.min != null) input.dataset.min = host.dataset.min;
+    if (host.dataset.cartQuantity != null) input.dataset.cartQuantity = host.dataset.cartQuantity;
+    if (host.dataset.max != null) {
+      input.dataset.max = host.dataset.max;
+      if (!input.max) input.max = host.dataset.max;
+    }
+    return input;
+  }
+
   resetQuantityInput(id) {
+    const host = this.querySelector(`plt-quantity-selector[data-index="${id}"]`);
+    if (host) {
+      const restored = host.getAttribute('value') ?? host.dataset.cartQuantity ?? '0';
+      const next = parseInt(restored, 10);
+      if (!Number.isNaN(next)) host.value = next;
+      this.isEnterPressed = false;
+      return;
+    }
     const input = this.querySelector(`#Quantity-${id}`);
+    if (!input) return;
     input.value = input.getAttribute('value');
     this.isEnterPressed = false;
   }
 
   setValidity(event, index, message) {
-    event.target.setCustomValidity(message);
-    event.target.reportValidity();
+    const target = this.getQuantityInputFromEvent(event) || event.target;
+    target.setCustomValidity?.(message);
+    target.reportValidity?.();
     this.resetQuantityInput(index);
-    event.target.select();
+    target.select?.();
   }
 
   validateQuantity(event) {
-    const inputValue = parseInt(event.target.value);
-    const index = event.target.dataset.index;
+    const target = this.getQuantityInputFromEvent(event) || event.target;
+    const inputValue = parseInt(event.detail?.value ?? target.value, 10);
+    const index = target.dataset.index;
+    const min = target.dataset.min;
+    const max = target.max || target.dataset.max;
+    const step = target.step;
 
-    if (inputValue < event.target.dataset.min) {
-      this.setValidity(event, index, window.quickOrderListStrings.min_error.replace('[min]', event.target.dataset.min));
-    } else if (inputValue > parseInt(event.target.max)) {
-      this.setValidity(event, index, window.quickOrderListStrings.max_error.replace('[max]', event.target.max));
-    } else if (inputValue % parseInt(event.target.step) != 0) {
-      this.setValidity(event, index, window.quickOrderListStrings.step_error.replace('[step]', event.target.step));
+    if (inputValue < min) {
+      this.setValidity(event, index, window.quickOrderListStrings.min_error.replace('[min]', min));
+    } else if (max && inputValue > parseInt(max)) {
+      this.setValidity(event, index, window.quickOrderListStrings.max_error.replace('[max]', max));
+    } else if (inputValue % parseInt(step) != 0) {
+      this.setValidity(event, index, window.quickOrderListStrings.step_error.replace('[step]', step));
     } else {
-      event.target.setCustomValidity('');
-      event.target.reportValidity();
-      event.target.setAttribute('value', inputValue);
+      target.setCustomValidity?.('');
+      target.reportValidity?.();
+      target.setAttribute('value', inputValue);
+      const host = target.closest?.('plt-quantity-selector');
+      if (host) host.setAttribute('value', String(inputValue));
       this.startQueue(index, inputValue);
     }
   }

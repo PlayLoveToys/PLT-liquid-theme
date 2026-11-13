@@ -188,9 +188,12 @@
     -%}
     <quantity-popover>
       <div class="variant-item__quantity-wrapper quantity-popover-wrapper{% unless has_popover %} variant-item__quantity-wrapper--no-info{% endunless %}">
-        <label class="visually-hidden" for="Quantity-{{ variant.id }}">
+        {%- comment -%}
+          JS-Q2: WC input id is generated; aria-label comes from quantity_label on the selector.
+        {%- endcomment -%}
+        <span class="visually-hidden">
           {{ 'products.product.quantity.label' | t }}
-        </label>
+        </span>
         <div class="quantity-popover-container{% if is_available and has_popover %} quantity-popover-container--hover{% endif %}{% if cart_qty == 0 %} quantity-popover-container--empty{% endif %}">
           {%- if has_qty_rules or has_vol_pricing -%}
             <button
