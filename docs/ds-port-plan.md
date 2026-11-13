@@ -285,11 +285,13 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 | 2d `card-product` markup ProductCard | PR #3 |
 | 2e badges article-card / main-search | PR #4 |
 | 2f gift_card badge + `snippets/button` + higiene orphans | PR #5 |
-| 2a `plt-pagination` compact + `anchor` (pin `a2c759b`) | PR de `port/ds-fase-2a` |
+| 2a `plt-pagination` compact + `anchor` (pin `a2c759b`) | PR #6 |
+| 2b plan JS + **JS-A** puente + sort desktop | PR #7 / #8 |
+| 2b **JS-B** `plt-filter-bar` + sort en drawer; search/sanity cableados | rama `port/ds-fase-2b-js-b` |
 
 | Bloqueado | Por qué | Para desbloquear |
 |---|---|---|
-| **2b WC** cantidad / sort / filtros | Alpine drawer + `quantity-input`; JS-A parcial en colección | Plan [`ds-port-2b-js-plan.md`](./ds-port-2b-js-plan.md); **JS-A** sort desktop colección + puente; faltan staging, JS-B/C, JS-Q* |
+| **2b WC** resto | Alpine drawer chrome; `quantity-input`; boolean filters sin adapter DS | **JS-C** (quitar Alpine facets); **JS-Q\***; issue DS boolean si hace falta |
 | **Fase 0 capturas** | Sin `shopify theme dev` / tienda | Credenciales merchant + handles fixture |
 | **Fase 3 shell** | Header/footer/cart/predictive search compartidos; riesgo visual alto | Tienda + capturas; decisión `cart-notification` → `plt-cart-drawer` |
 | **Fase 4 sections** | Depende de shell estable y huecos DS (Faq, Carousel, …) | Tras Fase 3 / issues DS |
@@ -297,10 +299,9 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 | **Fase 6 CI gates** | Formalizar budgets/diff visual | Tras baseline visual real (Fase 0) |
 | **Inputs/alerts / botones globales** | Sin corte Liquid acotado | Por template en Fase 4 o snippet nuevo si se extrae |
 
-**Siguiente (prioridad):** cerrar validación en tienda del **JS-A** (sort desktop en colección +
-`plt-section-nav`); luego **JS-B** (`plt-filter-bar` en el drawer). Bloqueado sin staging: Fase 0
-capturas y checklist visual del layout (fondo `html`, LCP `@import` legacy). Sort Dawn residual en
-`main-search` (vertical) sigue duplicado respecto al drawer — inventariado, fuera de JS-A.
+**Siguiente (prioridad):** staging de JS-A/B (filtros/sort/clear/paginación); luego **JS-C**
+(retirar Alpine del drawer) o **JS-Q0** (`product-info` ↔ quantity WC). Sin tienda: Fase 0
+capturas y checklist visual del layout (fondo `html`, LCP `@import` legacy).
 
 ### Fase 3: Shell
 Header (excepción documentada: se conserva, con `mega-menu.css`), footer + newsletter, carrito

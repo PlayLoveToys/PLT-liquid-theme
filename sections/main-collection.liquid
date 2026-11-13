@@ -4,8 +4,8 @@
     assign collection_sort_label = 'products.facets.sort_by_label' | t
   -%}
   {% comment %}
-    JS-A: opt-in Section Rendering root. Sort lives in the previously empty
-    #FacetSortForm slot (outside the Alpine facets drawer). Filters stay Alpine until JS-B.
+    JS-A/B: Section Rendering root. Desktop sort in #FacetSortForm; drawer
+    facets use plt-filter-bar + plt-sort-select (Alpine only for drawer chrome).
   {% endcomment %}
   <div
     id="product-grid-container"
