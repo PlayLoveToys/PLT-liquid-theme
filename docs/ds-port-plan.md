@@ -289,7 +289,7 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 
 | Bloqueado | Por qué | Para desbloquear |
 |---|---|---|
-| **2b WC** cantidad / sort / filtros | Acoplado a `quantity-input` + `product-form` / Alpine `facets` drawer | Diseño en [`ds-port-2b-js-plan.md`](./ds-port-2b-js-plan.md); código empieza por **JS-A** (puente + sort acotado) |
+| **2b WC** cantidad / sort / filtros | Alpine drawer + `quantity-input`; JS-A parcial en colección | Plan [`ds-port-2b-js-plan.md`](./ds-port-2b-js-plan.md); **JS-A** sort desktop colección + puente; faltan staging, JS-B/C, JS-Q* |
 | **Fase 0 capturas** | Sin `shopify theme dev` / tienda | Credenciales merchant + handles fixture |
 | **Fase 3 shell** | Header/footer/cart/predictive search compartidos; riesgo visual alto | Tienda + capturas; decisión `cart-notification` → `plt-cart-drawer` |
 | **Fase 4 sections** | Depende de shell estable y huecos DS (Faq, Carousel, …) | Tras Fase 3 / issues DS |
@@ -297,9 +297,10 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 | **Fase 6 CI gates** | Formalizar budgets/diff visual | Tras baseline visual real (Fase 0) |
 | **Inputs/alerts / botones globales** | Sin corte Liquid acotado | Por template en Fase 4 o snippet nuevo si se extrae |
 
-**Siguiente (prioridad):** implementar **JS-A** del plan 2b (puente `plt:*` → Section Rendering +
-`plt-sort-select` en un call site controlado). Bloqueado sin staging: Fase 0 capturas y checklist
-visual del layout (fondo `html`, LCP `@import` legacy).
+**Siguiente (prioridad):** cerrar validación en tienda del **JS-A** (sort desktop en colección +
+`plt-section-nav`); luego **JS-B** (`plt-filter-bar` en el drawer). Bloqueado sin staging: Fase 0
+capturas y checklist visual del layout (fondo `html`, LCP `@import` legacy). Sort Dawn residual en
+`main-search` (vertical) sigue duplicado respecto al drawer — inventariado, fuera de JS-A.
 
 ### Fase 3: Shell
 Header (excepción documentada: se conserva, con `mega-menu.css`), footer + newsletter, carrito

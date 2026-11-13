@@ -158,19 +158,24 @@ Contrato del puente theme:
 
 ### Antes de tocar Liquid de producción
 
-- [ ] Inventario UI: ¿sort Dawn residual en `main-search`? ¿`#FacetSortForm` vacío sigue en DOM?
-- [ ] Decidir id canónico del morph target (`product-grid-container` vs `ProductGridContainer`)
-- [ ] Decidir carga única del bundle WC en `layout/theme.liquid`
-- [ ] Harness: caso `controls` ya existe; añadir caso “sort-only + preserve filters” si JS-A parcial
+- [x] Inventario UI (2026-11-13): `main-collection` `#FacetSortForm` estaba **vacío** → call site JS-A.
+  `main-search` sigue con sort Dawn residual (`#SortBy` vertical, ~L157) **además** del drawer
+  `facets` — no migrar search en JS-A (doble sort a resolver en follow-up).
+- [x] Morph target canónico: `#product-grid-container` (mismo id que Alpine `x-target` hoy).
+  `#ProductGridContainer` es solo el grid interno.
+- [x] Bundle WC: carga en `sections/main-collection.liquid` (module) + `script_url: 'none'` en el
+  adaptador; consolidar en `layout/theme.liquid` cuando haya más call sites (JS-B / paginación puente).
+- [x] Harness: caso `sort-preserve` (sort-only + preserve filters/`q`) además de `controls`.
 - [ ] Staging / `shopify theme dev` (Fase 0) para no validar solo harness
 
 ### JS-A — sort con puente (primer código)
 
-- [ ] Asset puente (vanilla) + tests manuales colección
-- [ ] `plt-sort-select` en un solo call site controlado; cancelar `plt:sort-change`
-- [ ] Preserve filtros activos + `q`
-- [ ] Sin regresión: clear all, paginación, empty state
-- [ ] Gates: `check:plt`, `check:theme-css`, `test:templates`, `theme check` ≤ baseline
+- [x] Asset puente `assets/plt-section-nav.js` (vanilla; sort/filter/page)
+- [x] `plt-sort-select` en `main-collection` (`#FacetSortForm`); cancela `plt:sort-change` vía puente
+- [x] Preserve filtros activos + `q` (props del adaptador Liquid)
+- [ ] Sin regresión en tienda: clear all, paginación, empty state (requiere staging)
+- [x] Gates (2026-11-13): `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline;
+  `shopify theme check` = 6 err / 362 warn (≤ baseline)
 
 ### JS-B — filter-bar
 
