@@ -14,7 +14,7 @@ specs Playwright), no de sections: solo comparten 18 de 65 sections y 9 de 89 sn
 | Base CSS | Dawn `base.css` (80 KB) + Bulma `b-style.source.css` (650 KB) + 71 `component-*.css`; ~1,26 MB de CSS | daisyUI 5 + Tailwind 4, tokens `--plt-*`, tema `cheesecake` |
 | Markup | 492 usos de `b-*` en 52 archivos; `color-{{scheme}}` en 37; `page-width` en 44; 20 archivos con `<style>`; 99 `style=""` inline | renderers Liquid del DS + `d-*` / `theme-*` / `plt-*` |
 | JS | Alpine en 14 archivos; loader CDN de Shopify Web Components (desactivado) | Web Components Lit del DS |
-| Clases del DS hoy | `d-*`: 0, `theme-*`: 0, `plt-*`: 2 (`plt-product-modal`, `plt-gradient-background`) | |
+| Clases del DS hoy | Tras 2c: `d-*` en divider/breadcrumb/price (cards); `plt-*` de WC aún no cableados en storefront (salvo ids legacy `plt-product-modal` / `plt-gradient-background`) | |
 | Tamaño | 65 sections, 89 snippets, 36 blocks, 47 templates | |
 
 ### Baseline de calidad (Fase 0, 2026-11-12, `shopify theme check`, CLI 3.91.0)
@@ -33,7 +33,7 @@ archivo migrado; sirven para detectar regresiones.
 | LiquidHTMLSyntaxError | 1 | `sections/after-page-content.liquid:19` cierra un `div` no abierto |
 | ImgWidthAndHeight | 1 | `sections/main-bloggle-article.liquid:365` |
 | ContentForHeaderModification | 1 | `templates/search.avada-seo.liquid` |
-| **MissingAsset** | 1 | `sections/main-search.liquid` referencia `assets/facets.js`, que no existe. Es una etiqueta `<script>` obsoleta (da 404), no una función rota: los filtros los maneja Alpine (ver corte 2b) |
+| **MissingAsset** | 1 | ~~`sections/main-search.liquid` → `facets.js`~~ — **resuelto en higiene 2c** (script obsoleto eliminado). Los filtros los maneja Alpine (ver corte 2b). Baseline histórico: 1 MissingAsset previo al port. |
 
 Validación de templates (`npm run test:templates`): **40 de 42** JSON parsean en modo estricto. Fallan
 `templates/blog.json` (línea 79) y `templates/page.test.json` (línea 205) por un error de sintaxis JSON
@@ -61,7 +61,7 @@ Se registran como baseline del validador.
   404, cuenta. **Bloqueado**: requiere `shopify theme dev` contra una tienda (credenciales del merchant).
   Reutilizar `plt-frontend-liquid/tools/visual-compare`.
 - [ ] Fijar handles de fixture (producto, colección, artículo) y guardarlos en este documento.
-- [x] `facets.js` ausente: resuelto, es una etiqueta obsoleta (ver corte 2b). Se puede borrar el `<script>` de `main-search`.
+- [x] `facets.js` ausente: etiqueta obsoleta en `main-search` (ver corte 2b). **Higiene 2c:** `<script>` eliminado.
 
 ### Fase 1: Tooling y tokens (sin cambio visual)
 **Hecho (2026-11-12), sin tocar `layout/` ni ningún snippet/section existente:**
@@ -77,14 +77,15 @@ Se registran como baseline del validador.
 - [x] `theme check`: 7 errores (igual que el baseline); avisos 354 → 362 (+8 `RemoteAsset`/`UnusedAssign`
   de los snippets vendorizados; no se editan a mano).
 
-**Decisión deliberada: `assets/theme.css` aún NO se enlaza en `layout/theme.liquid`.** Sin capturas de la
-Fase 0 no hay forma de comprobar que no altera la tienda (el tema trae reglas base globales y el adaptador
-`shopify` añade estilos a `body` y `.shopify-section`, que por eso tampoco se importa). El primer enlace va con
-la primera migración de la Fase 2, ya verificada visualmente.
+**Enlace de `assets/theme.css`:** inicialmente se aplazó (sin capturas Fase 0). **Actualizado (corte 2b,
+2026-11-12):** sí está enlazado en `layout/theme.liquid` junto con la opción A (`@layer legacy` + `@import`
+de Dawn/Bulma). Ver corte 2b. El adaptador `shopify` del DS (estilos a `body` / `.shopify-section`) sigue
+sin importarse a propósito.
 
 Pendiente de la fase:
 - Reintroducir preflight de Tailwind cuando se retire Bulma (Fase 5).
-- Adaptador `shopify` del DS (alias `--token-*`, fondo de `body`): activar junto al enlace del CSS.
+- Adaptador `shopify` del DS (alias `--token-*`, fondo de `body`): activar cuando haya consumidores migrados
+  y capturas reales.
 - **Riesgo central** (sigue abierto): colisiones de nombre (`button`, `card`, `menu`, `modal`) con Dawn/Bulma;
   mitigado por el prefijo `d-`, a confirmar con capturas.
 - Mapear `settings_schema` (color_schemes, tipografía, botones, inputs, cards) a tokens. Decisión de
@@ -93,9 +94,12 @@ Pendiente de la fase:
 
 ### Fase 2: Primitivas y controles
 `button`→`d-btn`; precio, badges, inputs, alertas, divider, breadcrumb; `card-product`→`product-card`;
-cantidad, variantes, paginación, orden, filtros, galería y quick add→Web Components del DS (patrón de
-`facets.js`: cancelar `plt:*` y aplicar con Section Rendering). Borrar muertos: `card-product-Respaldo`,
-`price-BK`, `base-BK`, `base-purged`.
+cantidad, variantes, paginación, orden, filtros, galería y quick add→Web Components del DS (patrón:
+cancelar `plt:*` y aplicar con Section Rendering).
+
+**Higiene (2026-11-12, con corte 2c):** borrados sin referencias —
+`snippets/card-product-Respaldo.liquid`, `snippets/price-BK.liquid`, `assets/base-BK.css`,
+`assets/base-purged.css`. Script obsoleto a `facets.js` quitado de `sections/main-search.liquid`.
 
 **Método (cada corte):** (1) renderizar el snippet real en `tools/snippet-harness` y mirarlo en el navegador
 junto al CSS real del theme; (2) solo si se ve bien, migrar y enlazar. Un cambio de apariencia hacia el
@@ -122,13 +126,11 @@ evalúa filtros en argumentos de `render`), y conservar el markup Bulma solo mie
 Fuera del snippet compartido hay paginaciones inline que también migrar: `main-account`, `main-addresses`,
 `blog-mansory`.
 
-**Enlace de `theme.css` en el layout: aún no.** Análisis hecho (válido para cuando haya un consumidor):
-`theme.css` no tiene selectores de elemento globales sin capa, 0 colisiones de variables con el CSS legacy
-(246 variables propias) y las reglas del DS viven en capas, así que el CSS legacy, que no usa capas, gana
-siempre en un conflicto. Pesa 128 KB (~20 KB gz): se enlaza con el primer corte que sí funcione.
-
-> **Corrección (corte 2b):** que el legacy gane siempre protege a la tienda, pero **rompe los componentes del
-> DS**. Ver abajo.
+**Análisis previo al enlace** (sigue siendo válido como contexto): `theme.css` no tiene selectores de
+elemento globales sin capa, 0 colisiones de variables con el CSS legacy (246 variables propias) y las
+reglas del DS viven en capas. Con legacy **sin** capa, el CSS legacy ganaba siempre en conflicto — eso
+protege a la tienda pero **rompe los componentes del DS**. Por eso el enlace real fue con opción A en 2b
+(ver abajo), no “a secas”.
 
 #### Corte 2b: cantidad, orden y filtros — **bloqueado por la capa de CSS legacy** (2026-11-12)
 Caso `controls` del harness (`plt-quantity-selector`, `plt-sort-select`, `plt-filter-bar`), con el CSS real:
@@ -173,10 +175,34 @@ página real; en el harness el fondo de la página pasó a crema (#FAF7F2).
 **Acoplamiento JS que sigue pendiente aunque se resuelva el CSS:**
 - Cantidad: el theme usa `<quantity-input>` (`assets/global.js`, ligado a `product-form`) en `main-product`,
   `featured-product` y `quick-order-list-row`. Migrar implica el JS de formulario de producto.
-- Orden y filtros: no los maneja ningún `facets.js` (**corrección**: esa referencia en `main-search.liquid`
-  es una etiqueta obsoleta que da 404, y `<facet-filters-form>` no está definido). Los maneja Alpine con
-  `x-target` en el cajón `b-drawer` de `snippets/facets.liquid` (envío automático con debounce de 800 ms).
-  Migrar a `plt-filter-bar` / `plt-sort-select` implica reemplazar ese cajón.
+- Orden y filtros: no los maneja ningún `facets.js` (**corrección**: la referencia en `main-search.liquid`
+  era una etiqueta obsoleta; **eliminada en higiene 2c**. `<facet-filters-form>` no está definido). Los
+  maneja Alpine con `x-target` en el cajón `b-drawer` de `snippets/facets.liquid` (envío automático con
+  debounce de 800 ms). Migrar a `plt-filter-bar` / `plt-sort-select` implica reemplazar ese cajón.
+
+#### Corte 2c: divider → breadcrumb → price/badges en cards — **hecho** (2026-11-12)
+Con `theme.css` y `@layer legacy` ya en el layout, se ejecutó el PR de higiene + primitivas Liquid sin JS:
+
+1. **Divider** — harness `divider` + migrados `snippets/divider.liquid` y `blocks/_divider.liquid` a clases DS
+   (`d-*` / tokens `--plt-*` o utilidades del theme). Settings del block vía CSS variables locales.
+2. **Breadcrumb** — harness `breadcrumb` + migrado `blocks/breadcrumb.liquid` sin renombrar tipo de block ni
+   settings ids.
+3. **Price + badges en cards** — markup de `snippets/price.liquid` hacia look DS (cards / predictive search).
+   **No** se reescribió el bloque `price` de PDP para no romper el contrato con `product-info.js`. No se tocó
+   `snippets/price-facet.liquid` (Alpine + facets).
+
+**Gates (2026-11-12):** `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline (40/42; fallan
+`blog.json` / `page.test.json`); `shopify theme check` = **6 errores / 362 avisos** (≤ baseline 7/362;
+`MissingAsset` de `facets.js` eliminado). Harness regenerado con `LEGACY_LAYER=import` para divider /
+breadcrumb / price.
+
+**Checklist tienda (sigue pendiente; hace falta `shopify theme dev`):**
+- Fondo `html` crema (#FAF7F2) del DS vs página real.
+- LCP / CSS bloqueante por los `@import` en capa legacy.
+- Empates de especificidad `component-*.css` (sin capa) vs Bulma en capa `legacy`.
+
+Fuera de 2c (siguen bloqueados): reaplicar 2a al subir pin DS; cablear 2b WC (eventos `plt:*` + Section
+Rendering); capturas Fase 0; Fase 3 shell.
 
 ### Fase 3: Shell
 Header (excepción documentada: se conserva, con `mega-menu.css`), footer + newsletter, carrito
