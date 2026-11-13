@@ -1,47 +1,58 @@
 {% comment %}
-  Quantity input
+  Quantity input (JS-Q2)
+
+  Renders <plt-quantity-selector> with name="updates[{{ id }}]" for quick-order /
+  bulk cart updates. Host carries data-* for BulkAdd validation (data-min =
+  quantity_rule.min; min attr may be 0 so the shopper can clear the line).
 
   Accepts:
   - variant: {Object} Variant object
-  - variant_id: {String} Variant ID (optional)
-  - min: {Number} Min (optional)
+  - variant_id: {String} Variant ID for updates[] key (optional; default variant.id)
+  - min: {Number} Min (optional; QOL passes 0)
 
   Usage:
-  {% render 'quantity-input' variant: variant %}
+    {% render 'quantity-input', variant: variant, min: 0 %}
 {% endcomment %}
 
-<quantity-input class="quantity cart-quantity">
-  <button class="quantity__button" name="minus" type="button" data-target="decrement-{{ variant.id }}">
-    <span class="visually-hidden">
-      {{- 'products.product.quantity.decrease' | t: product: variant.title | escape -}}
-    </span>
-    <span class="svg-wrapper">{{ 'icon-minus.svg' | inline_asset_content }}</span>
-  </button>
-  <input
-    class="quantity__input"
-    data-quantity-variant-id="{{ variant.id }}"
-    type="number"
-    name="updates[{{ variant_id }}]"
-    {% # theme-check-disable %}
-    value="{{ cart | item_count_for_variant: variant.id }}"
-    data-cart-quantity="{{ cart | item_count_for_variant: variant.id }}"
-    min="{{ min }}"
-    data-min="{{ variant.quantity_rule.min }}"
-    {% if variant.quantity_rule.max != null %}
-      max="{{ variant.quantity_rule.max }}"
-    {% endif %}
-    step="{{ variant.quantity_rule.increment }}"
-    {% # theme-check-enable %}
-    aria-label="{{ 'products.product.quantity.input_label' | t: product: variant.title | escape }}"
-    id="Quantity-{{ variant.id }}"
-    data-index="{{ variant.id }}"
-    data-target="quantity-input-{{ variant.id }}"
-  >
-  <button class="quantity__button" name="plus" type="button" data-target="increment-{{ variant.id }}">
-    <span class="visually-hidden">
-      {{- 'products.product.quantity.increase' | t: product: variant.title | escape -}}
-    </span>
-    <span class="svg-wrapper">{{ 'icon-plus.svg' | inline_asset_content }}</span>
-  </button>
-  {%- render 'progress-bar' -%}
-</quantity-input>
+{%- liquid
+  assign qty_variant_id = variant_id | default: variant.id
+  assign cart_qty = cart | item_count_for_variant: variant.id
+  assign qty_min = min | default: 0
+  assign qty_step = variant.quantity_rule.increment
+  assign qty_rule_min = variant.quantity_rule.min
+  assign qty_rule_max = variant.quantity_rule.max
+  assign field_name = 'updates[' | append: qty_variant_id | append: ']'
+  assign qty_decrease_label = 'products.product.quantity.decrease' | t: product: variant.title
+  assign qty_increase_label = 'products.product.quantity.increase' | t: product: variant.title
+  assign qty_input_label = 'products.product.quantity.input_label' | t: product: variant.title
+-%}
+{%- comment -%}
+  script_url: 'none' — section/layout loads the WC bundle (JS-C). Adapter has no
+  attr passthrough — inject data-* / class on the host below.
+{%- endcomment -%}
+{%- capture plt_quantity_selector_html -%}
+  {% render 'plt-quantity-selector',
+    value: cart_qty,
+    min: qty_min,
+    max: qty_rule_max,
+    step: qty_step,
+    name: field_name,
+    decrease_label: qty_decrease_label,
+    increase_label: qty_increase_label,
+    quantity_label: qty_input_label,
+    script_url: 'none'
+  %}
+{%- endcapture -%}
+{%- liquid
+  assign plt_qty_host_attrs = ' class="quantity cart-quantity" data-cart-quantity="' | append: cart_qty | append: '" data-min="' | append: qty_rule_min | append: '" data-index="' | append: variant.id | append: '" data-quantity-variant-id="' | append: variant.id | append: '" data-target="quantity-input-' | append: variant.id | append: '"'
+  if qty_rule_max != null
+    assign plt_qty_host_attrs = plt_qty_host_attrs | append: ' data-max="' | append: qty_rule_max | append: '"'
+  endif
+  assign plt_qty_host_open = '<plt-quantity-selector' | append: plt_qty_host_attrs
+  assign plt_quantity_selector_html = plt_quantity_selector_html | replace_first: '<plt-quantity-selector', plt_qty_host_open
+  # Fallback input: mirror Dawn ids / data-* for no-JS and pre-upgrade selectors.
+  assign plt_qty_fallback_attrs = 'data-plt-fallback id="Quantity-' | append: variant.id | append: '" data-index="' | append: variant.id | append: '" data-min="' | append: qty_rule_min | append: '" data-cart-quantity="' | append: cart_qty | append: '" data-quantity-variant-id="' | append: variant.id | append: '" data-target="quantity-input-' | append: variant.id | append: '"'
+  assign plt_quantity_selector_html = plt_quantity_selector_html | replace_first: 'data-plt-fallback', plt_qty_fallback_attrs
+  echo plt_quantity_selector_html
+-%}
+{%- render 'progress-bar' -%}

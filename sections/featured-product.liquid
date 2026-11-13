@@ -185,7 +185,6 @@
                     </span>
                     <label
                       class="quantity__label form__label"
-                      for="Quantity-{{ section.id }}"
                       aria-labelledby="quantity-label-{{ section.id }}"
                     >
                       <span aria-hidden="true">{{ 'products.product.quantity.label' | t }}</span>
@@ -199,40 +198,46 @@
                       </span>
                     </label>
                     <div class="price-per-item__container">
-                      <quantity-input class="quantity">
-                        <button class="quantity__button" name="minus" type="button">
-                          <span class="visually-hidden">
-                            {{- 'products.product.quantity.decrease' | t: product: product.title | escape -}}
-                          </span>
-                          <span class="svg-wrapper">
-                            {{- 'icon-minus.svg' | inline_asset_content -}}
-                          </span>
-                        </button>
-                        <input
-                          class="quantity__input"
-                          type="number"
-                          name="quantity"
-                          id="Quantity-{{ section.id }}"
-                          data-cart-quantity="{{ cart_qty }}"
-                          data-min="{{ product.selected_or_first_available_variant.quantity_rule.min }}"
-                          min="{{ product.selected_or_first_available_variant.quantity_rule.min }}"
-                          {% if product.selected_or_first_available_variant.quantity_rule.max != null %}
-                            data-max="{{ product.selected_or_first_available_variant.quantity_rule.max }}"
-                            max="{{ product.selected_or_first_available_variant.quantity_rule.max }}"
-                          {% endif %}
-                          step="{{ product.selected_or_first_available_variant.quantity_rule.increment }}"
-                          value="{{ product.selected_or_first_available_variant.quantity_rule.min }}"
-                          form="{{ product_form_id }}"
-                        >
-                        <button class="quantity__button" name="plus" type="button">
-                          <span class="visually-hidden">
-                            {{- 'products.product.quantity.increase' | t: product: product.title | escape -}}
-                          </span>
-                          <span class="svg-wrapper">
-                            {{- 'icon-plus.svg' | inline_asset_content -}}
-                          </span>
-                        </button>
-                      </quantity-input>
+                      {%- comment -%}
+                        JS-Q1: plt-quantity-selector. Host must carry data-cart-quantity / data-min /
+                        data-max for product-info bounds; data-form associates the input with the ATC
+                        form (WC has no form prop). Adapter has no attr passthrough — inject on host.
+                        script_url: 'none' — layout loads the bundle after JS-C; until then this
+                        section loads the module once below.
+                      {%- endcomment -%}
+                      {%- liquid
+                        assign qty_rule_min = product.selected_or_first_available_variant.quantity_rule.min
+                        assign qty_rule_max = product.selected_or_first_available_variant.quantity_rule.max
+                        assign qty_rule_step = product.selected_or_first_available_variant.quantity_rule.increment
+                        assign qty_decrease_label = 'products.product.quantity.decrease' | t: product: product.title
+                        assign qty_increase_label = 'products.product.quantity.increase' | t: product: product.title
+                        assign qty_input_label = 'products.product.quantity.input_label' | t: product: product.title
+                      -%}
+                      {%- capture plt_quantity_selector_html -%}
+                        {% render 'plt-quantity-selector',
+                          value: qty_rule_min,
+                          min: qty_rule_min,
+                          max: qty_rule_max,
+                          step: qty_rule_step,
+                          name: 'quantity',
+                          decrease_label: qty_decrease_label,
+                          increase_label: qty_increase_label,
+                          quantity_label: qty_input_label,
+                          script_url: 'none'
+                        %}
+                      {%- endcapture -%}
+                      {%- liquid
+                        assign plt_qty_host_attrs = ' data-cart-quantity="' | append: cart_qty | append: '" data-min="' | append: qty_rule_min | append: '"'
+                        if qty_rule_max != null
+                          assign plt_qty_host_attrs = plt_qty_host_attrs | append: ' data-max="' | append: qty_rule_max | append: '"'
+                        endif
+                        assign plt_qty_host_attrs = plt_qty_host_attrs | append: ' data-form="' | append: product_form_id | append: '"'
+                        assign plt_qty_host_open = '<plt-quantity-selector' | append: plt_qty_host_attrs
+                        assign plt_quantity_selector_html = plt_quantity_selector_html | replace_first: '<plt-quantity-selector', plt_qty_host_open
+                        assign plt_qty_fallback_form = 'data-plt-fallback form="' | append: product_form_id | append: '"'
+                        assign plt_quantity_selector_html = plt_quantity_selector_html | replace_first: 'data-plt-fallback', plt_qty_fallback_form
+                        echo plt_quantity_selector_html
+                      -%}
                       {%- liquid
                         assign volume_pricing_array = product.selected_or_first_available_variant.quantity_price_breaks | sort: 'quantity' | reverse
                         assign current_qty_for_volume_pricing = cart_qty | plus: product.selected_or_first_available_variant.quantity_rule.min
@@ -473,6 +478,11 @@
   </section>
 
   <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+  {%- comment -%}
+    Bundle WC for plt-quantity-selector (JS-Q1). Layout loads it after JS-C (#12); keep this
+    until that merges so featured works on the Q0 base. Drop when rebasing onto JS-C.
+  {%- endcomment -%}
+  <script type="module" src="{{ 'plt-web-components.bundle.js' | asset_url }}"></script>
   {%- if section.settings.image_zoom == 'hover' -%}
     <script id="EnableZoomOnHover-featured" src="{{ 'magnify.js' | asset_url }}" defer="defer"></script>
   {%- endif %}

@@ -289,10 +289,13 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 | 2b plan JS + **JS-A** puente + sort desktop | PR #7 / #8 |
 | 2b **JS-B** `plt-filter-bar` + sort en drawer; search/sanity cableados | PR #9 |
 | 2b **JS-C** drawer `<dialog>` + bundle WC en `layout/theme.liquid` | rama `port/ds-fase-2b-js-c` |
+| 2b **JS-Q0** capa compat `product-info` ↔ `plt-quantity-selector` | rama `port/ds-fase-2b-js-q0` / PR #10 |
+| 2b **JS-Q1** quantity WC en `featured-product` | rama `port/ds-fase-2b-js-q1` / PR #13 |
+| 2b **JS-Q2** quantity WC en QOL / `updates[]` | rama `port/ds-fase-2b-js-q2` |
 
 | Bloqueado | Por qué | Para desbloquear |
 |---|---|---|
-| **2b WC** resto | `quantity-input`; boolean filters sin pin | **JS-Q\***; tras merge de [DS#5](https://github.com/PlayLoveToys/PLT-design-system/pull/5) → bump pin + `sync:plt` ([DS#3](https://github.com/PlayLoveToys/PLT-design-system/issues/3); **no bump antes del merge**) |
+| **2b WC** resto | `main-product` quantity; boolean filters sin pin | PDP quantity follow-up; tras merge de [DS#5](https://github.com/PlayLoveToys/PLT-design-system/pull/5) → bump pin + `sync:plt` ([DS#3](https://github.com/PlayLoveToys/PLT-design-system/issues/3); **no bump antes del merge**) |
 | **Fase 0 capturas** | Sin `shopify theme dev` / tienda | Credenciales merchant + handles fixture |
 | **Fase 3 shell** | Header/footer/cart/predictive search compartidos; riesgo visual alto | Tienda + capturas; decisión `cart-notification` → `plt-cart-drawer` |
 | **Fase 4 sections** | Depende de shell estable y huecos DS (Faq, Carousel, …) | Tras Fase 3 / [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
@@ -300,8 +303,8 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 | **Fase 6 CI gates** | Formalizar budgets/diff visual | Tras baseline visual real (Fase 0) |
 | **Inputs/alerts / botones globales** | Sin corte Liquid acotado | Por template en Fase 4 o snippet nuevo si se extrae |
 
-**Siguiente (prioridad):** staging de JS-A/B/C (filtros/sort/clear/paginación/drawer dialog);
-**JS-Q0** (`product-info` ↔ quantity WC). Alpine `x-data` restantes: **12** archivos Liquid (Fase 5).
+**Siguiente (prioridad):** staging de JS-A/B/C/Q* (filtros/sort/clear/paginación/drawer dialog/quantity);
+**JS-C** (retirar Alpine del drawer / bundle en layout). Alpine `x-data` restantes: **12** archivos Liquid (Fase 5).
 Sin tienda: Fase 0 capturas y checklist visual del layout (fondo `html`, LCP `@import` legacy).
 
 ### Fase 3: Shell
