@@ -16,17 +16,17 @@
           "type": "b-card-collections-grid",
           "name": "b-card-collections-grid",
           "settings": {
-            "main_collection": "action-figures",
+            "main_collection": "nerf",
             "collections_card_title": "",
             "priority_desktop": true,
             "priority_mobile": true,
-            "collection_1": "sex-toys-for-women",
-            "collection_1_title": "For Her",
-            "collection_2": "sex-toys-for-men",
-            "collection_2_title": "For Him",
-            "collection_3": "sex-toys-for-couples",
-            "collection_3_title": "For Couples",
-            "collection_4": "sexy-lingerie",
+            "collection_1": "",
+            "collection_1_title": "",
+            "collection_2": "",
+            "collection_2_title": "",
+            "collection_3": "",
+            "collection_3_title": "",
+            "collection_4": "",
             "collection_4_title": "",
             "collection_5": "",
             "collection_5_title": "",
@@ -187,7 +187,6 @@
       "type": "a-logo-motto",
       "name": "AA Logo Motto",
       "settings": {
-        "logo": "shopify://shop_images/Logo-PlayLoveToys-3by2-800x534.png",
         "motto_title": "Embrace Your Sexual Wellness",
         "motto": "We aim to promote a philosophy centred on encouraging the public to prioritize their overall sexual health and happiness. Our dedication is to establish a safe, inclusive, and empowering environment for everyone."
       }
