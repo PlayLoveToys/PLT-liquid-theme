@@ -468,6 +468,12 @@
       <script src="{{ 'alpine-product-card.js' | asset_url }}" defer></script>
     {% endcomment %}
     <script defer src="{{ 'alpine-bundle.js' | asset_url }}"></script>
+    {% comment %}
+      JS-C: single WC + section-nav load sitewide. Adapters that already render
+      on collection/search pass script_url: 'none'.
+    {% endcomment %}
+    <script type="module" src="{{ 'plt-web-components.bundle.js' | asset_url }}"></script>
+    <script src="{{ 'plt-section-nav.js' | asset_url }}" defer></script>
 
     {% comment %}
       TRANSFERIR A NUEVO THEME

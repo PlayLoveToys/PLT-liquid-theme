@@ -1,8 +1,8 @@
 {% comment %}
   Renders facets (filtering and sorting) as a unified drawer.
-  JS-B: filter/sort body is plt-filter-bar + plt-sort-select; morph via
-  plt-section-nav on an ancestor (data-plt-section-nav). Drawer chrome stays
-  Alpine until JS-C. Accepts:
+  JS-C: native <dialog> (no Alpine). Filter/sort body is plt-filter-bar +
+  plt-sort-select; morph via plt-section-nav on an ancestor
+  (data-plt-section-nav). Accepts:
   - results: {Object} Collection or Search object
 {% endcomment %}
 
@@ -24,14 +24,46 @@
   endif
 -%}
 
-<div x-data="{ drawerOpen: false }" class="b-container facets-wrapper">
+<style>
+  .facets-drawer {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    width: 100%;
+    height: 100%;
+    max-width: 100vw;
+    max-height: 100vh;
+    margin: 0;
+  }
+
+  .facets-drawer::backdrop {
+    background-color: rgba(10, 10, 10, 0.45);
+  }
+
+  .facets-drawer[open] {
+    display: block;
+  }
+
+  .facets-drawer .b-drawer-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--b-drawer-width, 420px);
+    max-width: 85vw;
+    height: 100%;
+    margin: 0;
+    transform: none;
+  }
+</style>
+
+<div class="b-container facets-wrapper">
   <!-- Trigger Sticky -->
   <div class="b-level b-top-4 b-px-4 b-border-bottom-light">
     <div class="b-level-left">
       <button
         type="button"
         class="b-button b-is-primary b-is-light"
-        @click="drawerOpen = true"
+        onclick="document.getElementById('FacetsDrawer').showModal()"
       >
         <span class="b-icon">
           {{ 'icon-filter.svg' | inline_asset_content }}
@@ -51,21 +83,24 @@
     </div>
   </div>
 
-  <!-- Drawer Component -->
-  <div
-    class="b-drawer"
-    :class="{ 'b-is-active': drawerOpen }"
-    @keydown.escape.window="drawerOpen = false"
+  <!-- Native dialog drawer (Escape + backdrop click close without Alpine) -->
+  <dialog
+    id="FacetsDrawer"
+    class="facets-drawer"
+    onclick="if (event.target === this) this.close()"
   >
-    <div class="b-drawer-background" @click="drawerOpen = false"></div>
-
     <div class="b-drawer-panel b-is-flex b-is-flex-direction-column b-h-full b-px-4 b-py-6">
       <!-- Header -->
       <header class="b-level b-is-mobile b-is-align-items-center b-py-4 b-px-4 b-border-bottom-light">
         <p class="b-title b-is-3 b-is-4-mobile b-my-0 b-has-text-primary ">
           {{ 'products.facets.filter_and_sort' | t }}
         </p>
-        <button type="button" class="b-delete" @click="drawerOpen = false"></button>
+        <button
+          type="button"
+          class="b-delete"
+          aria-label="{{ 'accessibility.close' | t }}"
+          onclick="this.closest('dialog').close()"
+        ></button>
       </header>
 
       <!-- Body: WC controls (own forms — do not wrap in an outer <form>) -->
@@ -106,7 +141,7 @@
           <button
             type="button"
             class="b-button b-level-item b-is-primary b-is-small"
-            @click="drawerOpen = false"
+            onclick="this.closest('dialog').close()"
           >
             {{ apply_label }}
           </button>
@@ -120,5 +155,5 @@
         </div>
       </div>
     </div>
-  </div>
+  </dialog>
 </div>
