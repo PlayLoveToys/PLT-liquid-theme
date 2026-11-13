@@ -177,11 +177,15 @@ Contrato del puente theme:
 - [x] Gates (2026-11-13): `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline;
   `shopify theme check` = 6 err / 362 warn (≤ baseline)
 
-### JS-B — filter-bar
+### JS-B — filter-bar (2026-11-13)
 
-- [ ] Reemplazar loop filtros + price-facet
-- [ ] `plt:filter-change` → mismo puente; debounce = el del WC / puente (no Alpine 800 ms)
-- [ ] Retirar `x-on:input.debounce` del form facets
+- [x] Reemplazar loop filtros + price-facet en `snippets/facets.liquid` por `plt-filter-bar`
+- [x] Sort del drawer → `plt-sort-select` (mismo puente); sin `<form>` exterior (los WC traen el suyo)
+- [x] `plt:filter-change` → `plt-section-nav`; sin `x-on:input.debounce` / `x-target` en facets
+- [x] `main-collection-sanity` + `main-search`: root `data-plt-section-nav` + scripts; sort Dawn residual de search eliminado
+- [x] Harness `filter-bar`
+- [ ] Boolean filters: el adapter DS solo mapea `list` + `price_range` (gap upstream)
+- [ ] Staging / clear chips / empty state en tienda
 
 ### JS-C — retirar Alpine de facets
 

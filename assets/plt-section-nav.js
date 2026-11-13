@@ -5,7 +5,7 @@
  * `data-plt-morph-target`, default `#product-grid-container`). Without a matching
  * root the WC keeps its native GET / link behaviour.
  *
- * See docs/ds-port-2b-js-plan.md (corte JS-A).
+ * See docs/ds-port-2b-js-plan.md (cortes JS-A / JS-B).
  */
 ;(() => {
   const SORT = 'plt:sort-change';

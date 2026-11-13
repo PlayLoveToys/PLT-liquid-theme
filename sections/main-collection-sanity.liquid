@@ -24,16 +24,27 @@
 <!-- hasta aqui llegue -->
 <!-- Collection Products Grid -->
 <section class="b-section">
-  <div id="product-grid-container" class="b-container b-is-fullhd">
+  {%- liquid
+    assign collection_sort_by = collection.sort_by | default: collection.default_sort_by
+    assign collection_sort_label = 'products.facets.sort_by_label' | t
+  -%}
+  <div
+    id="product-grid-container"
+    class="b-container b-is-fullhd"
+    data-plt-section-nav
+    data-plt-section-id="{{ section.id }}"
+    data-plt-morph-target="#product-grid-container"
+  >
     {%- paginate collection.products by 20 -%}
-      <div class="facets facets-vertical-sort c-small-screen-hide screen-hide">
-        <form
-          class="facets-vertical-form"
-          id="FacetSortForm"
-          action="{{ collection.url }}"
-          x-target="product-grid-container"
-          x-on:input.debounce.800ms="if($el.isConnected) $el.requestSubmit()"
-        ></form>
+      <div class="facets facets-vertical-sort c-small-screen-hide screen-hide" id="FacetSortForm">
+        {% render 'plt-sort-select',
+          options: collection.sort_options,
+          current: collection_sort_by,
+          filters: collection.filters,
+          action: collection.url,
+          label: collection_sort_label,
+          script_url: 'none'
+        %}
       </div>
 
       <aside
@@ -198,6 +209,8 @@
       </section>
     {%- endpaginate -%}
   </div>
+  <script type="module" src="{{ 'plt-web-components.bundle.js' | asset_url }}"></script>
+  <script src="{{ 'plt-section-nav.js' | asset_url }}" defer></script>
 </section>
 <!-- END Collection Products Grid -->
 
