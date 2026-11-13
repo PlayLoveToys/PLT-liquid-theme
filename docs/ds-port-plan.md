@@ -17,10 +17,15 @@ specs Playwright), no de sections: solo comparten 18 de 65 sections y 9 de 89 sn
 | Clases del DS hoy | Tras 2f: `d-*` en divider/breadcrumb/price + badges blog/search/gift_card; `d-btn*` en `snippets/button`; `plt-product-card` / `d-card` en `card-product`; `plt-*` de WC aún no cableados en storefront (salvo ids legacy `plt-product-modal` / `plt-gradient-background`) | |
 | Tamaño | 65 sections, 89 snippets, 36 blocks, 47 templates | |
 
-### Baseline de calidad (Fase 0, 2026-11-12, `shopify theme check`, CLI 3.91.0)
+### Baseline de calidad (`shopify theme check`, CLI 3.91.0)
 
-7 errores y 354 avisos **previos al port**. No se arreglan como parte del port salvo que toquen el
-archivo migrado; sirven para detectar regresiones.
+| Momento | Errores | Avisos | Nota |
+|---|---:|---:|---|
+| **Histórico pre-port** (Fase 0, 2026-11-12) | 7 | 354 | Snapshot del theme antes de tooling DS / cortes 2* |
+| **Baseline vigente en `main`** (2026-11-13) | **6** | **362** | Techo para todo PR: `MissingAsset` (`facets.js`) resuelto en higiene 2c; +8 avisos por snippets vendorizados tras `sync:plt` |
+
+Los recuentos **históricos 7 / 354** no se mezclan con el baseline operativo **6 / 362**. No se arreglan
+como parte del port salvo que toquen el archivo migrado; sirven para detectar regresiones.
 
 | Check | Cantidad | Nota |
 |---|---|---|
@@ -50,7 +55,8 @@ Se registran como baseline del validador.
 2. Política upstream del DS: lo compartido se arregla **en el DS** y se sube el pin. Prohibido editar a
    mano `assets/plt-web-components.bundle.js`, `snippets/plt-*.liquid`, `styles/plt/*.css`.
 3. Un PR por fase (idealmente por template dentro de la Fase 4); cada uno pasa `theme check` sin
-   superar el baseline y su diff visual.
+   superar el baseline vigente (**6 errores / 362 avisos**, CLI 3.91.0) y su diff visual. Sin CI en
+   el repo: gates manuales locales (§ Fase 6).
 4. Sin lógica Shopify en el DS: los renderers reciben datos ya normalizados (precio formateado, URLs).
 
 ## 3. Fases
@@ -151,7 +157,9 @@ Al primer `shopify theme dev`, antes o junto a las capturas:
 ### Fase 1: Tooling y tokens (sin cambio visual)
 **Hecho (2026-11-12), sin tocar `layout/` ni ningún snippet/section existente:**
 - [x] `package.json` con `@playlovetoys/platform` fijado a `PlayLoveToys/PLT-design-system#a2c759b`
-  (pin subido en corte 2a; antes `b0ba294`), `tailwindcss`/`@tailwindcss/cli` 4,
+  (pin subido en corte 2a; antes `b0ba294`). **Pin pendiente de subir a `c27304c`** tras merge de
+  [PR #17](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/17) (boolean filters / DS#5).
+  `tailwindcss`/`@tailwindcss/cli` 4,
   `daisyui` 5 (dev). Scripts `build:css`, `watch:css`, `sync:plt`, `check:plt`, `check:theme-css`, `test:templates`.
 - [x] `scripts/` copiados de `plt-frontend-liquid`; `.gitignore` y `.shopifyignore` (excluye `node_modules`,
   `docs`, `scripts`, `styles`, `package*.json` de las operaciones de Shopify CLI).
@@ -159,8 +167,7 @@ Al primer `shopify theme dev`, antes o junto a las capturas:
   `theme` + `utilities` y el tema `cheesecake`, para no pisar Dawn/Bulma. Daisy usa prefijo `d-`.
 - [x] `sync:plt` vendoriza 10 artefactos: `assets/plt-web-components.bundle.js`, 7 `snippets/plt-*.liquid` y
   `styles/plt/*.css`. `check:plt` y `check:theme-css` pasan.
-- [x] `theme check`: 7 errores (igual que el baseline); avisos 354 → 362 (+8 `RemoteAsset`/`UnusedAssign`
-  de los snippets vendorizados; no se editan a mano).
+- [x] `theme check`: de 7/354 (histórico pre-port) a **6/362** (baseline vigente; ver tabla §1).
 
 **Enlace de `assets/theme.css`:** inicialmente se aplazó (sin capturas Fase 0). **Actualizado (corte 2b,
 2026-11-12):** sí está enlazado en `layout/theme.liquid` junto con la opción A (`@layer legacy` + `@import`
@@ -237,7 +244,7 @@ components, utilities` se declara antes de `theme.css`; `base.css` y `b-style(.s
 `@import url(…) layer(legacy)`; `theme.css` queda enlazado. `layout/password.liquid` no se toca (no carga
 `theme.css` ni Bulma). Verificado en el harness (`LEGACY_LAYER=import`, misma sintaxis con `data:` URLs): los dos
 imports cargan en la capa `legacy`, el DS se ve bien y el markup Bulma sigue estilizado. `theme check` sin cambios
-(7 errores / 362 avisos, ninguno en el layout).
+(6 errores / 362 avisos, ninguno en el layout).
 
 **Sin verificar contra la tienda real** (hace falta `shopify theme dev`). Qué mirar ahí:
 - Cada `@import` encadena una petición y bloquea el render (2 más que antes); medir LCP/CSS bloqueante.
@@ -276,8 +283,8 @@ Con `theme.css` y `@layer legacy` ya en el layout, se ejecutó el PR de higiene 
    `snippets/price-facet.liquid` (Alpine + facets).
 
 **Gates (2026-11-12):** `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline (40/42; fallan
-`blog.json` / `page.test.json`); `shopify theme check` = **6 errores / 362 avisos** (≤ baseline 7/362;
-`MissingAsset` de `facets.js` eliminado). Harness regenerado con `LEGACY_LAYER=import` para divider /
+`blog.json` / `page.test.json`); `shopify theme check` = **6 errores / 362 avisos** (baseline vigente;
+histórico pre-port 7/354; `MissingAsset` de `facets.js` eliminado). Harness regenerado con `LEGACY_LAYER=import` para divider /
 breadcrumb / price.
 
 **Checklist tienda (sigue pendiente; hace falta `shopify theme dev`):**
@@ -360,87 +367,127 @@ Fase 6 CI gates formales.
 
 ### Estado sesión (2026-11-13)
 
-Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
+Una fila por ítem; sin duplicados. PRs abiertos se tratan como **en revisión** (no mergeados).
 
-| Hecho | Evidencia |
-|---|---|
-| Fase 1 tooling + tokens + harness | PR #1 |
-| 2b CSS: `@layer legacy` + `theme.css` en layout | commit en PR #1 |
-| 2c divider / breadcrumb / price | PR #2 |
-| 2d `card-product` markup ProductCard | PR #3 |
-| 2e badges article-card / main-search | PR #4 |
-| 2f gift_card badge + `snippets/button` + higiene orphans | PR #5 |
-| 2a `plt-pagination` compact + `anchor` (pin `a2c759b`) | PR #6 |
-| 2b plan JS + **JS-A** puente + sort desktop | PR #7 / #8 |
-| 2b **JS-B** `plt-filter-bar` + sort en drawer; search/sanity cableados | PR #9 |
-| 2b **JS-C** drawer `<dialog>` + bundle WC en `layout/theme.liquid` | rama `port/ds-fase-2b-js-c` |
-
-| Bloqueado | Por qué | Para desbloquear |
+| Estado | Ítem | Evidencia / enlace |
 |---|---|---|
-| **2b WC** resto | `quantity-input`; boolean filters sin adapter DS | **JS-Q\***; issue DS boolean + pin |
-| **2b WC** resto | Alpine drawer chrome; `quantity-input`; boolean filters sin adapter DS | **JS-C** (quitar Alpine facets); **JS-Q\***; issue DS boolean si hace falta |
-| 2b **JS-Q0** capa compat `product-info` ↔ `plt-quantity-selector` | rama `port/ds-fase-2b-js-q0` / PR #10 |
-| 2b **JS-Q1** quantity WC en `featured-product` | rama `port/ds-fase-2b-js-q1` / PR #13 |
-| 2b **JS-Q2** quantity WC en QOL / `updates[]` | rama `port/ds-fase-2b-js-q2` |
-| **Fase 3 shell-cart** footer/newsletter tokens + `plt-cart-drawer` + predictive defer | rama `port/ds-fase-3-shell-cart` |
-| **Fase 0 capturas** | Sin `shopify theme dev` / tienda | Credenciales + rellenar handles; checklist ya en § Fase 0 |
-| **2b WC** resto | `main-product` quantity; boolean filters sin pin | PDP quantity follow-up; tras merge de [DS#5](https://github.com/PlayLoveToys/PLT-design-system/pull/5) → bump pin + `sync:plt` ([DS#3](https://github.com/PlayLoveToys/PLT-design-system/issues/3); **no bump antes del merge**) |
-| **Fase 0 capturas** | Sin `shopify theme dev` / tienda | Credenciales merchant + handles fixture |
-| **Fase 3 shell** | Header/footer/cart/predictive search compartidos; riesgo visual alto | Tienda + capturas; decisión `cart-notification` → `plt-cart-drawer` |
-| **Fase 4 sections** | Depende de shell estable y huecos DS (Faq, Carousel, …) | Tras Fase 3 / [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
-| **Fase 3 shell** | Header tokens (mega-menu) pendiente; predictive search diferido | Capturas + `fase-3-header`; issue DS Search si aplica |
-| **Fase 4 sections** | Depende de shell estable y huecos DS (Faq, Carousel, …) | Tras Fase 3 / issues DS |
-| **Fase 5 Bulma/Alpine** | Aún hay `b-*` y Alpine en producción | Cuando conteo `b-*` → 0 y WC 2b cableados |
-| **Fase 6 CI gates** | Formalizar budgets/diff visual | Tras baseline visual real (Fase 0) |
-| **Inputs/alerts / botones globales** | Sin corte Liquid acotado | Por template en Fase 4 o snippet nuevo si se extrae |
+| **Hecho** | Fase 1 tooling + tokens + harness | [PR #1](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/1) |
+| **Hecho** | 2b CSS: `@layer legacy` + `theme.css` en layout | commit en PR #1 |
+| **Hecho** | Cortes 2c–2f (divider, breadcrumb, price, card, badges, gift_card, button) | [PR #2](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/2)–[#5](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/5) |
+| **Hecho** | 2a `plt-pagination` compact + `anchor` (pin `a2c759b`) | [PR #6](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/6) |
+| **Hecho** | 2b JS-A/B plan + puente Section Rendering + sort desktop | [PR #7](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/7) / [#8](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/8) |
+| **Hecho** | 2b JS-B `plt-filter-bar` + sort en drawer | [PR #9](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/9) |
+| **Hecho** | 2b JS-C drawer `<dialog>` + bundle WC en layout | [PR #12](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/12) |
+| **Hecho** | 2b JS-Q0 `product-info` ↔ `plt-quantity-selector` | [PR #10](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/10) |
+| **Hecho** | 2b **JS-Q1** quantity WC en `featured-product` | [PR #13](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/13) **cerrado sin merge**; código en `main` vía [PR #15](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/15) (JS-Q2), commit [`9377a75`](https://github.com/PlayLoveToys/PLT-liquid-theme/commit/9377a7539478f8ba5f088a48047d6121211ef330) |
+| **Hecho** | 2b JS-Q2 quantity en QOL / `updates[]` | [PR #15](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/15) |
+| **Hecho** | Fase 0 artefacto docs (checklist capturas; sin PNGs) | [PR #14](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/14) |
+| **En revisión** | 2b **JS-Q3** quantity WC en `main-product` | [PR #16](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/16) |
+| **En revisión** | 2b boolean filters: pin `c27304c` + `sync:plt` | [PR #17](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/17) (listo para review; [DS#5](https://github.com/PlayLoveToys/PLT-design-system/pull/5) ya en DS `main`) |
+| **En revisión** | Inventario Alpine residual (Fase 5) | [PR #18](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/18) → [`docs/ds-port-alpine-inventory.md`](./ds-port-alpine-inventory.md) (aún no en `main`) |
+| **Pendiente** | Fase 0 capturas reales 390/768/1280 | Sin `shopify theme dev` / credenciales; checklist § Fase 0 |
+| **Pendiente** | Fase 3 shell (header tokens, predictive search, newsletter) | Tras aclarar cart (abajo) + capturas |
+| **Pendiente** | Fase 4 sections por template | Orden § Fase 4; Alpine plegado según inventario |
+| **Pendiente** | Fase 5 retirar Bulma → luego Alpine | Ver § Fase 5 + inventario Alpine |
+| **Pendiente** | Fase 6 gates formales en CI | No hay GitHub Actions; ver § Fase 6 |
+| **Dudoso / perdido** | Fase 3 cart drawer | Plan citaba rama `port/ds-fase-3-shell-cart` (**no existe** en GitHub; **ningún PR**). En `main` sí hay `snippets/cart-drawer.liquid` + `assets/plt-cart-drawer-bridge.js` (commit [`c57ea14`](https://github.com/PlayLoveToys/PLT-liquid-theme/commit/c57ea1426e33e3e6d73c0201392125fcd192a0b9), sin PR). **Investigación aparte** para procedencia y si el corte está completo |
+| **Bloqueado** | Carruseles Alpine (`b-carousel`, `collection-list`, `c-carousel-buttons`) | No hay componente **Carousel** en DS — [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
+| **Bloqueado** | FAQ colección (`_collection-seo-faqs`) → `d-collapse` / Faq DS | No hay componente **Faq** en DS — [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
+| **Bloqueado** | Smoke PDP / layout en tienda | Sin credenciales merchant |
+| **Bloqueado** | Inputs/alerts / botones Dawn globales masivos | Sin snippet acotado; por template Fase 4 |
 
-**Siguiente (prioridad):** staging de JS-A/B/C (filtros/sort/clear/paginación/drawer dialog);
-**JS-Q0** (`product-info` ↔ quantity WC). Alpine `x-data` restantes: **12** archivos Liquid (Fase 5).
-(retirar Alpine del drawer) o **JS-Q0** (`product-info` ↔ quantity WC). Fase 0 artefacto docs
-listo; capturas reales al tener tienda (ver § Fase 0).
-**Siguiente (prioridad):** staging de JS-A/B/C/Q* (filtros/sort/clear/paginación/drawer dialog/quantity);
-**JS-C** (retirar Alpine del drawer / bundle en layout). Alpine `x-data` restantes: **12** archivos Liquid (Fase 5).
-Sin tienda: Fase 0 capturas y checklist visual del layout (fondo `html`, LCP `@import` legacy).
+**Siguiente (prioridad):** merge/review [PR #17](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/17) (pin) y [PR #16](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/16) (JS-Q3);
+staging en tienda de filtros boolean, quantity PDP y drawer cart; aclarar estado Fase 3 cart (`c57ea14`);
+verificar en staging `snippets/buy-buttons.liquid`: `@click="$store.cart.add(selectedVariant)"` **sin** ancestro `x-data` en PDP (`main-product` / `featured-product`). Alpine residual: **12** archivos con `x-data` ([inventario](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/18)). Gates: locales (`check:plt`, `check:theme-css`, `test:templates`, `theme check` ≤ **6/362**).
 
 ### Fase 3: Shell
-- **Cart (hecho en `port/ds-fase-3-shell-cart`):** `cart-notification` → `plt-cart-drawer`
-  (`snippets/cart-drawer.liquid` + `assets/plt-cart-drawer-bridge.js`). Call sites:
-  `product-form.js`, `quick-add.js`, Alpine product card / bundle. Header no se toca;
-  el bridge intercepta `#cart-icon-bubble`. Bundle WC en layout (alineado con JS-C).
-- **Footer + newsletter (parcial):** tokens `theme-label-bold` / `d-input` / `d-btn*` sin
-  renombrar settings merchant (`color_scheme`, gradients, `newsletter_enable`, etc.).
-- **Predictive search (defer):** sin contrato DS; se conserva Alpine + Section Rendering
-  (`section_id=predictive-search`). Mínimo seguro: `theme-label-bold` en headings de
-  `sections/predictive-search.liquid`. Revisitar con header o issue DS.
-- **Header (pendiente `fase-3-header`):** excepción documentada — conservar estructura +
-  `mega-menu.css`; solo tokens/`d-*` donde no rompa mega-menu.
+
+**Cart — estado dudoso / perdido (2026-11-13):** el plan asumía el corte en la rama
+`port/ds-fase-3-shell-cart`, que **no existe** en GitHub y **ningún PR** la referencia. Aun así,
+en `main` están `snippets/cart-drawer.liquid` y `assets/plt-cart-drawer-bridge.js` (commit
+`c57ea14`, autorefactors de `product-form.js` / `quick-add.js` / Alpine card). Falta confirmar si
+eso equivale al corte shell-cart completo o a un commit huérfano (investigación en curso).
+
+Intención documentada del corte cart (cuando se cierre el estado):
+
+- `cart-notification` → `plt-cart-drawer`; call sites: `product-form.js`, `quick-add.js`, Alpine
+  product card / bundle; bridge en `#cart-icon-bubble`; bundle WC en layout (JS-C).
+- Coordinar con Alpine **(b)** del inventario: `header` (burbuja), `main-cart-footer`, `cart-item-b`
+  y quick-add en `card-product` (ver § Fase 4 colección / § Fase 5).
+
+- **Footer + newsletter (parcial en `main`):** tokens `theme-label-bold` / `d-input` / `d-btn*`
+  sin renombrar settings merchant.
+- **Predictive search (defer):** sin contrato DS; mínimo `theme-label-bold` en headings; revisar con
+  header o issue DS Search.
+- **Header (pendiente `fase-3-header`):** conservar estructura + `mega-menu.css`; solo tokens/`d-*`
+  donde no rompa mega-menu.
 
 ### Fase 4: Sections por template
-Orden: colección/búsqueda → home (`slideshow`, `image-banner`, `multicolumn`) → contenido
-(`collapsible-content`/FAQ → `d-collapse`) → blog/artículo → producto (`main-product`, 2354 líneas,
-y `featured-product`, 1510) al final. Blocks `b-card-*` → EditorialCard / CollectionCard / ProductCard.
-**Se quedan en el theme**: portable-text de Sanity, JSON-LD/SEO, hreflang, metaobjects, `aa-cloudinary-image`,
-verificación de edad.
+
+Orden de migración Liquid (+ Alpine residual del inventario en el mismo orden de página):
+
+1. **Colección / búsqueda** — grids Bulma → cards DS; facets ya WC (2b). Alpine: `card-product`
+   quick-add (**(b)**, acoplado a Fase 3 cart / `plt-cart-drawer-bridge.js`), hero
+   `_collection-hero-collapsable-content` **(a)** collapse.
+2. **Home** — `slideshow`, `image-banner`, `multicolumn`. Alpine: `collection-list` + `b-carousel` +
+   `c-carousel-buttons` **(a)** → **bloqueado** hasta **Carousel** DS ([DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4)).
+3. **Contenido / FAQ** — `collapsible-content`; `_collection-seo-faqs` **(a)** → **bloqueado** hasta
+   **Faq** DS ([DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4)); `aa-hero-toggle-content`
+   puede ir a `<details>` / `d-collapse` sin Faq.
+4. **Blog / artículo** — `article-card` parcial (2e); EditorialCard pendiente.
+5. **Producto al final** — `main-product` (JS-Q3 en [PR #16](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/16)),
+   `featured-product` (JS-Q1 en `main`). Revisar `buy-buttons` (Alpine `$store.cart` sin `x-data` en PDP).
+
+Inventario detallado por archivo: [`docs/ds-port-alpine-inventory.md`](./ds-port-alpine-inventory.md)
+(en [PR #18](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/18) hasta merge).
+
+Blocks `b-card-*` → EditorialCard / CollectionCard / ProductCard.
+**Se quedan en el theme**: portable-text de Sanity, JSON-LD/SEO, hreflang, metaobjects,
+`aa-cloudinary-image`, verificación de edad.
 
 ### Fase 5: Retirar legacy
-Quitar Bulma cuando el conteo de `b-*` llegue a 0; después Alpine (**12** archivos Liquid con
-`x-data` tras JS-C), `component-*.css`, loader CDN. Revisar `ai_gen_block_*`.
+
+**Orden obligatorio:** (1) **Bulma** — cuando `b-*` → 0, preflight Tailwind y retirar `b-style`; (2)
+**Alpine** — los **12** archivos Liquid con `x-data` tras JS-C + residual sin `x-data` (`buy-buttons`,
+`c-carousel-buttons`); no retirar `alpine-bundle.js` / `cart-store.js` hasta migrar cart y
+`card-product` **(b)**; (3) `component-*.css` Dawn y loader CDN. Revisar `ai_gen_block_*`.
+
+Tabla y orden de PRs sugeridos: [`docs/ds-port-alpine-inventory.md`](./ds-port-alpine-inventory.md)
+([PR #18](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/18)).
+Carruseles y FAQ siguen **bloqueados** sin Carousel/Faq en DS ([DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4)).
 
 ### Fase 6: Gates de CI
-`check:plt`, `theme check` (≤ baseline), validación de templates, diff visual, presupuesto de CSS.
+
+**Estado (2026-11-13): pendiente.** Este repo **no tiene workflows de GitHub Actions**; cada quien
+abre el PR ejecuta en local:
+
+- `npm run check:plt`
+- `npm run check:theme-css`
+- `npm run test:templates` (40/42 baseline)
+- `shopify theme check` (CLI 3.91.0) ≤ **6 errores / 362 avisos**
+- harness `LEGACY_LAYER=import` cuando toque markup DS
+- diff visual / presupuesto CSS cuando existan capturas Fase 0
+
+Objetivo futuro: automatizar lo anterior en CI tras baseline visual real.
 
 ## 4. Huecos a implementar primero en el DS
 
 Tracking (checklist, un issue): **[DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4)** —
-`Faq`, `RichText`, `Carousel`, `TrustBar`, `LinkGrid`, `ChipPills`, `LocationCard`
+`RichText`, `TrustBar`, `LinkGrid`, `ChipPills`, `LocationCard`
 (`service-area-link-list`, `location_map`), contrato de `MegaMenu`, `MarketSelector`, `Swatch`,
 `StickyAddToCart`. Inventario: `PLT-design-system` `docs/storefront-component-inventory.md`.
 
+**Aún no existen en el DS** (bloquean migraciones en el theme): componentes **`Carousel`** y **`Faq`**
+(listados en DS#4). Hasta que estén en el paquete vendorizado, los carruseles Alpine
+(`b-carousel`, `collection-list`, `c-carousel-buttons`) y el acordeón FAQ
+(`_collection-seo-faqs`) quedan en espera.
+
 Boolean filters (`filter.type == boolean` en `plt-filter-bar` Liquid):
 **[DS#3](https://github.com/PlayLoveToys/PLT-design-system/issues/3)** /
-PR **[DS#5](https://github.com/PlayLoveToys/PLT-design-system/pull/5)**.
-**Nota:** no subir el pin `@playlovetoys/platform` ni correr `sync:plt` en este theme hasta que
-ese PR esté mergeado en `main` del DS.
+PR **[DS#5](https://github.com/PlayLoveToys/PLT-design-system/pull/5)** (mergeado en DS `main`).
+Adaptador en el theme: pin **`c27304c`** + `sync:plt` en
+[PR #17](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/17) (**en revisión**; en `main` sigue
+`a2c759b` hasta merge).
 
 ## 5. Riesgos
 - Convivencia de dos CSS: especificidad y peso durante la transición.
