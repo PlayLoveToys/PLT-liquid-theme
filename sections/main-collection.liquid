@@ -1,14 +1,28 @@
 {%- paginate collection.products by 20 -%}
-  {% comment %} Sort is the first tabbable element when filter type is vertical {% endcomment %}
-  <div id="product-grid-container" class="b-container">
-    <div class="facets facets-vertical-sort page-width small-hide">
-      <form
-        class="facets-vertical-form"
-        id="FacetSortForm"
-        action="{{ collection.url }}"
-        x-target="product-grid-container"
-        x-on:input.debounce.800ms="if($el.isConnected) $el.requestSubmit()"
-      ></form>
+  {%- liquid
+    assign collection_sort_by = collection.sort_by | default: collection.default_sort_by
+    assign collection_sort_label = 'products.facets.sort_by_label' | t
+  -%}
+  {% comment %}
+    JS-A: opt-in Section Rendering root. Sort lives in the previously empty
+    #FacetSortForm slot (outside the Alpine facets drawer). Filters stay Alpine until JS-B.
+  {% endcomment %}
+  <div
+    id="product-grid-container"
+    class="b-container"
+    data-plt-section-nav
+    data-plt-section-id="{{ section.id }}"
+    data-plt-morph-target="#product-grid-container"
+  >
+    <div class="facets facets-vertical-sort page-width small-hide" id="FacetSortForm">
+      {% render 'plt-sort-select',
+        options: collection.sort_options,
+        current: collection_sort_by,
+        filters: collection.filters,
+        action: collection.url,
+        label: collection_sort_label,
+        script_url: 'none'
+      %}
     </div>
 
     <aside
@@ -174,6 +188,9 @@
     </section>
   </div>
 {%- endpaginate -%}
+
+<script type="module" src="{{ 'plt-web-components.bundle.js' | asset_url }}"></script>
+<script src="{{ 'plt-section-nav.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
