@@ -295,11 +295,6 @@
   {{ 'mask-arch.svg' | inline_asset_content }}
 {%- endif -%}
 
-{%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
-  <script type="module" src="{{ 'plt-web-components.bundle.js' | asset_url }}"></script>
-  <script src="{{ 'plt-section-nav.js' | asset_url }}" defer></script>
-{%- endif -%}
-
 {% schema %}
 {
   "name": "t:sections.main-search.name",

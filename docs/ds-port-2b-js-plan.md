@@ -2,7 +2,7 @@
 
 Pin DS: `@playlovetoys/platform` → `a2c759b` (mismo que 2a).
 Estado CSS 2b: **hecho** (`@layer legacy` + `theme.css` en layout; harness `controls` OK).
-Estado WC 2b: **bloqueado** hasta ejecutar este plan por cortes. **No migrar facets ni quantity de golpe.**
+Estado WC 2b: sort/filtros + drawer sin Alpine (**JS-A/B/C** hechos). Queda **JS-Q\*** (quantity) + staging.
 
 Referencias DS (no editar vendor `plt-*` a mano; solo `sync:plt`):
 
@@ -57,7 +57,7 @@ Reglas:
 
 | Pieza hoy | Archivo | Comportamiento | Objetivo |
 |---|---|---|---|
-| Cajón unificado filter+sort | `snippets/facets.liquid` | Bulma `b-drawer` + Alpine `drawerOpen`; form `#FacetFiltersForm` con `x-target="product-grid-container"` y `x-on:input.debounce.800ms → requestSubmit()` | Sustituir cuerpo del form por `render 'plt-filter-bar'` + `render 'plt-sort-select'` **o** un solo filter-bar + sort hermano; UI drawer puede quedar Bulma hasta Fase 3/5 |
+| Cajón unificado filter+sort | `snippets/facets.liquid` | **JS-C:** `<dialog>` nativo + panel Bulma; cuerpo `plt-filter-bar` + `plt-sort-select`; morph `plt-section-nav` | Hecho (chrome Bulma hasta Fase 3/5) |
 | Sort nativo en drawer | `facets.liquid` `<select name="sort_by">` | Mismo form que filtros → morph Alpine | `plt-sort-select` con `options: results.sort_options`, `current: sort_by`, `preserve` = filtros activos + `q` |
 | Filtros list/boolean/price | `facets.liquid` + `price-facet.liquid` | Checkboxes / `priceRange()` Alpine | `plt-filter-bar` (`filters: results.filters`, `preserve` sort + `q`) |
 | Clear all | link `x-target` a `results_url` | Morph | Chip/clear del filter-bar o link con mismo puente |
@@ -83,8 +83,8 @@ sort fuera del cajón que sea realmente independiente (el `#FacetSortForm` está
 **Corte JS-B:** `plt-filter-bar` sustituye el loop de filtros + `price-facet`; retirar
 `x-on:input.debounce` del form; clear chips DS.
 
-**Corte JS-C:** retirar dependencia de Alpine Ajax para facets; drawer puede seguir siendo markup
-Bulma hasta Fase 5.
+**Corte JS-C (hecho):** drawer `<dialog>` nativo (sin Alpine); bundle WC + `plt-section-nav` en
+`layout/theme.liquid`; adapters con `script_url: 'none'`. Chrome Bulma hasta Fase 5.
 
 ### 2.2 Cantidad (`quantity-input` → `plt-quantity-selector`)
 
@@ -183,8 +183,8 @@ Contrato del puente theme:
   `facets` — no migrar search en JS-A (doble sort a resolver en follow-up).
 - [x] Morph target canónico: `#product-grid-container` (mismo id que Alpine `x-target` hoy).
   `#ProductGridContainer` es solo el grid interno.
-- [x] Bundle WC: carga en `sections/main-collection.liquid` (module) + `script_url: 'none'` en el
-  adaptador; consolidar en `layout/theme.liquid` cuando haya más call sites (JS-B / paginación puente).
+- [x] Bundle WC: consolidado en `layout/theme.liquid` (JS-C) + `script_url: 'none'` en adapters /
+  facets; scripts retirados de `main-collection` / sanity / search.
 - [x] Harness: caso `sort-preserve` (sort-only + preserve filters/`q`) además de `controls`.
 - [ ] Staging / `shopify theme dev` (Fase 0) para no validar solo harness
 
@@ -207,10 +207,14 @@ Contrato del puente theme:
 - [ ] Boolean filters: el adapter DS solo mapea `list` + `price_range` (gap upstream)
 - [ ] Staging / clear chips / empty state en tienda
 
-### JS-C — retirar Alpine de facets
+### JS-C — retirar Alpine de facets (2026-11-13)
 
-- [ ] Sin `x-target` en facets; drawer open/close puede quedar Alpine mínimo o pasar a HTML dialog
-- [ ] Contar archivos Alpine restantes (meta Fase 5)
+- [x] Drawer → HTML `<dialog>` nativo (Escape + click backdrop; sin `x-data` / `drawerOpen`)
+- [x] Sin `x-target` / debounce Alpine en facets (ya desde JS-B)
+- [x] Bundle `plt-web-components.bundle.js` + `plt-section-nav.js` en `layout/theme.liquid`
+- [x] Archivos Liquid con `x-data` restantes: **12** (meta Fase 5) —
+  `blocks/b-carousel`, `sections/{aa-banner-html-copy,aa-hero-toggle-content,collection-list,header,main-cart-footer,main-collection-plt}`,
+  `snippets/{card-product,cart-item-b,_collection-hero-collapsable-content,_collection-seo-faqs,predictive-search}`
 
 ### JS-Q* — quantity
 

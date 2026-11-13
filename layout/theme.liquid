@@ -469,6 +469,8 @@
     {% endcomment %}
     <script defer src="{{ 'alpine-bundle.js' | asset_url }}"></script>
     {% comment %}
+      JS-C: single WC + section-nav load sitewide. Adapters that already render
+      on collection/search pass script_url: 'none'.
       WC bundle sitewide (same as JS-C). Cart drawer adapter passes script_url: 'none'.
       Skip duplicating this block if JS-C (#12) is already merged into the base branch.
     {% endcomment %}

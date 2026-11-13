@@ -374,14 +374,15 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 | 2b plan JS + **JS-A** puente + sort desktop | PR #7 / #8 |
 | 2b **JS-B** `plt-filter-bar` + sort en drawer; search/sanity cableados | PR #9 |
 | 2b **JS-C** drawer `<dialog>` + bundle WC en `layout/theme.liquid` | rama `port/ds-fase-2b-js-c` |
+
+| Bloqueado | Por qué | Para desbloquear |
+|---|---|---|
+| **2b WC** resto | `quantity-input`; boolean filters sin adapter DS | **JS-Q\***; issue DS boolean + pin |
+| **2b WC** resto | Alpine drawer chrome; `quantity-input`; boolean filters sin adapter DS | **JS-C** (quitar Alpine facets); **JS-Q\***; issue DS boolean si hace falta |
 | 2b **JS-Q0** capa compat `product-info` ↔ `plt-quantity-selector` | rama `port/ds-fase-2b-js-q0` / PR #10 |
 | 2b **JS-Q1** quantity WC en `featured-product` | rama `port/ds-fase-2b-js-q1` / PR #13 |
 | 2b **JS-Q2** quantity WC en QOL / `updates[]` | rama `port/ds-fase-2b-js-q2` |
 | **Fase 3 shell-cart** footer/newsletter tokens + `plt-cart-drawer` + predictive defer | rama `port/ds-fase-3-shell-cart` |
-
-| Bloqueado | Por qué | Para desbloquear |
-|---|---|---|
-| **2b WC** resto | Alpine drawer chrome; `quantity-input`; boolean filters sin adapter DS | **JS-C** (quitar Alpine facets); **JS-Q\***; issue DS boolean si hace falta |
 | **Fase 0 capturas** | Sin `shopify theme dev` / tienda | Credenciales + rellenar handles; checklist ya en § Fase 0 |
 | **2b WC** resto | `main-product` quantity; boolean filters sin pin | PDP quantity follow-up; tras merge de [DS#5](https://github.com/PlayLoveToys/PLT-design-system/pull/5) → bump pin + `sync:plt` ([DS#3](https://github.com/PlayLoveToys/PLT-design-system/issues/3); **no bump antes del merge**) |
 | **Fase 0 capturas** | Sin `shopify theme dev` / tienda | Credenciales merchant + handles fixture |
@@ -393,7 +394,8 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 | **Fase 6 CI gates** | Formalizar budgets/diff visual | Tras baseline visual real (Fase 0) |
 | **Inputs/alerts / botones globales** | Sin corte Liquid acotado | Por template en Fase 4 o snippet nuevo si se extrae |
 
-**Siguiente (prioridad):** staging de JS-A/B (filtros/sort/clear/paginación); luego **JS-C**
+**Siguiente (prioridad):** staging de JS-A/B/C (filtros/sort/clear/paginación/drawer dialog);
+**JS-Q0** (`product-info` ↔ quantity WC). Alpine `x-data` restantes: **12** archivos Liquid (Fase 5).
 (retirar Alpine del drawer) o **JS-Q0** (`product-info` ↔ quantity WC). Fase 0 artefacto docs
 listo; capturas reales al tener tienda (ver § Fase 0).
 **Siguiente (prioridad):** staging de JS-A/B/C/Q* (filtros/sort/clear/paginación/drawer dialog/quantity);
