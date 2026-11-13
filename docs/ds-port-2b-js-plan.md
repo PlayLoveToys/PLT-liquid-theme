@@ -106,12 +106,22 @@ Bulma hasta Fase 5.
 | `data-min` / `data-cart-quantity` / pubsub validate | Props `min`/`max`/`step`/`value`; **no** hay pubsub — el theme debe `el.value = …` tras fetch de rules |
 | `product-info` reescribe atributos del input en el DOM | Hay que setear propiedades del WC tras morph/partial update |
 
-**Corte JS-Q0 (diseño, sin markup prod):** adaptar o envolver `product-info.js` para hablar con el WC
-(leer `value`, escribir props, escuchar `plt:quantity-change` solo si hace falta side-effects). Tests
-manuales en harness + PDP staging.
+**Corte JS-Q0 (capa compat, sin markup prod) — hecho (2026-11-13):**
+`assets/product-info.js` habla con Dawn **y** con `<plt-quantity-selector>`:
+
+| API theme | Dawn `.quantity__input` | WC `plt-quantity-selector` |
+|---|---|---|
+| Resolver control | `querySelector('.quantity__input')` | Preferido: `querySelector('plt-quantity-selector')` |
+| Leer valor | `input.value` | prop `el.value` (`getQuantityValue()`) |
+| Leer rules (cart/min/max/step) | `data-cart-quantity`, `data-min`, `data-max`, `step` | Mismos `data-*` en el **host** + props `min`/`max`/`step` (`readQuantityRuleData()`) |
+| Escribir bounds tras Section Rendering | attrs `min`/`max`/`value` | props `min`/`max`/`step`/`value` (`applyQuantityBounds()`; **no** `setValue()` → no emite evento) |
+| Sync desde HTML parcial `#Quantity-Form-*` | copia `data-*` + `step` | copia `data-*` + props desde el host actualizado (`syncQuantityControlFromUpdated()`) |
+| `plt:quantity-change` | n/a | **No** se escucha en `product-info`: el input `name` sigue en el form; el WC ya clampea. Side-effects de rules siguen vía pubsub `quantityUpdate` (Dawn `QuantityInput`). |
+
+Contrato para **Q1** (markup): conservar `#Quantity-Form-{{ section.id }}`, `.product-form__quantity`, `.quantity__rules`, `.quantity__label`. Sustituir `<quantity-input>` + `.quantity__input` por `render 'plt-quantity-selector'` con `name: 'quantity'`, `script_url: 'none'` si el bundle va en layout, y **espejar** en el host del WC: `data-cart-quantity`, `data-min`, `data-max` además de `min`/`max`/`step`/`value` (Liquid del variant `quantity_rule` + `cart_qty`). Sin eso, `setQuantityBoundries()` no puede restar qty en carrito.
 
 **Corte JS-Q1:** `featured-product` **o** un bloque quantity del PDP detrás de setting — nunca QOL
-primero.
+primero. Depende de Q0 (este PR).
 
 **Corte JS-Q2:** `snippets/quantity-input.liquid` / quick-order — requiere `name="updates[…]"` y
 listeners de `quick-order-list.js`.
@@ -194,8 +204,10 @@ Contrato del puente theme:
 
 ### JS-Q* — quantity
 
-- [ ] Q0: capa compat `product-info` ↔ WC
-- [ ] Q1: un PDP / featured
+- [x] Q0: capa compat `product-info` ↔ WC (2026-11-13; sin markup PDP)
+- [x] Gates Q0 (2026-11-13): `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline;
+  `shopify theme check` ≤ baseline (6 err / 362 warn; sin Liquid nuevo)
+- [ ] Q1: un PDP / featured (`plt-quantity-selector` + data-* en host; ver §2.2)
 - [ ] Q2: quick-order / `updates[]`
 - [ ] No card-product quantity en 2b
 
