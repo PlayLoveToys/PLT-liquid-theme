@@ -56,12 +56,97 @@ Se registran como baseline del validador.
 ## 3. Fases
 
 ### Fase 0: Red de seguridad
+
+**Estado (2026-11-13):** artefacto documentable listo para ejecutar cuando haya tienda.
+Las **capturas reales siguen bloqueadas** (sin credenciales / `shopify theme dev`).
+No bloquea cortes 2b WC (JS-C / JS-Q*) ni PRs de código.
+
 - [x] Baseline de `theme check` y validación de templates (arriba).
-- [ ] Captura visual a 390/768/1280 de: home, colección, producto, carrito, búsqueda, artículo, page,
-  404, cuenta. **Bloqueado**: requiere `shopify theme dev` contra una tienda (credenciales del merchant).
-  Reutilizar `plt-frontend-liquid/tools/visual-compare`.
-- [ ] Fijar handles de fixture (producto, colección, artículo) y guardarlos en este documento.
+- [x] Artefacto Fase 0: checklist páginas/viewports, placeholders de handles, instrucciones
+  `visual-compare`, checklist layout (esta sección).
+- [ ] Capturas reales 390 / 768 / 1280 (bloqueado: tienda).
+- [ ] Sustituir placeholders de handles por valores reales del merchant y archivar PNGs/baseline.
 - [x] `facets.js` ausente: etiqueta obsoleta en `main-search` (ver corte 2b). **Higiene 2c:** `<script>` eliminado.
+
+#### Checklist de capturas (páginas × viewports)
+
+Viewports fijos del port: **390**, **768**, **1280** (ancho CSS; altura fold ~844 móvil / ~900 desktop).
+
+| Página | Ruta (plantilla) | Viewports | Notas |
+|---|---|---|---|
+| Home | `/` | 390, 768, 1280 | hero, header, footer |
+| Colección | `/collections/COLLECTION_HANDLE` | 390, 768, 1280 | grid + facets/sort/paginación |
+| Producto | `/products/PRODUCT_HANDLE` | 390, 768, 1280 | galería, precio, quantity, ATC |
+| Carrito | `/cart` | 390, 768, 1280 | drawer vs página según estado |
+| Búsqueda | `/search?q=` (query con resultados) | 390, 768, 1280 | mismos controles que colección |
+| Artículo | `/blogs/<blog>/ARTICLE_HANDLE` | 390, 768, 1280 | badge/card blog |
+| Page | `/pages/<page>` (contenido CMS) | 390, 768, 1280 | una page estable del merchant |
+| 404 | URL inexistente | 390, 768, 1280 | |
+| Cuenta | `/account` (login o cuenta) | 390, 768, 1280 | sin PII en capturas |
+
+Por cada celda: guardar al menos `fold.png` + `full.png`. En colección/búsqueda, además crops de
+header / filters / sort / card / grid / pagination / footer si el runner los produce.
+
+#### Handles fixture (placeholders — sustituir en tienda)
+
+Fijar aquí los handles reales del catalogo de staging cuando existan. Mientras tanto usar solo
+placeholders; **no inventar** handles de producción en este repo público.
+
+```text
+PRODUCT_HANDLE=    # p. ej. un PDP con variantes + quantity rules
+COLLECTION_HANDLE= # colección con ≥1 filtro usable y ≥2 páginas
+ARTICLE_HANDLE=    # artículo publicado (blog handle + article handle)
+PAGE_HANDLE=       # opcional; page CMS estable
+SEARCH_QUERY=      # opcional; query que devuelva productos
+```
+
+Cuando se rellenen: actualizar esta tabla y citarlos en el PR de baseline visual (Fase 6).
+
+#### Cómo capturar con `visual-compare` (desde `plt-frontend-liquid`)
+
+El runner vive en el donante de tooling, no en este repo:
+
+`../plt-frontend-liquid/tools/visual-compare/capture.mjs`
+
+Requisitos: Playwright instalado en `plt-frontend-liquid` (`npx playwright install chromium` si falta),
+y **dos** URLs servidas (p. ej. theme de referencia vs preview del port, o el mismo origen dos veces
+para baseline único).
+
+```bash
+# 1. En este repo: preview del theme (necesita auth Shopify)
+shopify theme dev   # anotar el host, p. ej. http://127.0.0.1:9292
+
+# 2. Desde plt-frontend-liquid (cwd con playwright)
+cd ../plt-frontend-liquid
+node tools/visual-compare/capture.mjs \
+  --reference "http://127.0.0.1:9292/collections/COLLECTION_HANDLE" \
+  --candidate "http://127.0.0.1:9292/collections/COLLECTION_HANDLE" \
+  --widths 390,768,1280 \
+  --out ../PLT-liquid-theme/docs/visual-baseline/fase-0/collection
+
+# Repetir por página (home, producto, cart, search, article, page, 404, account)
+# sustituyendo PRODUCT_HANDLE / ARTICLE_HANDLE / etc.
+```
+
+Salida típica por run: `<out>/<site>/<width>/{fold,full}.png`, `parts/*.png`, `styles.json`,
+`diff.json`, `compare.html`, `summary.json`. Archivar bajo `docs/visual-baseline/fase-0/` (o un
+artefacto CI) **solo cuando** haya capturas reales; no committear placeholders vacíos.
+
+Nota: el script por defecto usa anchos `1440,1024,390`; para el port **pasar siempre**
+`--widths 390,768,1280`.
+
+#### Checklist layout (sin captura completa, mirar en DevTools / Lighthouse)
+
+Al primer `shopify theme dev`, antes o junto a las capturas:
+
+- [ ] Fondo `html` crema del DS (`#FAF7F2` / tokens `cheesecake`) vs página real; no forzar
+  overrides locales del vendor.
+- [ ] LCP / CSS bloqueante: los `@import … layer(legacy)` de `base.css` y `b-style*.css` en
+  `layout/theme.liquid` añaden cadena de peticiones; medir frente al baseline pre-2b.
+- [ ] Empates CSS: `component-*.css` (sin capa) ganan a Bulma en capa `legacy` en selectores de
+  elemento idénticos; anotar regresiones visibles (botones, inputs, cards Dawn).
+- [ ] Confirmar que `theme.css` carga en todas las páginas del layout principal (no en
+  `password.liquid` / gift card según alcance documentado).
 
 ### Fase 1: Tooling y tokens (sin cambio visual)
 **Hecho (2026-11-12), sin tocar `layout/` ni ningún snippet/section existente:**
@@ -292,7 +377,7 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 | Bloqueado | Por qué | Para desbloquear |
 |---|---|---|
 | **2b WC** resto | Alpine drawer chrome; `quantity-input`; boolean filters sin adapter DS | **JS-C** (quitar Alpine facets); **JS-Q\***; issue DS boolean si hace falta |
-| **Fase 0 capturas** | Sin `shopify theme dev` / tienda | Credenciales merchant + handles fixture |
+| **Fase 0 capturas** | Sin `shopify theme dev` / tienda | Credenciales + rellenar handles; checklist ya en § Fase 0 |
 | **Fase 3 shell** | Header/footer/cart/predictive search compartidos; riesgo visual alto | Tienda + capturas; decisión `cart-notification` → `plt-cart-drawer` |
 | **Fase 4 sections** | Depende de shell estable y huecos DS (Faq, Carousel, …) | Tras Fase 3 / issues DS |
 | **Fase 5 Bulma/Alpine** | Aún hay `b-*` y Alpine en producción | Cuando conteo `b-*` → 0 y WC 2b cableados |
@@ -300,8 +385,8 @@ Fase 2 Liquid-only del port, incluida la paginación desbloqueada por DS#1:
 | **Inputs/alerts / botones globales** | Sin corte Liquid acotado | Por template en Fase 4 o snippet nuevo si se extrae |
 
 **Siguiente (prioridad):** staging de JS-A/B (filtros/sort/clear/paginación); luego **JS-C**
-(retirar Alpine del drawer) o **JS-Q0** (`product-info` ↔ quantity WC). Sin tienda: Fase 0
-capturas y checklist visual del layout (fondo `html`, LCP `@import` legacy).
+(retirar Alpine del drawer) o **JS-Q0** (`product-info` ↔ quantity WC). Fase 0 artefacto docs
+listo; capturas reales al tener tienda (ver § Fase 0).
 
 ### Fase 3: Shell
 Header (excepción documentada: se conserva, con `mega-menu.css`), footer + newsletter, carrito
