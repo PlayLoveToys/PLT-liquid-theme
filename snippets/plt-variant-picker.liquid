@@ -1,0 +1,79 @@
+{% doc %}
+  Liquid adapter for <plt-variant-picker> (@playlovetoys/web-components).
+
+  Serializes the Shopify product into the picker contract and renders a
+  no-JavaScript <select> fallback. Selection logic lives in the component;
+  cart, price and URL handling stay in the theme (listen to plt:variant-change).
+
+  Copy dist/plt-web-components.bundle.js to the theme's assets/ folder.
+
+  @param {product} product - Shopify product
+  @param {variant} [selected_variant] - Defaults to product.selected_or_first_available_variant
+  @param {string} [name] - Form field name of the variant id (default: id)
+  @param {string} [sold_out_label] - Localized "Sold out"
+  @param {string} [unavailable_label] - Localized "Unavailable"
+  @param {string} [fallback_label] - Label of the no-JS select (default: product.options joined)
+  @param {string} [script_url] - Bundle URL (default: 'plt-web-components.bundle.js' | asset_url); pass 'none' to skip the tag
+{% enddoc %}
+
+{%- liquid
+  assign current_variant = selected_variant | default: product.selected_or_first_available_variant
+  assign field_name = name | default: 'id'
+  assign fallback_text = fallback_label
+  if fallback_text == blank
+    assign fallback_text = product.options | join: ' / '
+  endif
+  assign bundle_url = script_url
+  if bundle_url == blank
+    assign bundle_url = 'plt-web-components.bundle.js' | asset_url
+  endif
+-%}
+
+{%- capture options_json -%}
+  [
+  {%- for option in product.options_with_values -%}
+    {"name":{{ option.name | json }},"values":[
+    {%- for value in option.values -%}
+      {%- assign value_name = value.name | default: value -%}
+      {"value":{{ value_name | json }}
+      {%- if value.swatch.color or value.swatch.image -%}
+        ,"swatch":{"color":{% if value.swatch.color %}{{ value.swatch.color.rgb | prepend: 'rgb(' | append: ')' | json }}{% else %}null{% endif %},"image":{% if value.swatch.image %}{{ value.swatch.image | image_url: width: 80 | json }}{% else %}null{% endif %}}
+      {%- endif -%}
+      }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+    ]}{%- unless forloop.last -%},{%- endunless -%}
+  {%- endfor -%}
+  ]
+{%- endcapture -%}
+
+{%- capture variants_json -%}
+  [
+  {%- for variant in product.variants -%}
+    {"id":{{ variant.id | json }},"title":{{ variant.title | json }},"available":{{ variant.available | json }},"options":{{ variant.options | json }}}{%- unless forloop.last -%},{%- endunless -%}
+  {%- endfor -%}
+  ]
+{%- endcapture -%}
+
+{%- capture labels_json -%}
+  {"soldOut":{{ sold_out_label | default: 'Sold out' | json }},"unavailable":{{ unavailable_label | default: 'Unavailable' | json }}}
+{%- endcapture -%}
+
+<plt-variant-picker
+  name="{{ field_name | escape }}"
+  selected-variant-id="{{ current_variant.id | escape }}"
+  options="{{ options_json | strip | escape }}"
+  variants="{{ variants_json | strip | escape }}"
+  labels="{{ labels_json | strip | escape }}"
+>
+  <div class="plt-variant-picker__fallback" data-plt-fallback>
+    <label class="theme-label-bold" for="plt-variant-fallback-{{ product.id | escape }}">{{ fallback_text | escape }}</label>
+    <select class="d-select" id="plt-variant-fallback-{{ product.id | escape }}" name="{{ field_name | escape }}">
+      {%- for variant in product.variants -%}
+        <option value="{{ variant.id | escape }}"{% if variant.id == current_variant.id %} selected{% endif %}{% unless variant.available %} disabled{% endunless %}>{{ variant.title | escape }}</option>
+      {%- endfor -%}
+    </select>
+  </div>
+</plt-variant-picker>
+{%- if bundle_url != 'none' -%}
+  <script type="module" src="{{ bundle_url | escape }}"></script>
+{%- endif -%}

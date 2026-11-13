@@ -306,7 +306,19 @@
       }
     {% endstyle %}
 
-    {{ 'base.css' | asset_url | stylesheet_tag }}
+    {%- comment -%}
+      Cascade layers (see docs/ds-port-plan.md, cut 2b). The order must be declared before any layered
+      stylesheet: the legacy Dawn/Bulma CSS sits below the PLT design system (theme.css, built with
+      `npm run build:css`) so the design system's components are not overridden by legacy element resets.
+      Unlayered CSS (component-*.css and the inline style blocks) still wins over every layer.
+    {%- endcomment -%}
+    <style>
+      @layer legacy, theme, base, components, utilities;
+    </style>
+    {{ 'theme.css' | asset_url | stylesheet_tag }}
+    <style>
+      @import url('{{ 'base.css' | asset_url }}') layer(legacy);
+    </style>
 
     {% comment %}
       <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
@@ -348,12 +360,16 @@
     <!-- BULMA -->
 
     {% if use_full_css %}
-      {{ 'b-style.source.css' | asset_url | stylesheet_tag }}
+      <style>
+        @import url('{{ 'b-style.source.css' | asset_url }}') layer(legacy);
+      </style>
       <script>
         console.log('####### Using Full Bulma CSS #######');
       </script>
     {% else %}
-      {{ 'b-style.css' | asset_url | stylesheet_tag }}
+      <style>
+        @import url('{{ 'b-style.css' | asset_url }}') layer(legacy);
+      </style>
     {% endif %}
 
     {% style %}

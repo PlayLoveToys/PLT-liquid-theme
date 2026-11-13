@@ -1,0 +1,85 @@
+{% doc %}
+  Liquid adapter for <plt-filter-bar>: maps Shopify storefront filters
+  (`collection.filters` / `search.filters`) to the FilterBar contract. List
+  filters are multi-value checkbox groups (a value with no results is disabled
+  unless applied) and price-range filters are a `range` of two number inputs;
+  other filter types are skipped. Without JavaScript the fallback form submits
+  normally.
+
+  @param {filter[]} filters - collection.filters
+  @param {string} [action] - Form action (default: current page)
+  @param {string} [all_label] - Label of the "any" option (default: All)
+  @param {string} [apply_label]
+  @param {string} [orientation] - horizontal (default) or vertical
+  @param {boolean} [collapsible] - Wrap each filter in a collapsible <details> group
+  @param {boolean} [hide_chips] - Leave the active-filter chips to the theme
+  @param {string} [min_label] - Accessible name of a range minimum input and prefix of its chip (default: "<filter label> Min" and "Min")
+  @param {string} [max_label] - Same for the range maximum (default: Max)
+  @param {string} [remove_label] - Chip removal label prefix
+  @param {string} [clear_label] - "Clear all" label
+  @param {string} [active_label] - Label of the active-filters group
+  @param {string} [sort_by] - Preserved Shopify sort_by value
+  @param {string} [search_terms] - Preserved Shopify search query (`q`)
+  @param {string} [script_url] - Bundle URL; 'none' skips the tag
+{% enddoc %}
+{%- liquid
+  assign any_label = all_label | default: 'All'
+  assign apply_text = apply_label | default: 'Apply'
+  assign filter_orientation = orientation | default: 'horizontal'
+  assign is_collapsible = collapsible | default: false
+  assign hide_active_chips = hide_chips | default: false
+  assign bundle_url = script_url | default: ''
+  if bundle_url == blank
+    assign bundle_url = 'plt-web-components.bundle.js' | asset_url
+  endif
+-%}
+{%- capture filters_json -%}
+  [
+  {%- assign first = true -%}
+  {%- for filter in filters -%}
+    {%- if filter.type == 'list' -%}
+      {%- unless first -%},{%- endunless -%}{%- assign first = false -%}
+      {"id":{{ filter.param_name | json }},"label":{{ filter.label | json }},"multiple":true,"collapsible":{{ is_collapsible | json }},"options":[
+      {%- for value in filter.values -%}{"label":{{ value.label | json }},"value":{{ value.value | json }},"selected":{{ value.active | json }},"count":{{ value.count | default: 0 | json }},"disabled":{% if value.count == 0 and value.active == false %}true{% else %}false{% endif %}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}
+      ]}
+    {%- elsif filter.type == 'price_range' -%}
+      {%- unless first -%},{%- endunless -%}{%- assign first = false -%}
+      {"id":{{ filter.param_name | json }},"label":{{ filter.label | json }},"collapsible":{{ is_collapsible | json }},"options":[],"range":{"min":{"name":{{ filter.min_value.param_name | json }},"value":{{ filter.min_value.value | append: '' | json }},"placeholder":{{ filter.range_min | money_without_currency | strip_html | json }}{% if min_label != blank %},"label":{{ min_label | json }}{% endif %}},"max":{"name":{{ filter.max_value.param_name | json }},"value":{{ filter.max_value.value | append: '' | json }},"placeholder":{{ filter.range_max | money_without_currency | strip_html | json }}{% if max_label != blank %},"label":{{ max_label | json }}{% endif %}}}}
+    {%- endif -%}
+  {%- endfor -%}
+  ]
+{%- endcapture -%}
+{%- capture labels_json -%}{"apply":{{ apply_text | json }},"min":{{ min_label | default: 'Min' | json }},"max":{{ max_label | default: 'Max' | json }},"remove":{{ remove_label | default: 'Remove filter' | json }},"clear":{{ clear_label | default: 'Clear all' | json }},"active":{{ active_label | default: 'Active filters' | json }}}{%- endcapture -%}
+{%- capture preserve_json -%}{"sort_by":{{ sort_by | default: '' | json }},"q":{{ search_terms | default: '' | json }}}{%- endcapture -%}
+<plt-filter-bar filters="{{ filters_json | strip | escape }}" action="{{ action | escape }}" orientation="{{ filter_orientation | escape }}" preserve="{{ preserve_json | strip | escape }}" labels="{{ labels_json | strip | escape }}"{% if hide_active_chips %} hide-chips{% endif %}>
+  <form data-plt-fallback class="plt-filter-bar" action="{{ action | escape }}" method="get">
+    {%- if sort_by != blank -%}<input type="hidden" name="sort_by" value="{{ sort_by | escape }}">{%- endif -%}
+    {%- if search_terms != blank -%}<input type="hidden" name="q" value="{{ search_terms | escape }}">{%- endif -%}
+    {%- for filter in filters -%}
+      {%- if filter.type == 'list' or filter.type == 'price_range' -%}
+        {%- if is_collapsible -%}<details class="plt-filter-bar__details"{% if filter.active_values.size > 0 or filter.min_value.value != blank or filter.max_value.value != blank %} open{% endif %}><summary class="theme-label-bold">{{ filter.label | escape }}</summary>{%- endif -%}
+        {%- if filter.type == 'list' -%}
+          <fieldset class="plt-filter-bar__field plt-filter-bar__group"{% if is_collapsible %} aria-label="{{ filter.label | escape }}"{% endif %}>
+            {%- unless is_collapsible -%}<legend class="theme-label-bold">{{ filter.label | escape }}</legend>{%- endunless -%}
+            <ul class="plt-filter-bar__options">
+              {%- for value in filter.values -%}
+                <li><label class="plt-filter-bar__option"><input class="d-checkbox d-checkbox-primary" type="checkbox" name="{{ filter.param_name | escape }}" value="{{ value.value | escape }}"{% if value.active %} checked{% endif %}{% if value.count == 0 and value.active == false %} disabled{% endif %}> <span>{{ value.label | escape }} <span class="theme-meta">({{ value.count | default: 0 }})</span></span></label></li>
+              {%- endfor -%}
+            </ul>
+          </fieldset>
+        {%- else -%}
+          <fieldset class="plt-filter-bar__field plt-filter-bar__range"{% if is_collapsible %} aria-label="{{ filter.label | escape }}"{% endif %}>
+            {%- unless is_collapsible -%}<legend class="theme-label-bold">{{ filter.label | escape }}</legend>{%- endunless -%}
+            <div class="plt-filter-bar__bounds">
+              <input class="d-input d-input-sm" type="number" inputmode="decimal" min="0" step="any" name="{{ filter.min_value.param_name | escape }}" value="{{ filter.min_value.value | escape }}" placeholder="{{ filter.range_min | money_without_currency | strip_html | escape }}" aria-label="{% if min_label != blank %}{{ min_label | escape }}{% else %}{{ filter.label | escape }} Min{% endif %}">
+              <input class="d-input d-input-sm" type="number" inputmode="decimal" min="0" step="any" name="{{ filter.max_value.param_name | escape }}" value="{{ filter.max_value.value | escape }}" placeholder="{{ filter.range_max | money_without_currency | strip_html | escape }}" aria-label="{% if max_label != blank %}{{ max_label | escape }}{% else %}{{ filter.label | escape }} Max{% endif %}">
+            </div>
+          </fieldset>
+        {%- endif -%}
+        {%- if is_collapsible -%}</details>{%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+    <button type="submit" class="d-btn d-btn-primary theme-label-bold">{{ apply_text | escape }}</button>
+  </form>
+</plt-filter-bar>
+{%- if bundle_url != 'none' -%}<script type="module" src="{{ bundle_url | escape }}"></script>{%- endif -%}

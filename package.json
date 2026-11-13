@@ -1,0 +1,22 @@
+{
+  "name": "plt-liquid-theme",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i styles/global.css -o assets/theme.css --minify",
+    "watch:css": "tailwindcss -i styles/global.css -o assets/theme.css --watch",
+    "sync:plt": "node scripts/sync-plt.mjs",
+    "check:plt": "node scripts/sync-plt.mjs --check",
+    "check:theme-css": "node scripts/check-theme-css.mjs",
+    "test:templates": "node scripts/validate-template-json.mjs",
+    "harness:snippet": "node tools/snippet-harness/render.mjs"
+  },
+  "dependencies": {
+    "@playlovetoys/platform": "github:PlayLoveToys/PLT-design-system#b0ba29414aedfabec069599e79bf21b846c19ad0",
+    "@tailwindcss/cli": "^4.3.2",
+    "tailwindcss": "^4.3.2"
+  },
+  "devDependencies": {
+    "daisyui": "^5.6.6",
+    "liquidjs": "^10.30.1"
+  }
+}

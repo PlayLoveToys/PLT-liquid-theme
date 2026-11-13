@@ -1,0 +1,9 @@
+# Excluded from Shopify CLI operations (push, pull, dev).
+# Build tooling and documentation are not theme files.
+/node_modules/
+/docs/
+/scripts/
+/styles/
+/package.json
+/package-lock.json
+/tools/
