@@ -15,14 +15,18 @@ document.addEventListener('alpine:init', () => {
 
             const formData = new FormData(formElement);
 
-            // Add sections to update if cart drawer is present
-            const cartNotification = document.querySelector('cart-notification');
-            if (cartNotification) {
-                formData.append(
-                    'sections',
-                    cartNotification.getSectionsToRender().map((section) => section.id)
-                );
-                formData.append('sections_url', window.location.pathname);
+            // Open plt-cart-drawer (or legacy cart-notification) after add
+            const cartHost =
+                window.PltCartDrawerHost || document.querySelector('cart-notification');
+            if (cartHost?.getSectionsToRender) {
+                const sections = cartHost.getSectionsToRender();
+                if (sections.length) {
+                    formData.append(
+                        'sections',
+                        sections.map((section) => section.id)
+                    );
+                    formData.append('sections_url', window.location.pathname);
+                }
             }
 
             const config = {
@@ -53,16 +57,17 @@ document.addEventListener('alpine:init', () => {
                         return;
                     }
 
-                    // Success
+                    // Success: notify subscribers and open cart drawer
                     if (window.publish && window.PUB_SUB_EVENTS) {
                         window.publish(window.PUB_SUB_EVENTS.cartUpdate, {
                             source: 'product-form',
                             productVariantId: formData.get('id'),
                             cartData: response
                         });
-                    } else if (cartNotification) {
-                        cartNotification.renderContents(response);
-                    } else {
+                    }
+                    if (cartHost?.renderContents) {
+                        cartHost.renderContents(response);
+                    } else if (!(window.publish && window.PUB_SUB_EVENTS)) {
                         window.location = window.routes.cart_url;
                     }
                 })

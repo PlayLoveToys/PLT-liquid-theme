@@ -4226,13 +4226,16 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
         this.loading = true;
         this.errorMessage = "";
         const formData = new FormData(formElement);
-        const cartNotification = document.querySelector("cart-notification");
-        if (cartNotification) {
-          formData.append(
-            "sections",
-            cartNotification.getSectionsToRender().map((section) => section.id)
-          );
-          formData.append("sections_url", window.location.pathname);
+        const cartHost = window.PltCartDrawerHost || document.querySelector("cart-notification");
+        if (cartHost?.getSectionsToRender) {
+          const sections = cartHost.getSectionsToRender();
+          if (sections.length) {
+            formData.append(
+              "sections",
+              sections.map((section) => section.id)
+            );
+            formData.append("sections_url", window.location.pathname);
+          }
         }
         const config = {
           method: "POST",
@@ -4261,9 +4264,10 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
               productVariantId: formData.get("id"),
               cartData: response
             });
-          } else if (cartNotification) {
-            cartNotification.renderContents(response);
-          } else {
+          }
+          if (cartHost?.renderContents) {
+            cartHost.renderContents(response);
+          } else if (!(window.publish && window.PUB_SUB_EVENTS)) {
             window.location = window.routes.cart_url;
           }
         }).catch((e) => {

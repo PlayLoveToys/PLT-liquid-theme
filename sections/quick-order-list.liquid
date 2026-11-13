@@ -5,6 +5,11 @@
 <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'quick-order-list.js' | asset_url }}" defer="defer"></script>
+{%- comment -%}
+  Bundle WC for plt-quantity-selector (JS-Q2). Layout loads it after JS-C (#12); keep this
+  until that merges so QOL works on the Q1 base. Drop when rebasing onto JS-C.
+{%- endcomment -%}
+<script type="module" src="{{ 'plt-web-components.bundle.js' | asset_url }}"></script>
 
 {%- style -%}
   .section-{{ section.id }}-padding {

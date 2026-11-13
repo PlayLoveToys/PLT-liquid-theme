@@ -95,7 +95,7 @@
                 {% endif %}
               >
                 {%- if block.settings.heading != blank -%}
-                  <h2 class="footer-block__heading inline-richtext{% if block.type == 'link_list' %} footer-block__heading--collapsible{% endif %}">
+                  <h2 class="footer-block__heading theme-label-bold inline-richtext{% if block.type == 'link_list' %} footer-block__heading--collapsible{% endif %}">
                     {{- block.settings.heading -}}
                   </h2>
                 {%- endif -%}
@@ -154,7 +154,7 @@
                         </div>
                       {%- endif -%}
                       {%- if settings.brand_headline != blank -%}
-                        <h2 class="footer-block__heading rte">{{ settings.brand_headline }}</h2>
+                        <h2 class="footer-block__heading theme-label-bold rte">{{ settings.brand_headline }}</h2>
                       {%- endif -%}
                       {%- if settings.brand_description != blank -%}
                         <div class="rte">{{ settings.brand_description }}</div>
@@ -199,7 +199,7 @@
           {%- if section.settings.newsletter_enable -%}
             <div class="footer-block__newsletter">
               {%- if section.settings.newsletter_heading != blank -%}
-                <h2 class="footer-block__heading inline-richtext">{{ section.settings.newsletter_heading }}</h2>
+                <h2 class="footer-block__heading theme-label-bold inline-richtext">{{ section.settings.newsletter_heading }}</h2>
               {%- endif -%}
               {%- form 'customer', id: 'ContactFooter', class: 'footer__newsletter newsletter-form' -%}
                 <input type="hidden" name="contact[tags]" value="newsletter">
@@ -209,7 +209,7 @@
                       id="NewsletterForm--{{ section.id }}"
                       type="email"
                       name="contact[email]"
-                      class="field__input"
+                      class="field__input d-input"
                       value="{{ form.email }}"
                       aria-required="true"
                       autocorrect="off"
@@ -225,12 +225,12 @@
                       placeholder="{{ 'newsletter.label' | t }}"
                       required
                     >
-                    <label class="field__label" for="NewsletterForm--{{ section.id }}">
+                    <label class="field__label theme-label-bold" for="NewsletterForm--{{ section.id }}">
                       {{ 'newsletter.label' | t }}
                     </label>
                     <button
                       type="submit"
-                      class="newsletter-form__button field__button"
+                      class="newsletter-form__button field__button d-btn d-btn-primary theme-label-bold"
                       name="commit"
                       id="Subscribe"
                       aria-label="{{ 'newsletter.button_label' | t }}"

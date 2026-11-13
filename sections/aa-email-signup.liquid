@@ -59,7 +59,7 @@
                     id="NewsletterForm--{{ section.id }}"
                     type="email"
                     name="contact[email]"
-                    class="b-input b-is-primary b-is-rounded"
+                    class="b-input b-is-primary b-is-rounded d-input"
                     value="{{ form.email }}"
                     aria-required="true"
                     autocorrect="off"
@@ -75,12 +75,12 @@
                     placeholder="{{ 'newsletter.label' | t }}"
                     required
                   >
-                  <label class="b-label" for="NewsletterForm--{{ section.id }}">
+                  <label class="b-label theme-label-bold" for="NewsletterForm--{{ section.id }}">
                     {{ 'newsletter.label' | t }}
                   </label>
                   <button
                     type="submit"
-                    class="b-button"
+                    class="b-button d-btn d-btn-primary theme-label-bold"
                     name="commit"
                     id="Subscribe"
                     aria-label="{{ 'newsletter.button_label' | t }}"

@@ -1,0 +1,47 @@
+{% doc %}
+  Theme wrapper around snippets/plt-cart-drawer.liquid (vendored adapter).
+  assets/plt-cart-drawer-bridge.js owns Ajax cart mutations and opens the drawer.
+  Does not edit the vendored plt-* snippet. Header is untouched in this cut;
+  the bridge intercepts #cart-icon-bubble clicks when the drawer is present.
+{% enddoc %}
+
+{%- liquid
+  assign drawer_title = 'sections.cart.title' | t
+  assign drawer_close = 'accessibility.close' | t
+  assign drawer_checkout = 'sections.cart.checkout' | t
+  assign drawer_view_cart = 'sections.quick_order_list.view_cart' | t
+  assign drawer_empty = 'sections.cart.empty' | t
+  assign drawer_subtotal = 'sections.cart.estimated_total' | t
+  assign drawer_remove = 'sections.cart.remove_title' | t: title: ''
+  assign drawer_decrease = 'products.product.quantity.decrease' | t: product: 'item'
+  assign drawer_increase = 'products.product.quantity.increase' | t: product: 'item'
+  assign drawer_quantity = 'products.product.quantity.label' | t
+  assign drawer_change_error = 'sections.cart.cart_error' | t
+-%}
+
+{% render 'plt-cart-drawer',
+  cart: cart,
+  id: 'plt-cart-drawer',
+  title: drawer_title,
+  close_label: drawer_close,
+  checkout_label: drawer_checkout,
+  view_cart_label: drawer_view_cart,
+  empty_label: drawer_empty,
+  subtotal_label: drawer_subtotal,
+  remove_label: drawer_remove,
+  decrease_label: drawer_decrease,
+  increase_label: drawer_increase,
+  quantity_label: drawer_quantity,
+  script_url: 'none'
+%}
+
+<script>
+  window.PltCartDrawerConfig = {
+    locale: {{ request.locale.iso_code | json }},
+    currency: {{ cart.currency.iso_code | json }},
+    cartUrl: {{ routes.cart_url | json }},
+    checkoutUrl: '/checkout',
+    errorMessage: {{ drawer_change_error | json }},
+    drawerId: 'plt-cart-drawer'
+  };
+</script>

@@ -106,15 +106,35 @@ sort fuera del cajón que sea realmente independiente (el `#FacetSortForm` está
 | `data-min` / `data-cart-quantity` / pubsub validate | Props `min`/`max`/`step`/`value`; **no** hay pubsub — el theme debe `el.value = …` tras fetch de rules |
 | `product-info` reescribe atributos del input en el DOM | Hay que setear propiedades del WC tras morph/partial update |
 
-**Corte JS-Q0 (diseño, sin markup prod):** adaptar o envolver `product-info.js` para hablar con el WC
-(leer `value`, escribir props, escuchar `plt:quantity-change` solo si hace falta side-effects). Tests
-manuales en harness + PDP staging.
+**Corte JS-Q0 (capa compat, sin markup prod) — hecho (2026-11-13):**
+`assets/product-info.js` habla con Dawn **y** con `<plt-quantity-selector>`:
 
-**Corte JS-Q1:** `featured-product` **o** un bloque quantity del PDP detrás de setting — nunca QOL
-primero.
+| API theme | Dawn `.quantity__input` | WC `plt-quantity-selector` |
+|---|---|---|
+| Resolver control | `querySelector('.quantity__input')` | Preferido: `querySelector('plt-quantity-selector')` |
+| Leer valor | `input.value` | prop `el.value` (`getQuantityValue()`) |
+| Leer rules (cart/min/max/step) | `data-cart-quantity`, `data-min`, `data-max`, `step` | Mismos `data-*` en el **host** + props `min`/`max`/`step` (`readQuantityRuleData()`) |
+| Escribir bounds tras Section Rendering | attrs `min`/`max`/`value` | props `min`/`max`/`step`/`value` (`applyQuantityBounds()`; **no** `setValue()` → no emite evento) |
+| Sync desde HTML parcial `#Quantity-Form-*` | copia `data-*` + `step` | copia `data-*` + props desde el host actualizado (`syncQuantityControlFromUpdated()`) |
+| `plt:quantity-change` | n/a | **No** se escucha en `product-info`: el input `name` sigue en el form; el WC ya clampea. Side-effects de rules siguen vía pubsub `quantityUpdate` (Dawn `QuantityInput`). |
 
-**Corte JS-Q2:** `snippets/quantity-input.liquid` / quick-order — requiere `name="updates[…]"` y
-listeners de `quick-order-list.js`.
+Contrato para **Q1** (markup): conservar `#Quantity-Form-{{ section.id }}`, `.product-form__quantity`, `.quantity__rules`, `.quantity__label`. Sustituir `<quantity-input>` + `.quantity__input` por `render 'plt-quantity-selector'` con `name: 'quantity'`, `script_url: 'none'` si el bundle va en layout, y **espejar** en el host del WC: `data-cart-quantity`, `data-min`, `data-max` además de `min`/`max`/`step`/`value` (Liquid del variant `quantity_rule` + `cart_qty`). Sin eso, `setQuantityBoundries()` no puede restar qty en carrito.
+
+**Corte JS-Q1 — hecho (2026-11-13):** `sections/featured-product.liquid` usa
+`render 'plt-quantity-selector'` (`name: 'quantity'`, `script_url: 'none'`). Host del WC lleva
+`data-cart-quantity` / `data-min` / `data-max` + props `min`/`max`/`step`/`value`, y `data-form`
+para asociar el input al ATC (`product-info.syncQuantityFormAssociation`). Conserva
+`#Quantity-Form-{{ section.id }}`, `.product-form__quantity`, `.quantity__rules`, `.quantity__label`.
+Bundle: script module en la section hasta que JS-C consolide en layout. `main-product` y QOL = Q2 /
+follow-up.
+
+**Corte JS-Q2 — hecho (2026-11-13):** `snippets/quantity-input.liquid` → `plt-quantity-selector`
+con `name="updates[{{ variant.id }}]"` (min 0 para vaciar línea). Host lleva `data-index` /
+`data-min` / `data-cart-quantity` / `data-target` (+ class `quantity cart-quantity`).
+`BulkAdd` (`global.js`) resuelve el input del WC (`getQuantityInputFromEvent` /
+`syncPltQuantityInputAttrs`); `quick-order-list.js` escucha `plt:quantity-change`;
+`quick-add-bulk.js` acepta el mismo host (fallback Dawn). Bundle module en
+`sections/quick-order-list.liquid` hasta JS-C en layout. Sin card-product quantity.
 
 **No hacer en 2b:** cablear quantity en `card-product` / quick-add WC (explícitamente fuera de 2d).
 
@@ -198,16 +218,24 @@ Contrato del puente theme:
 
 ### JS-Q* — quantity
 
-- [ ] Q0: capa compat `product-info` ↔ WC
-- [ ] Q1: un PDP / featured
-- [ ] Q2: quick-order / `updates[]`
-- [ ] No card-product quantity en 2b
+- [x] Q0: capa compat `product-info` ↔ WC (2026-11-13; sin markup PDP)
+- [x] Gates Q0 (2026-11-13): `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline;
+  `shopify theme check` ≤ baseline (6 err / 362 warn; sin Liquid nuevo)
+- [x] Q1: `featured-product` → `plt-quantity-selector` + data-* / `data-form` en host (2026-11-13)
+- [x] Gates Q1 (2026-11-13): `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline;
+  `shopify theme check` ≤ baseline (6 err / 362 warn)
+- [x] Q2: quick-order / `updates[]` via `quantity-input` → WC + BulkAdd compat (2026-11-13)
+- [x] Gates Q2 (2026-11-13): `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline;
+  `shopify theme check` ≤ baseline (6 err / 362 warn)
+- [x] No card-product quantity en 2b
+- [ ] `main-product` quantity (mismo patrón Q1; blast mayor — follow-up)
 
 ### Explicitamente fuera / bloqueado
 
 - [ ] Migración masiva de `facets.liquid` en un solo PR
 - [ ] Editar a mano `snippets/plt-*.liquid` vendor (solo `npm run sync:plt`)
-- [ ] `plt-cart-drawer` / cart quantity (Fase 3)
+- [x] `plt-cart-drawer` cableado (Fase 3 shell-cart); quantity en líneas del drawer vía WC
+- [ ] Quantity Dawn en página `/cart` (follow-up / Q2 si aplica)
 - [ ] `plt-variant-picker` en PDP (corte propio)
 - [ ] Fase 0 capturas sin credenciales merchant
 
