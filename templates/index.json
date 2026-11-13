@@ -12,27 +12,15 @@
     "a_matrix_KPxFQ3": {
       "type": "a-matrix",
       "blocks": {
-        "b_card_collections_grid_CBVDdL": {
-          "type": "b-card-collections-grid",
-          "name": "b-card-collections-grid",
+        "b_card_collection_VxJGjr": {
+          "type": "b-card-collection",
+          "name": "b-Card Collection",
           "settings": {
-            "main_collection": "nerf",
-            "collections_card_title": "",
-            "priority_desktop": true,
-            "priority_mobile": true,
-            "collection_1": "",
-            "collection_1_title": "",
-            "collection_2": "",
-            "collection_2_title": "",
-            "collection_3": "",
-            "collection_3_title": "",
-            "collection_4": "",
-            "collection_4_title": "",
-            "collection_5": "",
-            "collection_5_title": "",
-            "collection_6": "",
-            "collection_6_title": "",
-            "cta_text": "View All",
+            "collection": "action-figures",
+            "priority": false,
+            "show_description": false,
+            "truncatewords": 20,
+            "cta_text": "View Collection",
             "cta_url": ""
           },
           "blocks": {}
@@ -114,7 +102,7 @@
         }
       },
       "block_order": [
-        "b_card_collections_grid_CBVDdL",
+        "b_card_collection_VxJGjr",
         "b_card_collections_grid_HA36Vz",
         "b_card_collections_grid_fRnH7P",
         "b_card_collections_grid_EqRJpQ"
