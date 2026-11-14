@@ -67,17 +67,15 @@ Se registran como baseline del validador.
 
 ### Fase 0: Red de seguridad
 
-**Estado (2026-11-13):** artefacto documentable listo para ejecutar cuando haya tienda.
-Las **capturas reales siguen pendientes**: ya hay tienda de desarrollo y handles (ver «Tienda y handles
-fixture»); falta el login de Shopify del usuario y la descarga de Chromium para Playwright.
-No bloquea cortes 2b WC (JS-C / JS-Q*) ni PRs de código.
+**Estado (2026-11-14):** capturas y smoke ejecutados en `aadigital-dev-00` (theme-dev + Chromium).
+Baseline local en `docs/visual-baseline/fase-0/` (gitignored; no commit de PNGs hasta Fase 6).
 
 - [x] Baseline de `theme check` y validación de templates (arriba).
 - [x] Artefacto Fase 0: checklist páginas/viewports, placeholders de handles, instrucciones
   `visual-compare`, checklist layout (esta sección).
-- [ ] Capturas reales 390 / 768 / 1280 (tienda dev + handles en § Fase 0; falta login Shopify del usuario y Chromium).
-- [x] Handles fixture iniciales documentados (2026-11-14); [ ] ampliar si faltan paginación/filtros/variantes (tabla cobertura § Fase 0).
-- [ ] Archivar PNGs/baseline bajo `docs/visual-baseline/fase-0/` (sin committear volúmenes masivos hasta Fase 6).
+- [x] Capturas reales 390 / 768 / 1280 (pre-port `f5446a9` @9292 vs `main` @9293; 9 rutas).
+- [x] Handles fixture documentados + cobertura verificada (2026-11-14); ver tabla y handles abajo.
+- [x] Archivar PNGs/baseline bajo `docs/visual-baseline/fase-0/` (local; sin committear volúmenes masivos hasta Fase 6).
 - [x] `facets.js` ausente: etiqueta obsoleta en `main-search` (ver corte 2b). **Higiene 2c:** `<script>` eliminado.
 
 #### Checklist de capturas (páginas × viewports)
@@ -106,26 +104,33 @@ Tienda **de desarrollo** (no producción), facilitada por el usuario. No usar la
 
 ```text
 STORE=aadigital-dev-00.myshopify.com
+STOREFRONT_PASSWORD=***          # Preferences → password (theme-dev --store-password)
 PRODUCT_HANDLE=the-inventory-not-tracked-snowboard
-COLLECTION_HANDLE=frontpage
-ARTICLE=news/lorem-ipsum          # blog handle / article handle  → /blogs/news/lorem-ipsum
-PAGE_HANDLE=contact               # → /pages/contact
-SEARCH_QUERY=snowboard            # PROPUESTA (no facilitada): derivada del producto; confirmar que devuelve resultados
+COLLECTION_HANDLE=all            # capturas/smoke: /collections/all (paginación + filtros)
+COLLECTION_HANDLE_ALT=frontpage  # existe pero vacía / sin grid útil
+ARTICLE=news/lorem-ipsum         # → /blogs/news/lorem-ipsum
+PAGE_HANDLE=contact              # → /pages/contact
+SEARCH_QUERY=snowboard           # confirmado: 16 resultados
 ```
 
-**Cobertura de estos fixtures: a verificar en el primer `theme dev`.** Parecen datos de muestra de Shopify, y
-puede que no ejerciten todo lo que el port ha tocado:
+**Notas theme-dev (2026-11-14):** templates con dynamic sources de metafields PLT
+(`collection.json` hero/afterpage, metaobjects, `blog.custom-mansory-blog.json`) **fallan el upload**
+en esta tienda sample. Mitigación: `--ignore` de metaobject / collection variants + neutralizar
+temporalmente los `{{ collection.metafields… }}` en `collection.json` solo en la sesión local
+(restaurar antes de commit). Snippets `_global-scripts-defer` / `defer-stylesheet` a veces no
+resuelven en el preview (Liquid error en layout); no bloqueó capturas ni ATC.
 
-| Qué cubre el port | Posible hueco con estos fixtures |
+**Cobertura verificada en el primer `theme-dev`:**
+
+| Qué cubre el port | Resultado en aadigital-dev-00 |
 |---|---|
-| Paginación `plt-pagination` compact (corte 2a) | `frontpage` necesita **más de una página** (el theme pagina de 20 en 20); con pocos productos no hay paginación |
-| `plt-filter-bar` / sort (JS-A/B/C) | La colección necesita **filtros** con varios valores y, si es posible, un filtro de precio |
-| `plt-quantity-selector` y reglas de cantidad (JS-Q*) | «Inventory not tracked» sugiere un producto simple; **sin variantes, reglas de cantidad ni estados de stock** |
-| Variant picker, galería | Un producto con varias variantes y varias imágenes |
-| Búsqueda | `SEARCH_QUERY` sin confirmar |
+| Paginación `plt-pagination` | **OK** en `/collections/all` (>20 productos) |
+| `plt-filter-bar` / sort | **OK** Availability + Price (+ sort); no hay filtros boolean de producto tipados |
+| `plt-quantity-selector` (JS-Q3) | **OK** en PDP fixture; **sin** quantity rules / variantes |
+| Variant picker, galería | Hueco: el snowboard fixture es simple |
+| Búsqueda | **OK** `?q=snowboard` (16 hits + filter-bar) |
 
-Si faltan, añadir en la tienda de desarrollo un segundo producto (con variantes y reglas de cantidad) y una
-colección con >20 productos, y registrar aquí sus handles. Citar los handles en el PR de baseline visual (Fase 6).
+Seguimiento opcional: producto con variantes + quantity rules en la tienda sample (no bloquea P1).
 
 #### Cómo capturar con `visual-compare` (desde `plt-frontend-liquid`)
 
@@ -182,16 +187,13 @@ Repetir el paso 4 con: `/` (home), `/products/the-inventory-not-tracked-snowboar
 
 #### Checklist layout (sin captura completa, mirar en DevTools / Lighthouse)
 
-Al primer `shopify theme dev`, antes o junto a las capturas:
+Ejecutada 2026-11-14 en theme-dev `:9293` (candidate `main`):
 
-- [ ] Fondo `html` crema del DS (`#FAF7F2` / tokens `cheesecake`) vs página real; no forzar
-  overrides locales del vendor.
-- [ ] LCP / CSS bloqueante: los `@import … layer(legacy)` de `base.css` y `b-style*.css` en
-  `layout/theme.liquid` añaden cadena de peticiones; medir frente al baseline pre-2b.
-- [ ] Empates CSS: `component-*.css` (sin capa) ganan a Bulma en capa `legacy` en selectores de
-  elemento idénticos; anotar regresiones visibles (botones, inputs, cards Dawn).
-- [ ] Confirmar que `theme.css` carga en todas las páginas del layout principal (no en
-  `password.liquid` / gift card según alcance documentado).
+- [x] `theme.css` + `@import … layer(legacy)` de `base.css` / `b-style*.css` presentes en el HTML del layout.
+- [~] Fondo `html` crema `#FAF7F2`: no siempre computado como crema en el primer paint (tokens/capa);
+  comparar en `docs/visual-baseline/fase-0/home` vs pre-port.
+- [~] LCP / CSS bloqueante por `@import` legacy: cualitativo vía capturas; medición formal → Fase 6.
+- [x] Empates `component-*.css` vs Bulma `legacy`: sin bloqueo de smoke; regresiones visuales en PNGs.
 
 ### Fase 1: Tooling y tokens (sin cambio visual)
 **Hecho (2026-11-12), sin tocar `layout/` ni ningún snippet/section existente:**
@@ -425,39 +427,39 @@ Una fila por ítem; sin duplicados.
 | **Hecho** | Inventario Alpine residual (Fase 5) | [PR #18](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/18) → [`docs/ds-port-alpine-inventory.md`](./ds-port-alpine-inventory.md) |
 | **Hecho** | Sync plan + estado port (baseline 6/362, tabla sesión) | [PR #19](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/19) |
 | **Hecho** | Fase 3 shell-cart (drawer + footer/newsletter tokens parcial + predictive defer headings) | código en `main` [`c57ea14`](https://github.com/PlayLoveToys/PLT-liquid-theme/commit/c57ea1426e33e3e6d73c0201392125fcd192a0b9) (sin PR); docs [PR #22](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/22) |
-| **Pendiente** | Fase 0 capturas reales 390/768/1280 | Tienda de desarrollo y handles ya definidos (§ Fase 0); falta `shopify auth login` del usuario y Chromium; pre-port `f5446a9` vs `main` |
-| **Pendiente** | Fase 3 shell header (`fase-3-header`; predictive search completo) | Tras capturas; cart/footer/newsletter parcial ya en `main` |
+| **Hecho** | Fase 0 capturas reales 390/768/1280 | Local `docs/visual-baseline/fase-0/` (9 rutas; gitignored); pre-port `f5446a9` vs `main` |
+| **Hecho** | Smoke tienda (filtros/qty/drawer/ATC) + layout checklist | 2026-11-14 en `aadigital-dev-00`; ver § Fase 0 |
+| **Pendiente** | Fase 3 shell header (`fase-3-header`; predictive search completo) | Siguiente; cart/footer/newsletter parcial ya en `main` |
 | **Pendiente** | Fase 4 sections por template | Orden § Fase 4; Alpine plegado según inventario |
-| **Pendiente** | Fase 5 retirar Bulma → luego Alpine | Ver § Fase 5 + inventario Alpine |
+| **Pendiente** | Fase 5 retirar Bulma → luego Alpine | Ver § Fase 5 + prioridades Alpine |
 | **Pendiente** | Fase 6 gates formales en CI | No hay GitHub Actions; ver § Fase 6 |
 | **Bloqueado** | Carruseles Alpine (`b-carousel`, `collection-list`, `c-carousel-buttons`) | No hay componente **Carousel** en DS — [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
 | **Bloqueado** | FAQ colección (`_collection-seo-faqs`) → `d-collapse` / Faq DS | No hay componente **Faq** en DS — [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
-| **Bloqueado** | Smoke PDP / layout en tienda | Depende del login de Shopify del usuario; los fixtures pueden no cubrir paginación, filtros ni quantity rules (§ Fase 0) |
 | **Bloqueado** | Inputs/alerts / botones Dawn globales masivos | Sin snippet acotado; por template Fase 4 |
 
 ### Lista de pendientes (2026-11-14)
 
-Orden sugerido; **0 PRs abiertos** en el theme. Gates locales en cada corte: `check:plt`, `check:theme-css`, `test:templates` (40/42), `theme check` ≤ **6/362**.
+Actualizado tras ejecutar P0. Gates locales en cada corte: `check:plt`, `check:theme-css`, `test:templates` (40/42), `theme check` ≤ **6/362**.
 
 | P | Qué | Responsable / notas |
 |---|---|---|
-| **P0** | `shopify auth login` + `npx playwright install chromium` | Usuario |
-| **P0** | Primer `shopify theme dev` (`aadigital-dev-00`) + checklist layout § Fase 0 | Usuario + agente docs |
-| **P0** | Completar fixtures si fallan paginación/filtros/variantes (§ tabla cobertura) | Usuario en tienda dev |
-| **P0** | Capturas pre-port `f5446a9` vs `main` (9 rutas × 390/768/1280) | Usuario; instrucciones § Fase 0 |
-| **P0** | Smoke manual: filtros boolean (`c27304c`), quantity PDP (JS-Q3), drawer (`c57ea14`), ATC quick-add | Tras `theme dev` |
-| **P0** | `snippets/buy-buttons.liquid`: `$store.cart.add(selectedVariant)` sin `x-data` en PDP | Staging → fix en PR acotado |
+| **P0** ✓ | `shopify auth login` + Chromium Playwright | Hecho |
+| **P0** ✓ | `theme-dev` `aadigital-dev-00` + checklist layout | Hecho (ver § Fase 0) |
+| **P0** ✓ | Fixtures: usar `COLLECTION_HANDLE=all`; search `snowboard` OK | Hueco residual: variantes / quantity rules |
+| **P0** ✓ | Capturas pre-port `f5446a9` vs `main` (9×390/768/1280) | Local bajo `docs/visual-baseline/fase-0/` |
+| **P0** ✓ | Smoke: filter-bar + sort, qty PDP, drawer ATC | Quick-add card no hallado en fixture `all` |
+| **P0** ✓ | `buy-buttons` sin Alpine roto | [PR #25](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/25) |
 | **P1** | Corte **`fase-3-header`** (tokens / `d-*`; conservar mega-menu) | Siguiente PR shell |
 | **P1** | Predictive search: shell completa (defer); hoy solo headings `theme-label-bold` | Tras header o issue DS Search |
 | **P1** | Harness `cart-drawer` (opcional; offline QA del adapter) | Mejora tooling, no bloquea |
 | **P2** | Fase 4 por template (orden § Fase 4): colección/búsqueda → home → contenido → blog → producto | Un PR por template |
-| **P3** | Fase 5: retirar Bulma (`b-*` → 0) → luego Alpine **12** archivos + `buy-buttons` / `c-carousel-buttons` | Ver [inventario](./ds-port-alpine-inventory.md) |
+| **P3** | Fase 5: retirar Bulma (`b-*` → 0) → luego Alpine **12** archivos + residual `c-carousel-buttons` | Ver [inventario](./ds-port-alpine-inventory.md) |
 | **P4** | Fase 6: workflow CI + diff visual tras baseline | Sin Actions hoy |
 | **—** | **Bloqueado DS:** Carousel + Faq ([DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4)) | Home carruseles + `_collection-seo-faqs` |
 | **—** | Adaptador `shopify` DS, preflight Tailwind, mapeo `settings_schema` → tokens | Fase 1 residual / Fase 5 |
 | **—** | Limpieza Dawn cart-notification (assets/snippets huérfanos) | Fase 5, tras validar drawer en tienda |
 
-**Siguiente inmediato:** filas **P0** (auth, dev server, fixtures, capturas, smoke cart/facets/PDP).
+**Siguiente inmediato:** **P1** — corte `fase-3-header` (tokens / `d-*`; conservar mega-menu).
 
 ### Fase 3: Shell
 
@@ -491,7 +493,7 @@ Orden de migración Liquid (+ Alpine residual del inventario en el mismo orden d
    puede ir a `<details>` / `d-collapse` sin Faq.
 4. **Blog / artículo** — `article-card` parcial (2e); EditorialCard pendiente.
 5. **Producto al final** — `main-product` (JS-Q3, [PR #16](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/16) en `main`),
-   `featured-product` (JS-Q1 en `main`). Revisar `buy-buttons` (Alpine `$store.cart` sin `x-data` en PDP).
+   `featured-product` (JS-Q1 en `main`). `buy-buttons` Alpine residual retirado ([PR #25](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/25)).
 
 Inventario detallado por archivo: [`docs/ds-port-alpine-inventory.md`](./ds-port-alpine-inventory.md) (en `main` desde [PR #18](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/18)).
 
@@ -502,8 +504,9 @@ Blocks `b-card-*` → EditorialCard / CollectionCard / ProductCard.
 ### Fase 5: Retirar legacy
 
 **Orden obligatorio:** (1) **Bulma** — cuando `b-*` → 0, preflight Tailwind y retirar `b-style`; (2)
-**Alpine** — los **12** archivos Liquid con `x-data` tras JS-C + residual sin `x-data` (`buy-buttons`,
-`c-carousel-buttons`); no retirar `alpine-bundle.js` / `cart-store.js` hasta migrar cart y
+**Alpine** — los **12** archivos Liquid con `x-data` tras JS-C + residual sin `x-data`
+(`c-carousel-buttons`; `buy-buttons` ya limpio en [PR #25](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/25));
+no retirar `alpine-bundle.js` / `cart-store.js` hasta migrar cart y
 `card-product` **(b)**; (3) `component-*.css` Dawn y loader CDN. Revisar `ai_gen_block_*`.
 
 Tabla y orden de PRs sugeridos: [`docs/ds-port-alpine-inventory.md`](./ds-port-alpine-inventory.md).
