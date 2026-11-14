@@ -424,32 +424,28 @@ Una fila por ítem; sin duplicados. PRs abiertos se tratan como **en revisión**
 | **En revisión** | 2b boolean filters: pin `c27304c` + `sync:plt` | [PR #17](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/17) (listo para review; [DS#5](https://github.com/PlayLoveToys/PLT-design-system/pull/5) ya en DS `main`) |
 | **En revisión** | Inventario Alpine residual (Fase 5) | [PR #18](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/18) → [`docs/ds-port-alpine-inventory.md`](./ds-port-alpine-inventory.md) (aún no en `main`) |
 | **Pendiente** | Fase 0 capturas reales 390/768/1280 | Tienda de desarrollo y handles ya definidos (§ Fase 0); falta `shopify auth login` del usuario y Chromium; pre-port `f5446a9` vs `main` |
-| **Pendiente** | Fase 3 shell (header tokens, predictive search, newsletter) | Tras aclarar cart (abajo) + capturas |
+| **Pendiente** | Fase 3 shell header (`fase-3-header`; predictive search completo) | Tras capturas; cart/footer/newsletter parcial ya en `main` |
 | **Pendiente** | Fase 4 sections por template | Orden § Fase 4; Alpine plegado según inventario |
 | **Pendiente** | Fase 5 retirar Bulma → luego Alpine | Ver § Fase 5 + inventario Alpine |
 | **Pendiente** | Fase 6 gates formales en CI | No hay GitHub Actions; ver § Fase 6 |
-| **Dudoso / perdido** | Fase 3 cart drawer | Plan citaba rama `port/ds-fase-3-shell-cart` (**no existe** en GitHub; **ningún PR**). En `main` sí hay `snippets/cart-drawer.liquid` + `assets/plt-cart-drawer-bridge.js` (commit [`c57ea14`](https://github.com/PlayLoveToys/PLT-liquid-theme/commit/c57ea1426e33e3e6d73c0201392125fcd192a0b9), sin PR). **Investigación aparte** para procedencia y si el corte está completo |
+| **Hecho** | Fase 3 shell-cart (drawer + footer/newsletter tokens parcial + predictive defer headings) | **`main`** [`c57ea14`](https://github.com/PlayLoveToys/PLT-liquid-theme/commit/c57ea1426e33e3e6d73c0201392125fcd192a0b9) (push directo, **sin PR**; rama planificada `port/ds-fase-3-shell-cart` nunca existió en GitHub) |
 | **Bloqueado** | Carruseles Alpine (`b-carousel`, `collection-list`, `c-carousel-buttons`) | No hay componente **Carousel** en DS — [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
 | **Bloqueado** | FAQ colección (`_collection-seo-faqs`) → `d-collapse` / Faq DS | No hay componente **Faq** en DS — [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
 | **Bloqueado** | Smoke PDP / layout en tienda | Depende del login de Shopify del usuario; los fixtures pueden no cubrir paginación, filtros ni quantity rules (§ Fase 0) |
 | **Bloqueado** | Inputs/alerts / botones Dawn globales masivos | Sin snippet acotado; por template Fase 4 |
 
 **Siguiente (prioridad):** merge/review [PR #17](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/17) (pin) y [PR #16](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/16) (JS-Q3);
-staging en tienda de filtros boolean, quantity PDP y drawer cart; aclarar estado Fase 3 cart (`c57ea14`);
+staging en tienda de filtros boolean, quantity PDP y drawer cart (Fase 3 shell-cart ya en `main`, `c57ea14`);
 verificar en staging `snippets/buy-buttons.liquid`: `@click="$store.cart.add(selectedVariant)"` **sin** ancestro `x-data` en PDP (`main-product` / `featured-product`). Alpine residual: **12** archivos con `x-data` ([inventario](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/18)). Gates: locales (`check:plt`, `check:theme-css`, `test:templates`, `theme check` ≤ **6/362**).
 
 ### Fase 3: Shell
 
-**Cart — estado dudoso / perdido (2026-11-13):** el plan asumía el corte en la rama
-`port/ds-fase-3-shell-cart`, que **no existe** en GitHub y **ningún PR** la referencia. Aun así,
-en `main` están `snippets/cart-drawer.liquid` y `assets/plt-cart-drawer-bridge.js` (commit
-`c57ea14`, autorefactors de `product-form.js` / `quick-add.js` / Alpine card). Falta confirmar si
-eso equivale al corte shell-cart completo o a un commit huérfano (investigación en curso).
-
-Intención documentada del corte cart (cuando se cierre el estado):
-
-- `cart-notification` → `plt-cart-drawer`; call sites: `product-form.js`, `quick-add.js`, Alpine
-  product card / bundle; bridge en `#cart-icon-bubble`; bundle WC en layout (JS-C).
+- **Cart (hecho en `main`, [`c57ea14`](https://github.com/PlayLoveToys/PLT-liquid-theme/commit/c57ea1426e33e3e6d73c0201392125fcd192a0b9)):** `cart-notification` → `plt-cart-drawer`
+  (`snippets/cart-drawer.liquid` + `assets/plt-cart-drawer-bridge.js`). Call sites:
+  `product-form.js`, `quick-add.js`, Alpine product card / bundle. Header no se toca;
+  el bridge intercepta `#cart-icon-bubble`. Bundle WC en layout (alineado con JS-C, [PR #12](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/12)).
+  Corte en `main` por push directo (**sin PR**); la rama `port/ds-fase-3-shell-cart` citada en
+  versiones anteriores del plan **nunca existió** en GitHub.
 - Coordinar con Alpine **(b)** del inventario: `header` (burbuja), `main-cart-footer`, `cart-item-b`
   y quick-add en `card-product` (ver § Fase 4 colección / § Fase 5).
 
