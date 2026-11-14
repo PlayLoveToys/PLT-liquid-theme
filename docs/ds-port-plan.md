@@ -7,7 +7,7 @@ specs Playwright), no de sections: solo comparten 18 de 65 sections y 9 de 89 sn
 
 > Este repo es **público**: todo lo que se commitee aquí se publica.
 
-**Última actualización:** 2026-11-14, sobre `main` @ `326b3c4` (desde `497a933` solo cambió documentación). Medido ese día:
+**Última actualización:** 2026-11-14, sobre `main` @ `66fdd25`. Medido ese día:
 `theme check` 6 errores / 362 avisos; `check:plt`, `check:theme-css` y `test:templates` (40/42) en baseline; 7 snippets
 `plt-*` vendorizados.
 
@@ -403,9 +403,9 @@ Fase 6 CI gates formales.
 **Gates (2026-11-12):** `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline (40/42);
 `shopify theme check` = **6 errores / 362 avisos** (sin regresión).
 
-### Estado sesión (2026-11-13)
+### Estado sesión (2026-11-14)
 
-Una fila por ítem; sin duplicados. PRs abiertos se tratan como **en revisión** (no mergeados).
+Una fila por ítem; sin duplicados.
 
 | Estado | Ítem | Evidencia / enlace |
 |---|---|---|
@@ -420,23 +420,25 @@ Una fila por ítem; sin duplicados. PRs abiertos se tratan como **en revisión**
 | **Hecho** | 2b **JS-Q1** quantity WC en `featured-product` | [PR #13](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/13) **cerrado sin merge**; código en `main` vía [PR #15](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/15) (JS-Q2), commit [`9377a75`](https://github.com/PlayLoveToys/PLT-liquid-theme/commit/9377a7539478f8ba5f088a48047d6121211ef330) |
 | **Hecho** | 2b JS-Q2 quantity en QOL / `updates[]` | [PR #15](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/15) |
 | **Hecho** | Fase 0 artefacto docs (checklist capturas; sin PNGs) | [PR #14](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/14) |
-| **En revisión** | 2b **JS-Q3** quantity WC en `main-product` | [PR #16](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/16) |
-| **En revisión** | 2b boolean filters: pin `c27304c` + `sync:plt` | [PR #17](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/17) (listo para review; [DS#5](https://github.com/PlayLoveToys/PLT-design-system/pull/5) ya en DS `main`) |
-| **En revisión** | Inventario Alpine residual (Fase 5) | [PR #18](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/18) → [`docs/ds-port-alpine-inventory.md`](./ds-port-alpine-inventory.md) (aún no en `main`) |
+| **Hecho** | 2b **JS-Q3** quantity WC en `main-product` | [PR #16](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/16) |
+| **Hecho** | 2b boolean filters: pin `c27304c` + `sync:plt` | [PR #17](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/17) |
+| **Hecho** | Inventario Alpine residual (Fase 5) | [PR #18](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/18) → [`docs/ds-port-alpine-inventory.md`](./ds-port-alpine-inventory.md) |
+| **Hecho** | Sync plan + estado port (baseline 6/362, tabla sesión) | [PR #19](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/19) |
+| **Hecho** | Fase 3 shell-cart (drawer + footer/newsletter tokens parcial + predictive defer headings) | código en `main` [`c57ea14`](https://github.com/PlayLoveToys/PLT-liquid-theme/commit/c57ea1426e33e3e6d73c0201392125fcd192a0b9) (sin PR); docs [PR #22](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/22) |
 | **Pendiente** | Fase 0 capturas reales 390/768/1280 | Tienda de desarrollo y handles ya definidos (§ Fase 0); falta `shopify auth login` del usuario y Chromium; pre-port `f5446a9` vs `main` |
 | **Pendiente** | Fase 3 shell header (`fase-3-header`; predictive search completo) | Tras capturas; cart/footer/newsletter parcial ya en `main` |
 | **Pendiente** | Fase 4 sections por template | Orden § Fase 4; Alpine plegado según inventario |
 | **Pendiente** | Fase 5 retirar Bulma → luego Alpine | Ver § Fase 5 + inventario Alpine |
 | **Pendiente** | Fase 6 gates formales en CI | No hay GitHub Actions; ver § Fase 6 |
-| **Hecho** | Fase 3 shell-cart (drawer + footer/newsletter tokens parcial + predictive defer headings) | **`main`** [`c57ea14`](https://github.com/PlayLoveToys/PLT-liquid-theme/commit/c57ea1426e33e3e6d73c0201392125fcd192a0b9) (push directo, **sin PR**; rama planificada `port/ds-fase-3-shell-cart` nunca existió en GitHub) |
 | **Bloqueado** | Carruseles Alpine (`b-carousel`, `collection-list`, `c-carousel-buttons`) | No hay componente **Carousel** en DS — [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
 | **Bloqueado** | FAQ colección (`_collection-seo-faqs`) → `d-collapse` / Faq DS | No hay componente **Faq** en DS — [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
 | **Bloqueado** | Smoke PDP / layout en tienda | Depende del login de Shopify del usuario; los fixtures pueden no cubrir paginación, filtros ni quantity rules (§ Fase 0) |
 | **Bloqueado** | Inputs/alerts / botones Dawn globales masivos | Sin snippet acotado; por template Fase 4 |
 
-**Siguiente (prioridad):** merge/review [PR #17](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/17) (pin) y [PR #16](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/16) (JS-Q3);
-staging en tienda de filtros boolean, quantity PDP y drawer cart (Fase 3 shell-cart ya en `main`, `c57ea14`);
-verificar en staging `snippets/buy-buttons.liquid`: `@click="$store.cart.add(selectedVariant)"` **sin** ancestro `x-data` en PDP (`main-product` / `featured-product`). Alpine residual: **12** archivos con `x-data` ([inventario](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/18)). Gates: locales (`check:plt`, `check:theme-css`, `test:templates`, `theme check` ≤ **6/362**).
+**Siguiente (prioridad):** Fase 0 capturas reales (tienda `aadigital-dev-00`, § handles); smoke en staging:
+filtros boolean (pin `c27304c`), quantity PDP (JS-Q3), drawer cart (`c57ea14`);
+verificar `snippets/buy-buttons.liquid` — `@click="$store.cart.add(selectedVariant)"` **sin** ancestro `x-data` en PDP.
+Fase 3 shell: **`fase-3-header`** + predictive search (defer). Alpine residual: **12** archivos `x-data` ([inventario](./ds-port-alpine-inventory.md)). Gates: `check:plt`, `check:theme-css`, `test:templates`, `theme check` ≤ **6/362**.
 
 ### Fase 3: Shell
 
