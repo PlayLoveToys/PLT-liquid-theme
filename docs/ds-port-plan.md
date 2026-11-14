@@ -7,13 +7,17 @@ specs Playwright), no de sections: solo comparten 18 de 65 sections y 9 de 89 sn
 
 > Este repo es **público**: todo lo que se commitee aquí se publica.
 
+**Última actualización:** 2026-11-14, sobre `main` @ `326b3c4` (desde `497a933` solo cambió documentación). Medido ese día:
+`theme check` 6 errores / 362 avisos; `check:plt`, `check:theme-css` y `test:templates` (40/42) en baseline; 7 snippets
+`plt-*` vendorizados.
+
 ## 1. Punto de partida
 
 | Eje | Estado actual | Destino |
 |---|---|---|
 | Base CSS | Dawn `base.css` (80 KB) + Bulma `b-style.source.css` (650 KB) + 71 `component-*.css`; ~1,26 MB de CSS | daisyUI 5 + Tailwind 4, tokens `--plt-*`, tema `cheesecake` |
-| Markup | 492 usos de `b-*` en 52 archivos; `color-{{scheme}}` en 37; `page-width` en 44; 20 archivos con `<style>`; 99 `style=""` inline | renderers Liquid del DS + `d-*` / `theme-*` / `plt-*` |
-| JS | Alpine en 14 archivos; loader CDN de Shopify Web Components (desactivado) | Web Components Lit del DS |
+| Markup | 411 usos de `b-*` en 48 archivos (2026-11-14; eran 492 / 52); `color-{{scheme}}` en 37; `page-width` en 44; 20 archivos con `<style>`; 99 `style=""` inline | renderers Liquid del DS + `d-*` / `theme-*` / `plt-*` |
+| JS | Alpine `x-data` en 12 archivos (eran 14; [inventario](./ds-port-alpine-inventory.md)); loader CDN de Shopify Web Components (desactivado) | Web Components Lit del DS |
 | Clases del DS hoy | Tras 2f: `d-*` en divider/breadcrumb/price + badges blog/search/gift_card; `d-btn*` en `snippets/button`; `plt-product-card` / `d-card` en `card-product`; `plt-*` de WC aún no cableados en storefront (salvo ids legacy `plt-product-modal` / `plt-gradient-background`) | |
 | Tamaño | 65 sections, 89 snippets, 36 blocks, 47 templates | |
 
@@ -64,7 +68,8 @@ Se registran como baseline del validador.
 ### Fase 0: Red de seguridad
 
 **Estado (2026-11-13):** artefacto documentable listo para ejecutar cuando haya tienda.
-Las **capturas reales siguen bloqueadas** (sin credenciales / `shopify theme dev`).
+Las **capturas reales siguen pendientes**: ya hay tienda de desarrollo y handles (ver «Tienda y handles
+fixture»); falta el login de Shopify del usuario y la descarga de Chromium para Playwright.
 No bloquea cortes 2b WC (JS-C / JS-Q*) ni PRs de código.
 
 - [x] Baseline de `theme check` y validación de templates (arriba).
@@ -93,53 +98,86 @@ Viewports fijos del port: **390**, **768**, **1280** (ancho CSS; altura fold ~84
 Por cada celda: guardar al menos `fold.png` + `full.png`. En colección/búsqueda, además crops de
 header / filters / sort / card / grid / pagination / footer si el runner los produce.
 
-#### Handles fixture (placeholders — sustituir en tienda)
+#### Tienda y handles fixture (2026-11-14)
 
-Fijar aquí los handles reales del catalogo de staging cuando existan. Mientras tanto usar solo
-placeholders; **no inventar** handles de producción en este repo público.
+Tienda **de desarrollo** (no producción), facilitada por el usuario. No usar la tienda viva para capturas.
+`theme dev` sube un tema de desarrollo no publicado y no toca el tema live.
 
 ```text
-PRODUCT_HANDLE=    # p. ej. un PDP con variantes + quantity rules
-COLLECTION_HANDLE= # colección con ≥1 filtro usable y ≥2 páginas
-ARTICLE_HANDLE=    # artículo publicado (blog handle + article handle)
-PAGE_HANDLE=       # opcional; page CMS estable
-SEARCH_QUERY=      # opcional; query que devuelva productos
+STORE=aadigital-dev-00.myshopify.com
+PRODUCT_HANDLE=the-inventory-not-tracked-snowboard
+COLLECTION_HANDLE=frontpage
+ARTICLE=news/lorem-ipsum          # blog handle / article handle  → /blogs/news/lorem-ipsum
+PAGE_HANDLE=contact               # → /pages/contact
+SEARCH_QUERY=snowboard            # PROPUESTA (no facilitada): derivada del producto; confirmar que devuelve resultados
 ```
 
-Cuando se rellenen: actualizar esta tabla y citarlos en el PR de baseline visual (Fase 6).
+**Cobertura de estos fixtures: a verificar en el primer `theme dev`.** Parecen datos de muestra de Shopify, y
+puede que no ejerciten todo lo que el port ha tocado:
+
+| Qué cubre el port | Posible hueco con estos fixtures |
+|---|---|
+| Paginación `plt-pagination` compact (corte 2a) | `frontpage` necesita **más de una página** (el theme pagina de 20 en 20); con pocos productos no hay paginación |
+| `plt-filter-bar` / sort (JS-A/B/C) | La colección necesita **filtros** con varios valores y, si es posible, un filtro de precio |
+| `plt-quantity-selector` y reglas de cantidad (JS-Q*) | «Inventory not tracked» sugiere un producto simple; **sin variantes, reglas de cantidad ni estados de stock** |
+| Variant picker, galería | Un producto con varias variantes y varias imágenes |
+| Búsqueda | `SEARCH_QUERY` sin confirmar |
+
+Si faltan, añadir en la tienda de desarrollo un segundo producto (con variantes y reglas de cantidad) y una
+colección con >20 productos, y registrar aquí sus handles. Citar los handles en el PR de baseline visual (Fase 6).
 
 #### Cómo capturar con `visual-compare` (desde `plt-frontend-liquid`)
 
 El runner vive en el donante de tooling, no en este repo:
+`../plt-frontend-liquid/tools/visual-compare/capture.mjs`. Necesita Playwright (`plt-frontend-liquid` lo tiene)
+y un Chromium (`npx playwright install chromium`, descarga ~150 MB).
 
-`../plt-frontend-liquid/tools/visual-compare/capture.mjs`
+**Qué comparar.** El port ya está mergeado en `main`, así que el baseline útil es **pre-port vs actual**:
 
-Requisitos: Playwright instalado en `plt-frontend-liquid` (`npx playwright install chromium` si falta),
-y **dos** URLs servidas (p. ej. theme de referencia vs preview del port, o el mismo origen dos veces
-para baseline único).
+| Rol | Código | Puerto |
+|---|---|---|
+| `--reference` (antes) | commit `f5446a9` (`init`, theme sin tocar), en un `git worktree` | 9292 |
+| `--candidate` (ahora) | `main` (este checkout) | 9293 |
 
 ```bash
-# 1. En este repo: preview del theme (necesita auth Shopify)
-shopify theme dev   # anotar el host, p. ej. http://127.0.0.1:9292
+# 0. Una vez: login de Shopify (interactivo, lo hace el usuario)
+shopify auth login   # o dejar que el primer `shopify theme dev --store …` pida el login
 
-# 2. Desde plt-frontend-liquid (cwd con playwright)
+# 1. Worktree con el theme pre-port (fuera del repo)
+git worktree add ../PLT-liquid-theme-preport f5446a9
+
+# 2. Referencia (pre-port)  [terminal A, dejar corriendo]
+cd ../PLT-liquid-theme-preport
+shopify theme dev --store aadigital-dev-00.myshopify.com --port 9292
+
+# 3. Candidato (main)       [terminal B]
+cd ../PLT-liquid-theme
+shopify theme dev --store aadigital-dev-00.myshopify.com --port 9293
+
+# 4. Captura por página (desde plt-frontend-liquid, que tiene playwright)
 cd ../plt-frontend-liquid
 node tools/visual-compare/capture.mjs \
-  --reference "http://127.0.0.1:9292/collections/COLLECTION_HANDLE" \
-  --candidate "http://127.0.0.1:9292/collections/COLLECTION_HANDLE" \
+  --reference "http://127.0.0.1:9292/collections/frontpage" \
+  --candidate "http://127.0.0.1:9293/collections/frontpage" \
   --widths 390,768,1280 \
   --out ../PLT-liquid-theme/docs/visual-baseline/fase-0/collection
-
-# Repetir por página (home, producto, cart, search, article, page, 404, account)
-# sustituyendo PRODUCT_HANDLE / ARTICLE_HANDLE / etc.
 ```
 
-Salida típica por run: `<out>/<site>/<width>/{fold,full}.png`, `parts/*.png`, `styles.json`,
-`diff.json`, `compare.html`, `summary.json`. Archivar bajo `docs/visual-baseline/fase-0/` (o un
-artefacto CI) **solo cuando** haya capturas reales; no committear placeholders vacíos.
+Repetir el paso 4 con: `/` (home), `/products/the-inventory-not-tracked-snowboard`, `/cart`,
+`/search?q=snowboard`, `/blogs/news/lorem-ipsum`, `/pages/contact`, una URL inexistente (404) y `/account`.
 
-Nota: el script por defecto usa anchos `1440,1024,390`; para el port **pasar siempre**
-`--widths 390,768,1280`.
+**Precauciones**
+- **Posible conflicto entre los dos `theme dev`:** la CLI crea un tema de desarrollo por usuario y tienda, y
+  los dos procesos probablemente apuntan al mismo. Si las capturas salen mezcladas, ejecutarlos **de uno en
+  uno**: captura primero la referencia, páralo, y luego el candidato.
+- El `home` cambió fuera del port: 4 «Update from Shopify» (2026-11-13) tocaron `templates/index.json`
+  (contenido del editor). Parte de las diferencias de la home serán de contenido, no del port; el worktree
+  pre-port tiene el `index.json` antiguo. Para aislar el efecto del port, copiar el `index.json` actual al
+  worktree antes de capturar.
+- `capture.mjs` usa por defecto `1440,1024,390`: **pasar siempre** `--widths 390,768,1280`.
+- No commitear PNGs voluminosos (ver Fase 6); archivar `docs/visual-baseline/` solo con capturas reales.
+- Salida por run: `<out>/<site>/<width>/{fold,full}.png`, `parts/*.png`, `styles.json`, `diff.json`,
+  `compare.html`, `summary.json`.
 
 #### Checklist layout (sin captura completa, mirar en DevTools / Lighthouse)
 
@@ -216,7 +254,7 @@ Desbloqueado por [DS#1](https://github.com/PlayLoveToys/PLT-design-system/issues
 **Gates (2026-11-13):** `check:plt` ok; `check:theme-css` ok; `test:templates` = baseline;
 `shopify theme check` ≤ baseline (6 err / 362 warn).
 
-#### Corte 2b: cantidad, orden y filtros — **bloqueado por la capa de CSS legacy** (2026-11-12)
+#### Corte 2b: cantidad, orden y filtros — **CSS resuelto (opción A); JS-A/B/C/Q0–Q2 hechos** (bloqueo inicial: 2026-11-12)
 Caso `controls` del harness (`plt-quantity-selector`, `plt-sort-select`, `plt-filter-bar`), con el CSS real:
 
 | Variante | Resultado |
@@ -385,7 +423,7 @@ Una fila por ítem; sin duplicados. PRs abiertos se tratan como **en revisión**
 | **En revisión** | 2b **JS-Q3** quantity WC en `main-product` | [PR #16](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/16) |
 | **En revisión** | 2b boolean filters: pin `c27304c` + `sync:plt` | [PR #17](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/17) (listo para review; [DS#5](https://github.com/PlayLoveToys/PLT-design-system/pull/5) ya en DS `main`) |
 | **En revisión** | Inventario Alpine residual (Fase 5) | [PR #18](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/18) → [`docs/ds-port-alpine-inventory.md`](./ds-port-alpine-inventory.md) (aún no en `main`) |
-| **Pendiente** | Fase 0 capturas reales 390/768/1280 | Sin `shopify theme dev` / credenciales; checklist § Fase 0 |
+| **Pendiente** | Fase 0 capturas reales 390/768/1280 | Tienda de desarrollo y handles ya definidos (§ Fase 0); falta `shopify auth login` del usuario y Chromium; pre-port `f5446a9` vs `main` |
 | **Pendiente** | Fase 3 shell (header tokens, predictive search, newsletter) | Tras aclarar cart (abajo) + capturas |
 | **Pendiente** | Fase 4 sections por template | Orden § Fase 4; Alpine plegado según inventario |
 | **Pendiente** | Fase 5 retirar Bulma → luego Alpine | Ver § Fase 5 + inventario Alpine |
@@ -393,7 +431,7 @@ Una fila por ítem; sin duplicados. PRs abiertos se tratan como **en revisión**
 | **Dudoso / perdido** | Fase 3 cart drawer | Plan citaba rama `port/ds-fase-3-shell-cart` (**no existe** en GitHub; **ningún PR**). En `main` sí hay `snippets/cart-drawer.liquid` + `assets/plt-cart-drawer-bridge.js` (commit [`c57ea14`](https://github.com/PlayLoveToys/PLT-liquid-theme/commit/c57ea1426e33e3e6d73c0201392125fcd192a0b9), sin PR). **Investigación aparte** para procedencia y si el corte está completo |
 | **Bloqueado** | Carruseles Alpine (`b-carousel`, `collection-list`, `c-carousel-buttons`) | No hay componente **Carousel** en DS — [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
 | **Bloqueado** | FAQ colección (`_collection-seo-faqs`) → `d-collapse` / Faq DS | No hay componente **Faq** en DS — [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
-| **Bloqueado** | Smoke PDP / layout en tienda | Sin credenciales merchant |
+| **Bloqueado** | Smoke PDP / layout en tienda | Depende del login de Shopify del usuario; los fixtures pueden no cubrir paginación, filtros ni quantity rules (§ Fase 0) |
 | **Bloqueado** | Inputs/alerts / botones Dawn globales masivos | Sin snippet acotado; por template Fase 4 |
 
 **Siguiente (prioridad):** merge/review [PR #17](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/17) (pin) y [PR #16](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/16) (JS-Q3);
