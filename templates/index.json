@@ -38,14 +38,14 @@
             "collection_2": "hasbro",
             "collection_2_title": "Clitoral Play",
             "collection_3": "lego",
-            "collection_3_title": "",
+            "collection_3_title": "{{ block.settings.collection_3.title }}",
             "collection_4": "dolls",
-            "collection_4_title": "Vibrators",
+            "collection_4_title": "{{ block.settings.collection_4.title }}",
             "collection_5": "",
-            "collection_5_title": "",
+            "collection_5_title": "{{ closest.collection.title }}",
             "collection_6": "",
             "collection_6_title": "",
-            "cta_text": "Shop For Her",
+            "cta_text": "",
             "cta_url": ""
           },
           "blocks": {}
