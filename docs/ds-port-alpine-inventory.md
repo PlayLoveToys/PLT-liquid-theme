@@ -24,9 +24,10 @@ Estos archivos usan directivas Alpine (`@click`, `x-show`, …) pero **no** decl
 | Archivo | Evidencia | Notas |
 |---|---|---|
 | `snippets/c-carousel-buttons.liquid` | `@click="previous()"` / `next()` | Hijo de `carousel()` en `blocks/b-carousel.liquid` y `sections/collection-list.liquid` |
-| `snippets/buy-buttons.liquid` | `@click="$store.cart.add(selectedVariant)"` | Render en `main-product` / `featured-product` **sin** ancestro `x-data` en esas sections — revisar en staging (`selectedVariant` no definido en el snippet) |
 
-No forman parte del conteo de 12; conviene incluirlos en el **mismo programa Fase 5** o en un follow-up de higiene.
+`snippets/buy-buttons.liquid`: residual Alpine (`@click="$store.cart.add(selectedVariant)"` / `:disabled`) **retirado** (P0). El ATC del PDP queda en `<product-form>` / `assets/product-form.js` → `plt-cart-drawer`.
+
+No forman parte del conteo de 12; conviene incluir `c-carousel-buttons` en el **mismo programa Fase 5** o en un follow-up de higiene.
 
 ### Infraestructura Alpine (no Liquid)
 

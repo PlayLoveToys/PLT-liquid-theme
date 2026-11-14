@@ -10,3 +10,6 @@ node_modules/
 
 # Output of tools/snippet-harness
 tools/snippet-harness/.out/
+
+# Fase 0 / Fase 6 local PNG baselines (do not commit bulky captures)
+docs/visual-baseline/
