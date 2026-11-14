@@ -45,8 +45,8 @@
             "collection_5_title": "{{ closest.collection.title }}",
             "collection_6": "",
             "collection_6_title": "",
-            "cta_text": "",
-            "cta_url": ""
+            "cta_text": "Shop {{ block.settings.main_collection.title }}",
+            "cta_url": "{{ block.settings.main_collection.url }}"
           },
           "blocks": {}
         },
