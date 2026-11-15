@@ -11,11 +11,8 @@
     </div>
   {%- endunless -%}
 
-  <div
-    class="b-carousel-wrapper"
-    x-data="carousel({slides: '.slide-{{ section.id }}', intervalTime: 3000})"
-  >
-    <div class="b-carousel">
+  <div class="b-carousel-wrapper">
+    {% capture slides %}
       {%- for block in section.blocks -%}
         <div
           id="Slide-{{ section.id }}-{{ forloop.index }}"
@@ -25,9 +22,15 @@
           {% render 'card-collection', card_collection: block.settings.collection %}
         </div>
       {%- endfor -%}
-    </div>
-
-    {% render 'c-carousel-buttons' %}
+    {% endcapture %}
+    {% render 'ds-carousel',
+      slides: slides,
+      interval_ms: 3000,
+      nav_overlay: true,
+      track_class: 'b-carousel',
+      prev_label: 'Previous slide',
+      next_label: 'Next slide'
+    %}
   </div>
 
   <div class="b-section">

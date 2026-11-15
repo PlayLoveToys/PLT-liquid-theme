@@ -1,0 +1,43 @@
+/* Bulma collection-list / b-carousel parity for DS Carousel overlay nav */
+.plt-carousel--overlay-nav {
+  position: relative;
+  display: block;
+}
+
+.plt-carousel--overlay-nav .plt-carousel__nav {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: block;
+}
+
+.plt-carousel--overlay-nav .plt-carousel__btn {
+  pointer-events: auto;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+}
+
+.plt-carousel--overlay-nav .plt-carousel__btn--prev {
+  left: 0.25rem;
+}
+
+.plt-carousel--overlay-nav .plt-carousel__btn--next {
+  right: 0.25rem;
+}
+
+@media screen and (min-width: 1152px) {
+  .plt-carousel--overlay-nav .plt-carousel__nav {
+    display: none;
+  }
+}
+
+/* Track carries legacy b-carousel scroll + desktop grid rules */
+.plt-carousel--overlay-nav .plt-carousel__viewport {
+  overflow: visible;
+}
+
+.plt-carousel--overlay-nav .plt-carousel__track.b-carousel {
+  display: flex;
+}

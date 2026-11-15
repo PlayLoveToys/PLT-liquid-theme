@@ -477,6 +477,8 @@
     <script type="module" src="{{ 'plt-web-components.bundle.js' | asset_url }}"></script>
     <script src="{{ 'plt-section-nav.js' | asset_url }}" defer></script>
     <script src="{{ 'plt-cart-drawer-bridge.js' | asset_url }}" defer></script>
+    {{ 'plt-carousel-compat.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'plt-carousel.js' | asset_url }}" defer></script>
 
     {% comment %}
       TRANSFERIR A NUEVO THEME
