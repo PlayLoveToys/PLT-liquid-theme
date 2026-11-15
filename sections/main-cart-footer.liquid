@@ -1,8 +1,9 @@
 <div
-  x-data
-  x-show="$store.cart.item_count > 0"
-  x-cloak
+  data-cart-footer
   class="b-container b-is-max-tablet b-py-3 b-px-3"
+  {% if cart == empty %}
+    hidden
+  {% endif %}
 >
   <!-- Cart note (si está habilitado) -->
   {% if settings.show_cart_note %}
@@ -80,16 +81,13 @@
   </div>
   <!-- Totals Card -->
   <div class="b-box b-p-4 b-mb-5">
-    <!-- Línea horizontal estilo ecuación -->
-    <div x-data class="b-is-flex b-is-align-items-center b-is-justify-content-space-between">
+  <div class="b-is-flex b-is-align-items-center b-is-justify-content-space-between">
       <span class="b-is-size-5 b-has-text-weight-semibold">
         {{ 'sections.cart.estimated_total' | t }}
       </span>
 
-      <strong class="b-is-size-4">
-        <span>{{ cart.currency.symbol }}</span>
-        <span x-text="$store.cart.total_price / 100">{{ cart.total_price | money_with_currency }}</span>
-        <span> {{ cart.currency.iso_code }}</span>
+      <strong class="b-is-size-4" data-cart-total>
+        {{ cart.total_price | money_with_currency }}
       </strong>
     </div>
 
@@ -139,10 +137,10 @@
       name="checkout"
       form="cart"
       id="checkout"
-      x-data
-      :class="$store.cart.item_count > 0? 'b-is-focused' : ''"
-      :disabled="$store.cart.item_count <= 0"
-      class="b-button b-is-link b-is-fullwidth b-is-medium"
+      class="b-button b-is-link b-is-fullwidth b-is-medium{% if cart.item_count > 0 %} b-is-focused{% endif %}"
+      {% if cart.item_count <= 0 %}
+        disabled
+      {% endif %}
     >
       {{ 'sections.cart.checkout' | t }}
     </button>
