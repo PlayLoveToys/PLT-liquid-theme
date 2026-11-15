@@ -212,9 +212,10 @@ Contrato del puente theme:
 - [x] Drawer → HTML `<dialog>` nativo (Escape + click backdrop; sin `x-data` / `drawerOpen`)
 - [x] Sin `x-target` / debounce Alpine en facets (ya desde JS-B)
 - [x] Bundle `plt-web-components.bundle.js` + `plt-section-nav.js` en `layout/theme.liquid`
-- [x] Archivos Liquid con `x-data` restantes: **12** (meta Fase 5) —
-  `blocks/b-carousel`, `sections/{aa-banner-html-copy,aa-hero-toggle-content,collection-list,header,main-cart-footer,main-collection-plt}`,
-  `snippets/{card-product,cart-item-b,_collection-hero-collapsable-content,_collection-seo-faqs,predictive-search}`
+- [x] Archivos Liquid con `x-data` restantes: **9** tras higiene (c) 2026-11-15 (meta Fase 5) —
+  `blocks/b-carousel`, `sections/{aa-hero-toggle-content,collection-list,header,main-cart-footer}`,
+  `snippets/{card-product,cart-item-b,_collection-hero-collapsable-content,_collection-seo-faqs}`
+  (tras higiene 2026-11-15: retirados `aa-banner-html-copy`, `main-collection-plt`, snippet Alpine `predictive-search`; ver inventario Alpine)
 
 ### JS-Q* — quantity
 
