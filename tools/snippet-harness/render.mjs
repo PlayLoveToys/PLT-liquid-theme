@@ -44,6 +44,15 @@ engine.registerTag('doc', {
   },
   *render() {},
 });
+engine.registerTag('stylesheet', {
+  parse(_token, remaining) {
+    while (remaining.length && remaining[0].name !== 'endstylesheet') {
+      remaining.shift();
+    }
+    if (remaining.length) remaining.shift();
+  },
+  *render() {},
+});
 engine.registerFilter('t', (key, ...rest) =>
   translate(key, Object.fromEntries(rest.filter(Array.isArray))),
 );
@@ -90,6 +99,11 @@ ${styles}
   .case { padding: 12px 24px; border-bottom: 1px dashed #bbb; }
   .row { display: flex; gap: 48px; flex-wrap: wrap; }
   .case h3, .case h4 { margin: 4px 0; font: 600 13px system-ui; color: #555; }
+  .plt-details-disclosure__summary { list-style: none; cursor: pointer; }
+  .plt-details-disclosure__summary::-webkit-details-marker { display: none; }
+  .plt-details-disclosure__summary .plt-details-disclosure__icon--open { display: none; }
+  .plt-details-disclosure[open] .plt-details-disclosure__summary .plt-details-disclosure__icon--closed { display: none; }
+  .plt-details-disclosure[open] .plt-details-disclosure__summary .plt-details-disclosure__icon--open { display: inline-flex; }
 </style>
 </head>
 <body>
