@@ -50,7 +50,7 @@ const buildHostQuantity = async ({ engine }, opts) => {
     quantity_label: inputLabel,
   },
   );
-  let hostAttrs = ` data-cart-quantity="${cartQty}" data-min="${min}"`;
+  let hostAttrs = ` class="quantity" data-cart-quantity="${cartQty}" data-min="${min}"`;
   if (max != null) hostAttrs += ` data-max="${max}"`;
   hostAttrs += ` data-form="${productFormId}"`;
   html = html.replace('<plt-quantity-selector', `<plt-quantity-selector${hostAttrs}`);
@@ -58,9 +58,6 @@ const buildHostQuantity = async ({ engine }, opts) => {
     'data-plt-fallback',
     `data-plt-fallback form="${productFormId}"`,
   );
-  html = html.replace('class="d-input"', 'class="quantity__input d-input"');
-  html = html.replace('name="quantity"', 'name="quantity-fallback"');
-  html = `<quantity-input class="quantity">${html}</quantity-input>`;
   const cartHidden = cartQty === 0 ? ' hidden' : '';
   return `
     <div id="Quantity-Form-${sectionId}" class="product-form__input product-form__quantity">
@@ -104,45 +101,21 @@ export async function verify({root}) {
     const page = await browser.newPage({viewport: {width: 1280, height: 900}});
     await page.goto(pathToFileURL(path.resolve(htmlPath)).href, {waitUntil: 'load'});
     const result = await page.evaluate(() => {
-      const wrap = document.querySelector('#zone-pdp-quantity quantity-input.quantity');
-      if (!wrap) return {ok: false, reason: 'missing quantity-input.quantity'};
-      const wcQty = document.querySelector(
-        '#zone-pdp-quantity plt-quantity-selector input.d-join-item[type="number"]',
-      );
-      const fallback = document.querySelector(
-        '#zone-pdp-quantity input.quantity__input[name="quantity-fallback"]',
-      );
-      const probeQty = document.querySelector(
-        '#zone-pdp-quantity quantity-input input, #zone-pdp-quantity input[name="quantity"]',
-      );
-      const input = wcQty || probeQty || fallback;
-      if (!input) return {ok: false, reason: 'missing quantity input (WC or fallback)'};
-      if (getComputedStyle(input).display === 'none' || input.hidden) {
-        return {ok: false, reason: 'quantity input not visible'};
-      }
-      const host = wrap.getBoundingClientRect();
-      const qty = input.getBoundingClientRect();
-      return {
-        ok: true,
-        wrapW: host.width,
-        wrapH: host.height,
-        qtyW: qty.width,
-        qtyH: qty.height,
-        qtyDisplay: getComputedStyle(input).display,
-        which: wcQty ? 'wc' : 'fallback',
-      };
+      const host = document.querySelector('#zone-pdp-quantity plt-quantity-selector.quantity');
+      if (!host) return {ok: false, reason: 'missing plt-quantity-selector.quantity'};
+      const {width, height} = host.getBoundingClientRect();
+      const display = getComputedStyle(host).display;
+      return {ok: true, width, height, display};
     });
     if (!result.ok) throw new Error(result.reason);
-    const minW = 40;
-    const minH = 28;
-    if (result.qtyW < minW || result.qtyH < minH) {
-      throw new Error(
-        `quantity ${result.which} ${result.qtyW.toFixed(1)}×${result.qtyH.toFixed(1)}px below ${minW}×${minH}px`,
-      );
+    if (result.display !== 'flex') {
+      throw new Error(`quantity host display ${result.display}, expected flex`);
     }
-    if (result.wrapW < 60 || result.wrapH < 44) {
+    const minW = 60;
+    const minH = 44;
+    if (result.width < minW || result.height < minH) {
       throw new Error(
-        `quantity-input ${result.wrapW.toFixed(1)}×${result.wrapH.toFixed(1)}px below 60×44px`,
+        `quantity host ${result.width.toFixed(1)}×${result.height.toFixed(1)}px below ${minW}×${minH}px`,
       );
     }
   } finally {

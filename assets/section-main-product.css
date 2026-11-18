@@ -355,8 +355,8 @@ a.product__text {
   margin-bottom: 0.6rem;
 }
 
-/* PDP: Dawn <quantity-input class="quantity"> + plt-quantity-selector (JS-Q3). */
-.product-form__quantity quantity-input.quantity {
+/* PDP: plt-quantity-selector host (no .quantity in legacy layer). Mirror Dawn .quantity sizing. */
+.product-form__quantity plt-quantity-selector.quantity {
   color: rgba(var(--color-foreground));
   position: relative;
   width: calc(14rem / var(--font-body-scale) + var(--inputs-border-width) * 2);
@@ -364,19 +364,6 @@ a.product__text {
   border-radius: var(--inputs-radius);
   min-height: calc((var(--inputs-border-width) * 2) + 4.5rem);
   box-sizing: border-box;
-}
-
-.product-form__quantity quantity-input.quantity plt-quantity-selector {
-  width: 100%;
-}
-
-.product-form__quantity quantity-input.quantity plt-quantity-selector .plt-quantity-selector {
-  width: 100%;
-}
-
-.product-form__quantity quantity-input.quantity plt-quantity-selector input[name='quantity'] {
-  min-height: calc((var(--inputs-border-width) * 2) + 2.6rem);
-  flex: 1 1 auto;
 }
 
 .price-per-item__label.form__label {
