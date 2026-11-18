@@ -18,114 +18,110 @@
   endif
 %}
 
-<div class="b-card b-has-background-primary-25">
-  <header class="b-card-header">
-    <p class="b-card-header-title b-is-capitalized b-title b-is-5 b-has-text-white">
+<article class="d-card h-full bg-primary/25 text-base-content theme-bordered theme-elevated plt-media-card">
+  <header class="px-4 py-3 border-b border-base-content/10">
+    <h3 class="d-card-title theme-headline-sm capitalize m-0 text-base-100">
       {{ card_title }}
-    </p>
+    </h3>
   </header>
-  <div class="b-card-content b-p-2">
-    <div class="b-content">
-      <div class="b-fixed-grid b-has-2-cols">
-        <div class="b-grid">
-          {% if block.settings.collection_1 != blank %}
-            {% liquid
-              if block.settings.collection_1_title != blank
-                assign title = block.settings.collection_1_title
-              else
-                assign title = block.settings.collection_1.title
-              endif
-            %}
-            {% render 'c-collection-mini',
-              collection: block.settings.collection_1,
-              priority: block.settings.priority,
-              title: title
-            %}
-          {% endif %}
-          {% if block.settings.collection_2 != blank %}
-            {% liquid
-              if block.settings.collection_2_title != blank
-                assign title = block.settings.collection_2_title
-              else
-                assign title = block.settings.collection_2.title
-              endif
-            %}
-            {% render 'c-collection-mini',
-              collection: block.settings.collection_2,
-              priority: block.settings.priority,
-              title: title
-            %}
-          {% endif %}
-          {% if block.settings.collection_3 != blank %}
-            {% liquid
-              if block.settings.collection_3_title != blank
-                assign title = block.settings.collection_3_title
-              else
-                assign title = block.settings.collection_3.title
-              endif
-            %}
-            {% render 'c-collection-mini',
-              collection: block.settings.collection_3,
-              priority_desktop: block.settings.priority_desktop,
-              priority_mobile: block.settings.priority_mobile,
-              title: title
-            %}
-          {% endif %}
-          {% if block.settings.collection_4 != blank %}
-            {% liquid
-              if block.settings.collection_4_title != blank
-                assign title = block.settings.collection_4_title
-              else
-                assign title = block.settings.collection_4.title
-              endif
-            %}
-            {% render 'c-collection-mini',
-              collection: block.settings.collection_4,
-              priority_desktop: block.settings.priority_desktop,
-              priority_mobile: block.settings.priority_mobile,
-              title: title
-            %}
-          {% endif %}
-          {% if block.settings.collection_5 != blank %}
-            {% liquid
-              if block.settings.collection_5_title != blank
-                assign title = block.settings.collection_5_title
-              else
-                assign title = block.settings.collection_5.title
-              endif
-            %}
-            {% render 'c-collection-mini',
-              collection: block.settings.collection_5,
-              priority_desktop: block.settings.priority_desktop,
-              priority_mobile: block.settings.priority_mobile,
-              title: title
-            %}
-          {% endif %}
-          {% if block.settings.collection_6 != blank %}
-            {% liquid
-              if block.settings.collection_6_title != blank
-                assign title = block.settings.collection_6_title
-              else
-                assign title = block.settings.collection_6.title
-              endif
-            %}
-            {% render 'c-collection-mini',
-              collection: block.settings.collection_6,
-              priority_desktop: block.settings.priority_desktop,
-              priority_mobile: block.settings.priority_mobile,
-              title: title
-            %}
-          {% endif %}
-        </div>
-      </div>
+  <div class="d-card-body plt-media-card__body p-4">
+    <div class="grid grid-cols-2 gap-2">
+      {% if block.settings.collection_1 != blank %}
+        {% liquid
+          if block.settings.collection_1_title != blank
+            assign title = block.settings.collection_1_title
+          else
+            assign title = block.settings.collection_1.title
+          endif
+        %}
+        {% render 'c-collection-mini',
+          collection: block.settings.collection_1,
+          priority: block.settings.priority,
+          title: title
+        %}
+      {% endif %}
+      {% if block.settings.collection_2 != blank %}
+        {% liquid
+          if block.settings.collection_2_title != blank
+            assign title = block.settings.collection_2_title
+          else
+            assign title = block.settings.collection_2.title
+          endif
+        %}
+        {% render 'c-collection-mini',
+          collection: block.settings.collection_2,
+          priority: block.settings.priority,
+          title: title
+        %}
+      {% endif %}
+      {% if block.settings.collection_3 != blank %}
+        {% liquid
+          if block.settings.collection_3_title != blank
+            assign title = block.settings.collection_3_title
+          else
+            assign title = block.settings.collection_3.title
+          endif
+        %}
+        {% render 'c-collection-mini',
+          collection: block.settings.collection_3,
+          priority_desktop: block.settings.priority_desktop,
+          priority_mobile: block.settings.priority_mobile,
+          title: title
+        %}
+      {% endif %}
+      {% if block.settings.collection_4 != blank %}
+        {% liquid
+          if block.settings.collection_4_title != blank
+            assign title = block.settings.collection_4_title
+          else
+            assign title = block.settings.collection_4.title
+          endif
+        %}
+        {% render 'c-collection-mini',
+          collection: block.settings.collection_4,
+          priority_desktop: block.settings.priority_desktop,
+          priority_mobile: block.settings.priority_mobile,
+          title: title
+        %}
+      {% endif %}
+      {% if block.settings.collection_5 != blank %}
+        {% liquid
+          if block.settings.collection_5_title != blank
+            assign title = block.settings.collection_5_title
+          else
+            assign title = block.settings.collection_5.title
+          endif
+        %}
+        {% render 'c-collection-mini',
+          collection: block.settings.collection_5,
+          priority_desktop: block.settings.priority_desktop,
+          priority_mobile: block.settings.priority_mobile,
+          title: title
+        %}
+      {% endif %}
+      {% if block.settings.collection_6 != blank %}
+        {% liquid
+          if block.settings.collection_6_title != blank
+            assign title = block.settings.collection_6_title
+          else
+            assign title = block.settings.collection_6.title
+          endif
+        %}
+        {% render 'c-collection-mini',
+          collection: block.settings.collection_6,
+          priority_desktop: block.settings.priority_desktop,
+          priority_mobile: block.settings.priority_mobile,
+          title: title
+        %}
+      {% endif %}
     </div>
   </div>
-  <footer class="b-card-footer">
+  <footer class="d-card-actions border-t border-base-content/10 p-4">
     <a
       href="{{ cta_url }}"
-      class="b-card-footer-item b-button b-is-primary b-is-size-5 b-is-capitalized"
+      class="d-btn d-btn-primary theme-label-bold capitalize"
     >
       {{ cta_text }}
     </a>
   </footer>
-</div>
+</article>
