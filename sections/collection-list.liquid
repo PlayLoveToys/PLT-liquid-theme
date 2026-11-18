@@ -14,13 +14,8 @@
     </div>
   {%- endunless -%}
 
-  <div
-    class="relative w-full"
-    x-data="carousel({slides: '.slide-{{ section.id }}', intervalTime: 3000})"
-  >
-    <div
-      class="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth max-lg:flex-nowrap lg:grid lg:grid-cols-3 lg:overflow-visible lg:snap-none"
-    >
+  <div class="relative w-full">
+    {% capture slides %}
       {%- for block in section.blocks -%}
         <div
           id="Slide-{{ section.id }}-{{ forloop.index }}"
@@ -30,9 +25,15 @@
           {% render 'card-collection', card_collection: block.settings.collection %}
         </div>
       {%- endfor -%}
-    </div>
-
-    {% render 'c-carousel-buttons' %}
+    {% endcapture %}
+    {% render 'ds-carousel',
+      slides: slides,
+      interval_ms: 3000,
+      nav_overlay: true,
+      track_class: 'plt-carousel-track',
+      prev_label: 'Previous slide',
+      next_label: 'Next slide'
+    %}
   </div>
 
   <div class="mt-8">

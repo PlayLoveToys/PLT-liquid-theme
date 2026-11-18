@@ -105,10 +105,18 @@ const legacyStyle = (file) => {
   }
   return `<style data-source="${file}">${legacyLayer ? `@layer legacy {${css}}` : css}</style>`;
 };
+const carouselExtras =
+  name === 'carousel'
+    ? [
+        `<style data-source="plt-carousel-compat.css">${readAsset('plt-carousel-compat.css')}</style>`,
+        `<script defer>${readAsset('plt-carousel.js')}</script>`,
+      ].join('\n')
+    : '';
 const styles = [
   legacyLayer ? '<style>@layer legacy, theme, base, components, utilities;</style>' : '',
   `<style data-source="theme.css">${readAsset('theme.css')}</style>`,
   ...['base.css'].map(legacyStyle),
+  carouselExtras,
 ].join('\n');
 const page = `<!doctype html>
 <html lang="en" data-theme="brand">
