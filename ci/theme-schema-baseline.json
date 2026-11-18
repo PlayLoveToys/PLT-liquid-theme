@@ -1,0 +1,4 @@
+{
+  "schemalessSections": ["main-404", "main-bloggle-article"],
+  "missingSectionAllowlist": ["AA-Banner-HTML-copy"]
+}
