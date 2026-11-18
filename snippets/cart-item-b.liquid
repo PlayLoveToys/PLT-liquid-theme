@@ -1,7 +1,6 @@
-<div class="b-box b-p-4 b-mb-5">
-  <!-- CARD HORIZONTAL -->
+<div class="d-card mb-5 p-4">
   <article
-    class="b-media"
+    class="flex flex-wrap gap-4"
     x-data="
       {
         error: null,
@@ -22,9 +21,8 @@
       }
     "
   >
-    <!-- IMAGEN + REMOVE (centrado) -->
-    <div class="b-media-left b-has-text-centered" style="max-width:100px;">
-      <figure class="b-image" style="max-width:100px; margin:0 auto;">
+    <div class="mx-auto text-center md:mx-0" style="max-width:100px;">
+      <figure class="mx-auto w-full" style="max-width:100px;">
         <img
           src="{{ item.image | image_url: width: 100 }}"
           alt="{{ item.image.alt | escape }}"
@@ -35,108 +33,93 @@
         >
       </figure>
 
-      <!-- Botón delete debajo de la imagen, centrado -->
       <button
-        class="b-delete b-is-medium b-mt-5"
+        class="d-btn d-btn-ghost d-btn-sm mt-5"
         type="button"
         @click.prevent="remove()"
         :disabled="$store.cart.isBusy"
         aria-label="Remove item"
-      ></button>
+      >
+        ×
+      </button>
     </div>
 
-    <!-- INFORMACIÓN DEL PRODUCTO -->
-    <div class="b-media-content b-pl-4">
-      <!-- Título -->
-      <a href="{{ item.url }}" class="b-title b-is-6 b-mb-2">
+    <div class="min-w-0 flex-1 pl-0 md:pl-4">
+      <a href="{{ item.url }}" class="mb-2 block text-lg font-semibold link">
         {{ item.product.title }}
       </a>
 
-      <!-- Vendor -->
-      <p class="b-is-size-7 b-has-text-grey-dark b-mb-2">
+      <p class="mb-2 text-sm text-base-content/70">
         {{ item.product.vendor }}
       </p>
 
-      <!-- Variantes -->
       {% unless item.product.has_only_default_variant %}
         {% for opt in item.options_with_values %}
-          <p class="b-is-size-7 b-has-text-grey-dark">
+          <p class="text-sm text-base-content/70">
             <strong>{{ opt.name }}:</strong> {{ opt.value }}
           </p>
         {% endfor %}
       {% endunless %}
 
-      <!-- OPERACIÓN: costo unitario x qty = subtotal (todo en una línea) -->
-      <!-- Unit price + label -->
-      <p class="b-is-size-7 b-has-text-grey-dark"><strong> Price: </strong>{{ item.final_price | money }}</p>
+      <p class="text-sm text-base-content/70"><strong> Price: </strong>{{ item.final_price | money }}</p>
 
-      <div class="b-block b-mt-5">
-        <!-- Qty label + selector -->
-        <p class="b-is-size-7 b-has-text-grey-dark b-mr-1">
+      <div class="mt-5 block">
+        <p class="mb-2 text-sm text-base-content/70">
           <strong>Qty:</strong>
-
-          <div class="b-field b-has-addons b-is-inline-flex b-mr-3">
-            <div class="b-control">
-              <button
-                class="b-button b-is-primary b-is-light b-is-rounded"
-                style="max-width:20px; height:35px;"
-                type="button"
-                @click.prevent="decrease()"
-                :disabled="$store.cart.isBusy"
-              >
-                −
-              </button>
-            </div>
-
-            <div class="b-control">
-              <input
-                class="b-input b-has-text-centered"
-                style="max-width:55px; height:35px;"
-                type="number"
-                name="updates[]"
-                x-model="quantity"
-                min="0"
-                id="updates_{{ item.key }}"
-                data-index="{{ forloop.index }}"
-              >
-            </div>
-
-            <div class="b-control">
-              <button
-                class="b-button b-is-primary b-is-light b-is-rounded"
-                style="max-width:20px; height:35px;"
-                type="button"
-                @click.prevent="increase()"
-                :disabled="$store.cart.isBusy"
-              >
-                +
-              </button>
-            </div>
-            <!-- Key del item (útil para identificación) -->
-          </div>
         </p>
+
+        <div class="join inline-flex">
+          <button
+            class="d-btn d-btn-primary d-btn-sm join-item"
+            style="max-width:20px; min-height:35px;"
+            type="button"
+            @click.prevent="decrease()"
+            :disabled="$store.cart.isBusy"
+          >
+            −
+          </button>
+
+          <input
+            class="d-input join-item text-center"
+            style="max-width:55px; min-height:35px;"
+            type="number"
+            name="updates[]"
+            x-model="quantity"
+            min="0"
+            id="updates_{{ item.key }}"
+            data-index="{{ forloop.index }}"
+          >
+
+          <button
+            class="d-btn d-btn-primary d-btn-sm join-item"
+            style="max-width:20px; min-height:35px;"
+            type="button"
+            @click.prevent="increase()"
+            :disabled="$store.cart.isBusy"
+          >
+            +
+          </button>
+        </div>
+
         <input
           type="hidden"
           name="line_item_key[]"
           value="{{ item.key }}"
         >
-        <!-- Atributos del carrito (opcional) -->
         <input type="hidden" name="attributes[gift_message]" value="">
       </div>
 
       <p
-        class="b-help b-is-danger"
+        class="mt-2 text-sm text-error"
         x-show="error"
         x-text="error"
         x-cloak
       ></p>
 
-      <!-- Igual -->
-      <div class="b-mr-5 b-is-flex b-is-justify-content-flex-end">
-        <!-- Subtotal + label -->
-        <span class="b-is-size-7 b-has-text-grey-dark">
+      <div class="mt-4 flex justify-end">
+        <span class="text-sm text-base-content/70">
           Subtotal:
-          <strong class="b-is-size-5">
+          <strong class="text-lg">
             {{ item.final_line_price | money_with_currency }}
           </strong>
         </span>

@@ -6,36 +6,33 @@
   - Link to future SEO programmatic FAQ pages
 {% endcomment %}
 
-<section class="b-section b-section--local-faqs b-box">
-  <div class="b-container b-px-5">
-    <div class="b-section">
+<section class="section--local-faqs d-card py-8">
+  <div class="page-width px-5">
     {% if section.settings.heading != blank %}
-      <h2 class="b-title b-is-2">
+      <h2 class="h1 mb-4">
         {{ section.settings.heading }}
       </h2>
     {% endif %}
 
     {% if section.settings.intro_text != blank %}
-      <p class="b-content b-mb-5 b-is-large">
+      <p class="rte mb-5 text-lg">
         {{ section.settings.intro_text }}
       </p>
     {% endif %}
-  </div>
 
-    <div class="b-faq-list">
-
+    <div class="faq-list space-y-6">
       {% for block in section.blocks %}
-        <div class="b-faq-item b-block">
-          <h3 class="b-faq-question b-title">
+        <div class="faq-item block" {{ block.shopify_attributes }}>
+          <h3 class="h3 font-semibold">
             {{ block.settings.question }}
           </h3>
 
-          <div class="b-faq-answer b-subtitle">
+          <div class="rte mt-2">
             {{ block.settings.answer }}
 
             {% if block.settings.link_url != blank and block.settings.link_label != blank %}
-              <p class="b-mt-2">
-                <a href="{{ block.settings.link_url }}" class="b-link">
+              <p class="mt-2">
+                <a href="{{ block.settings.link_url }}" class="link">
                   {{ block.settings.link_label }}
                 </a>
               </p>
@@ -43,9 +40,7 @@
           </div>
         </div>
       {% endfor %}
-
     </div>
-
   </div>
 </section>
 
@@ -104,4 +99,3 @@
   ]
 }
 {% endschema %}
-

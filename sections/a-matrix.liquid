@@ -1,19 +1,20 @@
 <style>
-  .b-matrix .b-card {
+  .a-matrix .d-card {
     display: flex;
     flex-direction: column;
     height: 100%;
     justify-content: space-between;
   }
 
-  .b-matrix .b-card .b-card-footer {
+  .a-matrix .d-card .d-card-actions,
+  .a-matrix .d-card footer {
     margin-top: auto;
   }
 </style>
 
-<section class="b-section b-matrix">
-  <div class="b-container">
-    <div class="b-columns b-is-multiline b-is-3">
+<section class="a-matrix py-8">
+  <div class="page-width">
+    <div class="grid grid-cols-12 gap-4">
       {% content_for 'blocks' %}
     </div>
   </div>
