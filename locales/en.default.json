@@ -127,6 +127,8 @@
       "inventory_out_of_stock_continue_selling": "In stock",
       "sku": "SKU",
       "on_sale": "Sale",
+      "free_shipping_badge": "Free",
+      "savings_percentage_off": "{{ percent }}% OFF",
       "product_variants": "Product variants",
       "media": {
         "gallery_viewer": "Gallery Viewer",

@@ -1,69 +1,63 @@
 # Fase 1: decisión sobre preflight de Tailwind
 
-**Fecha:** 2026-11-18 (actualizado tras revisión CI & Quality / PR Bulma)  
-**Contexto:** `docs/ds-port-plan.md` (Fase 1 residual / corte 2b). Dawn (`base.css`) y, hasta retirarlo, Bulma (`b-style.css`) cargan en `@layer legacy`; `assets/theme.css` aporta `theme` + `utilities` **sin** preflight.
+**Fecha:** 2026-11-18 (sincronizado con `dev-ai`, head ≥ `c57f769`)  
+**Contexto:** `docs/ds-port-plan.md`. Legacy actual: **solo Dawn** (`base.css` en `@layer legacy` vía `layout/theme.liquid`). **Bulma** (`b-style.css`) y **Alpine** (cart / directives en layout) **ya retirados** en `dev-ai` tras [PR #38](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/38). `assets/theme.css` sigue con capas `theme` + `utilities`, **sin** `@import "tailwindcss/preflight.css"`.
 
-**Relación con [PR #38 — retirada Bulma](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/38):** en el commit `93d72d9` (verificación **PLT CI & Quality**), ese PR **ya no activa** el preflight de Tailwind. Según CI & Quality, **quitar Bulma no es condición suficiente** para importar preflight: el harness `controls` con `LEGACY_LAYER=import` **pasa sin preflight** con o sin Bulma en el stack legacy. El preflight **sigue diferido** en el storefront y en este PR #36.
+**Confirmación en `dev-ai`:** `styles/global.css` **no importa preflight** (comentario explícito en el fichero). Este PR #36 **no lo activa**; el preflight **sigue diferido** hasta decisión de producto (Alejandro).
 
 ## Estado de la decisión
 
 | Pregunta | Respuesta |
 | --- | --- |
-| ¿Activar preflight en Fase 1 / PR #36? | **No.** |
-| ¿Activa preflight el PR #38 (Bulma)? | **No** (`93d72d9`, PLT CI & Quality). |
-| ¿Cuándo replantear preflight? | Cuando el CSS de **Dawn** salga de `@layer legacy` en el layout global, se reduzca a plantillas/superficies acotadas, o exista un contenedor migrado donde el preflight no compita con resets de `base.css`. |
-| ¿Bloqueo principal tras Bulma? | Los **resets de Tailwind** (capa `base`) siguen **por encima** de `legacy` y colisionan con reglas de elemento de **Dawn** en `base.css` (`button`, `input[type=checkbox]`, etc.), aunque Bulma ya no esté en la página. |
+| ¿Activar preflight en PR #36? | **No** (cambio visual global; requiere aprobación explícita). |
+| ¿Lo activó PR #38 (Bulma/Alpine)? | **No** — integrado en `dev-ai` sin preflight. |
+| ¿Cuándo replantear? | Cuando **`base.css` (Dawn)** salga de `@layer legacy` en el layout global, o el preflight quede **acotado** a superficies sin Dawn en cascada. |
+| ¿Bloqueo tras retirar Bulma/Alpine? | **Sí:** el preflight en `@layer base` queda **por encima** de `legacy` y compite con resets de Dawn; ver probe post-`dev-ai` abajo. |
 
 ## Opciones evaluadas
 
 | Opción | Descripción | Resultado |
 | --- | --- | --- |
-| **A. Preflight global en `@layer base`** | `@import "tailwindcss/preflight.css" layer(base)` en `styles/global.css` | **Descartada** — ver probe abajo. |
-| **B. Preflight bajo contenedor** (p. ej. `.plt-ds-root`) | Reset solo en nodos migrados | Técnicamente viable pero requiere envolver cada superficie migrada y no cubre header/footer compartidos mientras Dawn siga en legacy global. |
-| **C. Flag de theme + carga condicional** | Activar preflight solo si `settings` futuro | Sin setting aprobado; añadiría deuda sin gate claro. |
-| **D. Mantener sin preflight** | Estado actual | **Elegida** (diferido). |
+| **A. Preflight global en `@layer base`** | `@import "tailwindcss/preflight.css" layer(base)` | **Descartada para merge** — probe 2026-11-18 post-`dev-ai` sigue mostrando regresión en harness. |
+| **B. Preflight bajo contenedor** | Reset en `.plt-ds-root` o similar | Viable a futuro; no en Fase 1. |
+| **C. Flag en theme settings** | Carga condicional | Sin setting aprobado. |
+| **D. Mantener sin preflight** | Estado `dev-ai` | **Elegida** (diferido). |
 
-## Evidencia: probe local (`LEGACY_LAYER=import`)
+## Probe post-Bulma / post-Alpine (2026-11-18)
 
-Comandos (rama de trabajo):
+Entorno: rama #36 mergeada con `origin/dev-ai`, harness `controls`, `LEGACY_LAYER=import`, legacy **solo `base.css`** (sin `b-style.css`). Probe **experimental** (no commiteado): añadir preflight en `styles/global.css`, `npm run build:css`, medir con Playwright en `tools/snippet-harness/.out/controls.layered.html`, restaurar `global.css`.
+
+### Resultados (resumen)
+
+| Métrica | Sin preflight | Con preflight (`layer(base)`) |
+| --- | --- | --- |
+| `plt-quantity-selector` (caja host) | ≈ **171×44** px | ≈ **145×40** px (encoge) |
+| Checkboxes en filter-bar (muestra) | mayoría **24×24** px | muchas pass **0×0** (no renderizadas) |
+| `d-btn` padding vertical | `1px` (layered) | **`0px`** (preflight gana a legacy) |
+
+**Conclusión del probe:** retirar Bulma y Alpine **no elimina** el choque preflight ↔ Dawn. El harness `controls` **pasa sin preflight** (gate `test:harness` / CI en #38). Con preflight global el caso `controls` sigue mostrando **regresión visual** en cantidad/filtros (misma clase de problema que corte 2b, ahora atribuible sobre todo a **`base.css`**).
+
+**Propuesta (no implementada en #36):** no activar preflight global en storefront hasta sacar Dawn de `legacy` o acotarlo. Si Alejandro aprueba un rollout visual, abrir PR dedicado con capturas y gates visuales; Fase 1 solo documenta la viabilidad negativa del probe.
+
+## Evidencia reproducible
 
 ```bash
-# Baseline (sin preflight) — estado de producción de global.css
+# Baseline (como dev-ai / #36)
 LEGACY_LAYER=import npm run harness:snippet -- controls
-# → tools/snippet-harness/.out/controls.layered.html
 
-# Preflight global (experimental, no commitear)
-cp styles/global.css /tmp/global.css.bak
-# Añadir tras @layer …: @import "tailwindcss/preflight.css" layer(base);
-npm run build:css
-LEGACY_LAYER=import npm run harness:snippet -- controls
-mv /tmp/global.css.bak styles/global.css && npm run build:css
+# Probe local (no dejar commiteado)
+# 1) Añadir: @import "tailwindcss/preflight.css" layer(base);
+# 2) npm run build:css && LEGACY_LAYER=import npm run harness:snippet -- controls
+# 3) Revertir global.css y npm run build:css
 ```
 
-Salida del probe registrada en [`docs/fase1-gates-report.md`](fase1-gates-report.md).
+Salida histórica previa: [`docs/fase1-gates-report.md`](fase1-gates-report.md) (incluye gates post-merge).
 
-### Por qué el preflight global rompe la convivencia legacy (con o sin Bulma)
-
-Con capas `@layer legacy, theme, base, components, utilities` (layout + harness), el preflight vive en **`base`**, por encima de **`legacy`**. Las reglas de reset de Tailwind (márgenes en `body`, `button`, `input`, listas, etc.) **ganan** sobre lo que quede en `legacy`, incluido **solo Dawn** (`base.css`).
-
-- **Con Bulma:** además, resets chocan con `button { padding: 0 }` y similares en `b-style.css` (corte 2b).
-- **Sin Bulma ([PR #38](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/38)):** el conflicto **relevante para el harness `controls`** persiste por **Dawn** — p. ej. `input[type=checkbox] { width: auto }` y resets de `button` en `base.css`. PLT CI & Quality confirma que **no hace falta preflight** para que `controls` pase con `LEGACY_LAYER=import`; introducir preflight global **sí** reintroduce el patrón de controles rotos documentado en `docs/ds-port-plan.md` § corte 2b.
-
-### Conclusión
-
-**No hay forma segura de activar el preflight de Tailwind a escala storefront** mientras `base.css` (Dawn) siga cargándose en `@layer legacy` en el layout global. Retirar Bulma ([PR #38](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/38)) **no desbloquea** el preflight; reduce ruido Bulma pero **no** elimina el choque Dawn ↔ resets Tailwind.
-
-**Ventana para preflight:** cuando el CSS de Dawn salga de `legacy` (retiro progresivo de `component-*.css` / `base.css` en favor del DS) o el preflight quede **acotado** a superficies sin Dawn en cascada (contenedor migrado, plantilla sin legacy global).
-
-Este PR **no** añade preflight; documenta la decisión (diferida) y entrega el **mapeo de tokens** `--plt-*` desde `settings_schema`.
-
-## Harness tras mapeo de tokens
-
-El harness inyecta las mismas variables que el layout (`PLT_DS_TOKENS=1`, ver `tools/snippet-harness/render.mjs`) para validar que los consumidores `plt-*` / `d-*` reciben overrides del merchant sin Shopify Live.
+## Harness + tokens (este PR)
 
 ```bash
 PLT_DS_TOKENS=1 LEGACY_LAYER=import npm run harness:snippet -- controls
 PLT_DS_TOKENS=1 LEGACY_LAYER=import npm run harness:snippet -- button
 ```
 
-Salida: `tools/snippet-harness/.out/*.layered.html` (comparar visualmente antes/después del mapeo en el mismo entorno layered). Sin preflight — alineado con el gate de CI & Quality en [PR #38](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/38).
+Este PR **no** añade preflight; entrega **mapeo** `--plt-*` via `snippets/_plt-ds-token-vars.liquid`. Decisiones de producto pendientes: [`docs/fase1-settings-token-map.md`](fase1-settings-token-map.md) (fuente accent, bordes/sombras, semánticos, radios de cards).

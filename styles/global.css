@@ -1,9 +1,10 @@
 /*
  * Design-system entry point. Compiled to assets/theme.css by `npm run build:css`.
  *
- * Phase 1 (docs/ds-port-plan.md): the legacy Dawn/Bulma CSS is still the base,
- * so Tailwind's preflight is intentionally NOT imported. Only the theme tokens
- * and utilities are layered in; preflight returns once Bulma is retired.
+ * Fase 5 (paso 1): Bulma retirado; Dawn base.css sigue en @layer legacy vía layout.
+ * Preflight de Tailwind sigue DIFERIDO (ver PR #36 / docs/fase1-preflight.md en esa rama):
+ * en @layer base queda por encima de legacy y choca con resets Dawn; no es requisito
+ * para retirar b-style (markup ya usa d-* / Tailwind).
  *
  * Canonical theme: design-system `cheesecake` (mirror of the Liquid `brand`
  * daisyUI theme). Do not redeclare @plugin "daisyui/theme" or @utility

@@ -18,47 +18,44 @@
   endif
 %}
 
-<div class="b-card b-has-background-primary-25">
-  <header class="b-card-header">
-    <p class="b-card-header-title b-is-capitalized b-title b-is-5 b-has-text-white">
+<article class="d-card h-full bg-primary/25 text-base-content theme-bordered theme-elevated plt-media-card">
+  <header class="px-4 py-3 border-b border-base-content/10">
+    <h3 class="d-card-title theme-headline-sm capitalize m-0 text-base-100">
       {{ card_title }}
-    </p>
+    </h3>
   </header>
-  <div class="b-card-content b-p-2">
-    <div class="b-content">
-      {% if block.settings.product_list %}
-        <div class="b-fixed-grid">
-          <div class="b-grid">
-            {% for product in block.settings.product_list %}
-              <div class="b-cell b-has-background-white b-has-radius-small">
-                <a href="{{ product.url }}">
-                  <figure class="b-image b-is-square">
-                    {{
-                      product.featured_image
-                      | image_url: width: 300
-                      | image_tag:
-                        widths: '50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600',
-                        loading: 'lazy',
-                        preload: block.settings.priority
-                    }}
-                  </figure>
-                  <p class="b-subtitle b-is-6 b-px-2 b-has-text-link-40 b-has-text-weight-bold b-has-text-right">
-                    {{ product.price | money }}
-                  </p>
-                </a>
-              </div>
-            {% endfor %}
+  <div class="d-card-body plt-media-card__body p-4">
+    {% if block.settings.product_list %}
+      <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {% for product in block.settings.product_list %}
+          <div class="min-w-0 rounded-lg bg-base-100 overflow-hidden shadow-sm">
+            <a href="{{ product.url }}" class="block">
+              <figure class="m-0 aspect-square overflow-hidden">
+                {{
+                  product.featured_image
+                  | image_url: width: 300
+                  | image_tag:
+                    widths: '50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600',
+                    loading: 'lazy',
+                    preload: block.settings.priority,
+                    class: 'h-full w-full object-cover'
+                }}
+              </figure>
+              <p class="theme-label-bold px-2 py-1 text-right text-sm text-primary m-0">
+                {{ product.price | money }}
+              </p>
+            </a>
           </div>
-        </div>
-      {% endif %}
-    </div>
+        {% endfor %}
+      </div>
+    {% endif %}
   </div>
-  <footer class="b-card-footer">
+  <footer class="d-card-actions border-t border-base-content/10 p-4">
     <a
       href="{{ cta_url }}"
-      class="b-card-footer-item b-button b-is-primary b-is-size-5 b-is-capitalized"
+      class="d-btn d-btn-primary theme-label-bold capitalize"
     >
       {{ cta_text }}
     </a>
   </footer>
-</div>
+</article>
