@@ -97,3 +97,17 @@
 .collection__view-all a:not(.link) {
   margin-top: 1rem;
 }
+
+/* Collection grid only: “Free” shipping badge (legacy main-collection parity, Fase 5 #38) */
+.plt-product-card__media-link {
+  position: relative;
+  display: block;
+}
+
+.plt-product-card__collection-free-badge {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1;
+  pointer-events: none;
+}
