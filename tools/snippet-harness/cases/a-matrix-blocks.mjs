@@ -1,4 +1,4 @@
-/** a-matrix block wrappers (col-span) @ 1280 — reproduces home matrix card columns. */
+/** a-matrix block wrappers (plt-a-matrix-card-cell) @ 1280 + full-width col-span-12 probe. */
 import {harnessOutPath} from '../lib/verify-carousel-slides.mjs';
 import {pathToFileURL} from 'node:url';
 
@@ -59,18 +59,22 @@ export default async ({engine}) => {
   };
 
   const cardCollection = await engine.parseAndRender(
-    `<div class="min-w-0">{% render 'c-card-collection', block: block %}</div>`,
+    `<div class="plt-a-matrix-card-cell min-w-0">{% render 'c-card-collection', block: block %}</div>`,
     {block: collectionBlock},
   );
   const cardArticle = await engine.parseAndRender(
-    `<div class="min-w-0">{% render 'c-card-article', block: block %}</div>`,
+    `<div class="plt-a-matrix-card-cell min-w-0">{% render 'c-card-article', block: block %}</div>`,
     {block: articleBlock},
   );
 
-  const cells = [cardCollection, cardArticle, cardCollection, cardArticle].join('');
+  const fullWidthBanner = `<div class="plt-a-matrix-full-width carousel-wrapper relative" id="matrix-full-width-probe">
+    <p class="p-4 text-center">Full-width matrix block (not a b-card cell)</p>
+  </div>`;
+
+  const cells = [cardCollection, cardArticle, fullWidthBanner, cardCollection].join('');
 
   return `<section class="a-matrix py-8 case" id="zone-a-matrix-blocks">
-    <h3>a-matrix: b-card-collection + b-card-article (real wrappers)</h3>
+    <h3>a-matrix: b-card-* cells + full-width col-span-12 block</h3>
     <div class="page-width" style="max-width:1280px;margin:0 auto;padding:0 1rem">
       <div class="grid grid-cols-12 gap-4">${cells}</div>
     </div>
@@ -86,20 +90,41 @@ export async function verify({root}) {
     await page.goto(pathToFileURL(htmlPath).href, {waitUntil: 'load'});
     const result = await page.evaluate(() => {
       const grid = document.querySelector('#zone-a-matrix-blocks .grid.grid-cols-12');
-      const cells = [...grid.children];
-      return cells.map((el, i) => ({
-        i,
-        width: el.getBoundingClientRect().width,
-        gridColumn: getComputedStyle(el).gridColumn,
-      }));
+      const cardCells = [...grid.querySelectorAll('.plt-a-matrix-card-cell')];
+      const banner = document.getElementById('matrix-full-width-probe');
+      return {
+        cards: cardCells.map((el, i) => ({
+          i,
+          width: el.getBoundingClientRect().width,
+          gridColumn: getComputedStyle(el).gridColumn,
+        })),
+        banner: banner
+          ? {
+              width: banner.getBoundingClientRect().width,
+              gridColumn: getComputedStyle(banner).gridColumn,
+            }
+          : null,
+        gridWidth: grid.getBoundingClientRect().width,
+      };
     });
-    const minWidth = 220;
-    for (const cell of result) {
-      if (cell.width < minWidth) {
+
+    const minCardWidth = 220;
+    for (const cell of result.cards) {
+      if (cell.width < minCardWidth) {
         throw new Error(
-          `matrix cell ${cell.i}: width ${cell.width.toFixed(1)}px < ${minWidth}px (grid-column ${cell.gridColumn})`,
+          `matrix card cell ${cell.i}: width ${cell.width.toFixed(1)}px < ${minCardWidth}px (grid-column ${cell.gridColumn})`,
         );
       }
+    }
+
+    if (!result.banner) {
+      throw new Error('missing full-width probe block');
+    }
+    const minFullWidth = result.gridWidth * 0.9;
+    if (result.banner.width < minFullWidth) {
+      throw new Error(
+        `full-width block: ${result.banner.width.toFixed(1)}px < 90% of grid (${minFullWidth.toFixed(1)}px); grid-column ${result.banner.gridColumn}`,
+      );
     }
   } finally {
     await browser.close();
