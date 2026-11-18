@@ -2,15 +2,15 @@
   Product card: DS ProductCard markup (plt-product-card) with Alpine productCard shell kept
   for quick-add / cart error state. Does not edit DS renderers or plt-* adapters.
 
-  Optional (main-collection parity): show_free_shipping_badge, show_type, show_savings_percentage,
+  Optional (main-collection parity): collection_grid_free_badge, show_type, show_savings_percentage,
   pad_color, media_aspect_ratio.
 {%- endcomment -%}
 {%- if card_product and card_product != empty -%}
   {%- liquid
     assign image_pad_color = pad_color | default: '000'
-    assign show_free_shipping = false
-    if show_free_shipping_badge and card_product.price >= 7500
-      assign show_free_shipping = true
+    assign show_collection_free_badge = false
+    if collection_grid_free_badge and card_product.price >= 7500
+      assign show_collection_free_badge = true
     endif
 
     assign show_card_badge = false
@@ -37,7 +37,11 @@
   >
     <article class="d-card bg-base-100 theme-bordered theme-elevated plt-media-card plt-product-card">
       {%- if card_product.featured_media -%}
-        <a class="plt-media-card__media plt-product-card__media-link" href="{{ card_product.url }}" tabindex="-1">
+        <a
+          class="plt-media-card__media{% if collection_grid_free_badge %} plt-product-card__media-link{% endif %}"
+          href="{{ card_product.url }}"
+          tabindex="-1"
+        >
           {%- assign card_alt = card_product.featured_media.alt | default: card_product.title -%}
           {%- if media_aspect_ratio == 'square' -%}
             {{
@@ -62,10 +66,10 @@
                 alt: card_alt
             }}
           {%- endif -%}
-          {%- if show_free_shipping -%}
-            <span class="d-badge plt-product-card__free-shipping-badge theme-label-bold">
+          {%- if show_collection_free_badge -%}
+            <span class="d-badge plt-product-card__collection-free-badge theme-label-bold inline-flex items-center font-semibold">
               <svg
-                class="plt-product-card__free-shipping-icon"
+                class="plt-product-card__collection-free-icon shrink-0"
                 xmlns="http://www.w3.org/2000/svg"
                 transform="scale(-1,1)"
                 height="1em"
@@ -81,10 +85,10 @@
                 <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>
                 <path d="M15 18H9"/>
                 <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/>
-                <circle cx="17" cy="18" r="2"/>
                 <circle cx="7" cy="18" r="2"/>
+                <circle cx="17" cy="18" r="2"/>
               </svg>
-              <span>{{ 'products.product.free_shipping_badge' | t }}</span>
+              Free
             </span>
           {%- endif -%}
         </a>

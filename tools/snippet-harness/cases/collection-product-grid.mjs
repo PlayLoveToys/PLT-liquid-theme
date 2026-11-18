@@ -38,7 +38,7 @@ const baseProduct = {
 const collectionFlags = {
   show_vendor: true,
   show_type: true,
-  show_free_shipping_badge: true,
+  collection_grid_free_badge: true,
   show_savings_percentage: true,
   media_aspect_ratio: 'square',
   pad_color: 'ffffff',
@@ -103,7 +103,7 @@ export default async ({engine}) => {
           card_product: product,
           show_vendor: true,
           show_type: true,
-          show_free_shipping_badge: true,
+          collection_grid_free_badge: true,
           show_savings_percentage: true,
           media_aspect_ratio: 'square',
           pad_color: 'ffffff'
@@ -113,7 +113,18 @@ export default async ({engine}) => {
     );
   }
 
+  /* Stack #38 badge styles (harness preview only; production CSS comes from merged #37/#39) */
+  const stackPreviewCss = `
+    .plt-product-card__media-link { position: relative; display: block; }
+    .plt-product-card__collection-free-badge {
+      position: absolute; top: 0.5rem; left: 0.5rem; z-index: 1; pointer-events: none;
+      border: 0; background-color: hsl(346deg 89% 61%); color: #fff;
+      font-size: 0.75rem; line-height: 1.25; padding: 0.2rem 0.45rem; gap: 0.25rem;
+    }
+  `;
+
   return `
+    <style data-harness-preview>${stackPreviewCss}</style>
     <section class="case">
       <h3>Collection product grid (2/4 + 5 widescreen; free ship, type, % OFF)</h3>
       <div class="collection" style="max-width:72rem;margin:0 auto">
