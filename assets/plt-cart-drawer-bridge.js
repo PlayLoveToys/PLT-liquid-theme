@@ -3,11 +3,11 @@
  * Owns cart mutations (CartApi /cart/change.js), maps /cart.js → lines/subtotal,
  * and exposes a cart-notification-compatible host for product-form / quick-add / Alpine.
  *
- * Cart sync for non-Alpine consumers (header bubble):
+ * Cart sync for non-Alpine consumers (header bubble, cart page lines):
  *   document.addEventListener('plt:cart-updated', (e) => {
  *     const { item_count, total_price, cart } = e.detail || {};
  *   });
- * `detail.cart` is the Shopify Ajax cart from /cart.js or /cart/change.js.
+ * `detail.cart` is the Shopify Ajax cart object from /cart.js or /cart/change.js.
  */
 (() => {
   const DRAWER_READY_TIMEOUT_MS = 3000;
@@ -109,6 +109,12 @@
     );
   }
 
+  function setCartPageLinesBusy(busy) {
+    document.querySelectorAll('plt-cart-line').forEach((el) => {
+      el.busy = busy;
+    });
+  }
+
   async function syncAlpineStore(cart) {
     const store = window.Alpine?.store?.('cart');
     if (!store) return;
@@ -165,6 +171,7 @@
     const { lineId, quantity } = event.detail || {};
     if (!lineId || changingQty) return;
     changingQty = true;
+    setCartPageLinesBusy(true);
     const drawer = getDrawer();
     if (drawer) {
       drawer.busy = true;
@@ -191,6 +198,7 @@
       }
     } finally {
       changingQty = false;
+      setCartPageLinesBusy(false);
       if (drawer) drawer.busy = false;
     }
   }
