@@ -50,6 +50,66 @@ engine.registerFilter('t', (key, ...rest) =>
 engine.registerFilter('money_without_currency', (cents) => (Number(cents) / 100).toFixed(2));
 engine.registerFilter('asset_url', (file) => `../../../assets/${file}`);
 
+const hexToRgb = (hex) => {
+  const h = String(hex).replace('#', '');
+  return [
+    Number.parseInt(h.slice(0, 2), 16),
+    Number.parseInt(h.slice(2, 4), 16),
+    Number.parseInt(h.slice(4, 6), 16),
+  ];
+};
+const rgbToHex = ([r, g, b]) =>
+  `#${[r, g, b]
+    .map((v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0'))
+    .join('')}`;
+const mixRgb = (rgb, factor) => rgbToHex(rgb.map((v) => v * factor));
+engine.registerFilter('color_lighten', (color, amount) =>
+  mixRgb(hexToRgb(color), 1 + Number(amount) / 100),
+);
+engine.registerFilter('color_darken', (color, amount) =>
+  mixRgb(hexToRgb(color), 1 - Number(amount) / 100),
+);
+
+/** Shopify font_picker → objeto en runtime; en settings_data solo hay el handle. */
+const harnessFont = (handle, family) => ({
+  family,
+  fallback_families: 'sans-serif',
+  style: 'normal',
+  weight: 400,
+  system: false,
+  handle,
+});
+
+const pltDsTokenStyle = async () => {
+  const settingsData = JSON.parse(
+    fs.readFileSync(path.join(theme, 'config', 'settings_data.json'), 'utf8'),
+  );
+  const raw = settingsData.current;
+  const settings = {
+    ...raw,
+    type_header_font: harnessFont(raw.type_header_font, 'Roboto Condensed'),
+    type_body_font: harnessFont(raw.type_body_font, 'Inter'),
+  };
+  const color_schemes = Object.entries(raw.color_schemes ?? {}).map(([id, entry]) => ({
+    id,
+    settings: entry.settings ?? entry,
+  }));
+  if (color_schemes.length === 0) return '';
+  const first = color_schemes[0];
+  const tokenTpl = `{% for scheme in color_schemes -%}
+{% if forloop.first %}:root,{% endif %}
+.color-{{ scheme.id }} {
+{% render '_plt-ds-token-vars', scope: 'color_scheme', scheme: scheme %}
+}
+{% endfor -%}
+:root {
+{% render '_plt-ds-token-vars', scope: 'global' %}
+}
+`;
+  const css = await engine.parseAndRender(tokenTpl, {color_schemes, settings, scheme: first});
+  return `<style data-source="plt-ds-tokens">${css}</style>`;
+};
+
 const {default: build} = await import(
   pathToFileURL(path.join(here, 'cases', `${name}.mjs`)).href
 );
@@ -73,8 +133,11 @@ const legacyStyle = (file) => {
   }
   return `<style data-source="${file}">${legacyLayer ? `@layer legacy {${css}}` : css}</style>`;
 };
+const pltTokens =
+  process.env.PLT_DS_TOKENS === '1' ? await pltDsTokenStyle() : '';
 const styles = [
   legacyLayer ? '<style>@layer legacy, theme, base, components, utilities;</style>' : '',
+  pltTokens,
   `<style data-source="theme.css">${readAsset('theme.css')}</style>`,
   ...['base.css', 'b-style.css'].map(legacyStyle),
 ].join('\n');
