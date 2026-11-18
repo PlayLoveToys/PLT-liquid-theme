@@ -89,6 +89,6 @@
         },
     };
 
-    // Exponer en el global para que Alpine lo use: this.CartApi / window.CartApi
+    // Global for cart bridge / product-form: this.CartApi / window.CartApi
     window.CartApi = CartApi;
 })();

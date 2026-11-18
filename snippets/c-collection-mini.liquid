@@ -6,11 +6,12 @@
   if block.settings.priority_desktop
     assign image_class = image_class | append: ' image-priority-desktop-' | append: block.id
   endif
+  assign image_class = image_class | append: ' h-full w-full object-cover'
 %}
 
-<div class="b-cell b-has-background-white b-has-radius-small" {{ block.shopify_attributes }}>
-  <a href="{{ collection.url }}">
-    <figure class="b-image b-is-1by1">
+<div class="min-w-0 rounded-lg bg-base-100 overflow-hidden shadow-sm" {{ block.shopify_attributes }}>
+  <a href="{{ collection.url }}" class="block">
+    <figure class="m-0 aspect-square overflow-hidden">
       {{
         collection.image
         | image_url: width: 140
@@ -22,7 +23,7 @@
           class: image_class
       }}
     </figure>
-    <p class="b-is-6 b-px-1 b-has-text-left b-is-ghost b-is-capitalized">
+    <p class="theme-meta px-2 py-1 text-left capitalize m-0">
       {{ title }}
     </p>
   </a>

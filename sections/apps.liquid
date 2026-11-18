@@ -1,7 +1,7 @@
 {%- for block in section.blocks -%}
-  <div class="b-container">
-    <div class="b-box">
-      <div class="b-content">
+  <div class="page-width py-4">
+    <div class="d-card bg-base-100 theme-bordered theme-elevated">
+      <div class="d-card-body">
         {% render block %}
       </div>
     </div>
@@ -12,7 +12,7 @@
 {
   "name": "t:sections.apps.name",
   "tag": "section",
-  "class": "b-section",
+  "class": "section",
   "settings": [
     {
       "type": "checkbox",

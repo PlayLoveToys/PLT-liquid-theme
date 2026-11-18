@@ -1,3 +1,41 @@
+<style>
+  @media (min-width: 769px) {
+    {% if section.settings.logo %}
+      .logo-motto-text-{{ section.id }} {
+        margin-left: 2rem;
+      }
+    {% endif %}
+  }
+</style>
+
+<section class="py-8">
+  <div class="page-width">
+    <div class="d-card p-6">
+      <div class="grid items-center gap-6 md:grid-cols-12">
+        {% if section.settings.logo %}
+          <div class="md:col-span-3">
+            <figure class="aspect-square overflow-hidden">
+              {{
+                section.settings.logo
+                | image_url: width: 300
+                | image_tag: widths: '50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600', loading: 'lazy', class: 'h-full w-full object-cover'
+              }}
+            </figure>
+          </div>
+        {% endif %}
+        <div class="{% if section.settings.logo %}md:col-span-8{% else %}md:col-span-12{% endif %}">
+          <div class="logo-motto-text-{{ section.id }}">
+            <p class="h1 capitalize text-primary">
+              {{ section.settings.motto_title }}
+            </p>
+            <p class="mt-2 text-lg md:text-2xl">{{ section.settings.motto }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 {% schema %}
 {
   "name": "AA Logo Motto",
@@ -14,39 +52,3 @@
   ]
 }
 {% endschema %}
-
-<style>
-  @media (min-width: 769px) {
-    {% if section.settings.logo %}
-      .logo-motto-text-{{ section.id }} {
-        margin-left: 2rem;
-      }
-    {% endif %}
-  }
-</style>
-
-<section class="b-section">
-  <div class="b-box">
-    <div class="b-columns b-is-vcentered">
-      {% if section.settings.logo %}
-        <div class="b-column b-is-3">
-          <figure class="b-image b-is-square">
-            {{
-              section.settings.logo
-              | image_url: width: 300
-              | image_tag: widths: '50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600', loading: 'lazy'
-            }}
-          </figure>
-        </div>
-      {% endif %}
-      <div class="b-column {% if section.settings.logo %}b-is-8{% else %}b-is-12{% endif %}">
-        <div class="logo-motto-text-{{ section.id }}">
-          <p class="b-title b-is-6-mobile b-is-1-desktop b-is-capitalized b-has-text-primary">
-            {{ section.settings.motto_title }}
-          </p>
-          <p class="b-subtitle b-is-6-mobile b-is-4-desktop">{{ section.settings.motto }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
