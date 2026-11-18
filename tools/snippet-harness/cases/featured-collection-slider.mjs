@@ -121,7 +121,7 @@ export async function verify({root}) {
     });
 
     if (result.display !== 'flex') {
-      throw new Error(`product grid display is ${result.display}, expected flex (Dawn grid compat)`);
+      throw new Error(`product grid display is ${result.display}, expected flex (Dawn .grid in legacy layer)`);
     }
 
     const minWidth = 170;
@@ -143,6 +143,26 @@ export async function verify({root}) {
 
     if (result.linkStyle?.textDecoration === 'underline' && result.linkStyle?.color === 'rgb(0, 0, 238)') {
       throw new Error('product title link still has default unstyled anchor (blue underline)');
+    }
+    const pageMobile = await browser.newPage({viewport: {width: 390, height: 844}});
+    await pageMobile.goto(pathToFileURL(htmlPath).href, {waitUntil: 'load'});
+    const mobile = await pageMobile.evaluate(() => {
+      const ul = document.querySelector('#zone-featured-collection-slider ul.grid');
+      return {
+        display: getComputedStyle(ul).display,
+        flexWrap: getComputedStyle(ul).flexWrap,
+        tops: [...ul.querySelectorAll('.slider__slide')].map((el) => el.getBoundingClientRect().top),
+      };
+    });
+    if (mobile.display !== 'flex') {
+      throw new Error(`mobile slider display=${mobile.display}, expected flex`);
+    }
+    if (mobile.flexWrap !== 'nowrap') {
+      throw new Error(`mobile slider flexWrap=${mobile.flexWrap}, expected nowrap`);
+    }
+    const uniqueTops = [...new Set(mobile.tops.map((t) => Math.round(t)))];
+    if (uniqueTops.length > 1) {
+      throw new Error(`mobile slider slides wrapped (${uniqueTops.length} rows)`);
     }
   } finally {
     await browser.close();

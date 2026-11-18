@@ -24,3 +24,40 @@
 @source "../node_modules/@playlovetoys/platform/packages/web-components/adapters/liquid";
 
 @import "@playlovetoys/platform/packages/design-system/themes/cheesecake.css";
+
+/*
+ * Dawn base.css defines `.grid { display: flex }` in @layer legacy. The Tailwind
+ * utility `.grid { display: grid }` (utilities layer) overrides it and breaks
+ * collection/PDP/footer grids, while compat sheets that reset flex also broke
+ * slider nowrap. See docs/dawn-tailwind-class-collisions.md.
+ */
+@source not inline("{sm:,md:,lg:,xl:,2xl:,}grid");
+
+@layer utilities {
+  /* CSS grid only when Tailwind track utilities are present (not Dawn grid--*). */
+  .grid:where(
+    [class*='grid-cols'],
+    [class*='col-span'],
+    [class*='row-span'],
+    [class*='grid-rows'],
+    [class*='grid-flow'],
+    [class*='auto-rows'],
+    [class*='auto-cols'],
+    [class*='place-items'],
+    [class*='place-content'],
+    [class*='justify-items']
+  ) {
+    display: grid;
+  }
+
+  /* Dawn sliders: keep horizontal track (component-slider uses flex-wrap: inherit). */
+  .grid:where(
+    .slider,
+    .slider--mobile,
+    .slider--tablet,
+    .slider--desktop,
+    .slider--everywhere
+  ) {
+    flex-wrap: nowrap;
+  }
+}

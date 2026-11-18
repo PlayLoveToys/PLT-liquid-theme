@@ -1,6 +1,12 @@
 /**
  * Harness: collection PDP grid shell (main-collection.liquid pattern) with DS card-product cells.
  */
+import fs from 'node:fs';
+import path from 'node:path';
+import {pathToFileURL} from 'node:url';
+import {harnessOutPath} from '../lib/verify-carousel-slides.mjs';
+import {itemsPerRowEstimate} from '../lib/grid-layout.mjs';
+
 const money = (cents) => `$${(Number(cents || 0) / 100).toFixed(2)}`;
 
 const media = (alt = 'Product photo') => ({
@@ -62,37 +68,18 @@ export default async ({engine}) => {
   const data = {
     settings: {currency_code_enabled: false, card_style: 'card'},
     section: {id: 'harness-collection-grid'},
-    products: [
-      {...baseProduct},
-      {
-        ...baseProduct,
-        id: 1002,
-        title: 'On-sale toy',
-        type: 'Accessories',
-        compare_at_price: 2999,
-        price: 1999,
-        price_min: 1999,
-        selected_or_first_available_variant: {
-          ...baseProduct.selected_or_first_available_variant,
-          price: 1999,
-          compare_at_price: 2999,
-        },
+    products: Array.from({length: 8}, (_, i) => ({
+      ...baseProduct,
+      id: 1001 + i,
+      title: `Catalog item ${i + 1}`,
+      type: i % 2 === 0 ? 'Vibrators' : 'Accessories',
+      price: 1999 + i * 100,
+      price_min: 1999 + i * 100,
+      selected_or_first_available_variant: {
+        ...baseProduct.selected_or_first_available_variant,
+        price: 1999 + i * 100,
       },
-      {
-        ...baseProduct,
-        id: 1003,
-        title: 'Premium bundle',
-        type: 'Bundles',
-        price: 7900,
-        price_min: 7900,
-        compare_at_price: null,
-        selected_or_first_available_variant: {
-          ...baseProduct.selected_or_first_available_variant,
-          price: 7900,
-          compare_at_price: null,
-        },
-      },
-    ],
+    })),
   };
 
   const cards = [];
@@ -123,18 +110,69 @@ export default async ({engine}) => {
     }
   `;
 
+  const templateCollectionCss = fs.readFileSync(
+    path.join(process.cwd(), 'assets', 'template-collection.css'),
+    'utf8',
+  );
+
   return `
     <style data-harness-preview>${stackPreviewCss}</style>
+    <style data-source="template-collection.css">${templateCollectionCss}</style>
     <section class="case">
       <h3>Collection product grid (2/4 + 5 widescreen; free ship, type, % OFF)</h3>
       <div class="collection" style="max-width:72rem;margin:0 auto">
         <ul
           class="grid product-grid contains-card contains-card--product grid--2-col-tablet-down grid--4-col-desktop grid--5-col-widescreen"
           role="list"
-          style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr))"
         >
           ${cards.map((html) => `<li class="grid__item">${html}</li>`).join('\n')}
         </ul>
       </div>
     </section>`;
 };
+
+export async function verify({root}) {
+  const htmlPath = harnessOutPath(root, 'collection-product-grid');
+  const {chromium} = await import('playwright');
+  const browser = await chromium.launch({headless: true});
+  try {
+    for (const [label, viewport] of [
+      ['desktop', {width: 1440, height: 900}],
+      ['mobile', {width: 390, height: 844}],
+    ]) {
+      const page = await browser.newPage({viewport});
+      await page.goto(pathToFileURL(htmlPath).href, {waitUntil: 'load'});
+      const result = await page.evaluate(() => {
+        const ul = document.querySelector('.collection ul.grid');
+        const display = getComputedStyle(ul).display;
+        const ulWidth = ul.getBoundingClientRect().width;
+        const items = [...ul.querySelectorAll('.grid__item')].map((el) => {
+          const r = el.getBoundingClientRect();
+          return {top: r.top, left: r.left, width: r.width, height: r.height};
+        });
+        const flexWrap = getComputedStyle(ul).flexWrap;
+        return {display, flexWrap, items, ulWidth};
+      });
+
+      if (result.display !== 'flex') {
+        throw new Error(`[${label}] collection grid display=${result.display}, expected flex`);
+      }
+
+      const perRow = itemsPerRowEstimate(result.items);
+      if (label === 'desktop' && perRow < 4) {
+        throw new Error(`[${label}] expected ≥4 items on first row, got ${perRow}`);
+      }
+      // Mobile: regresión principal era display:grid (1 ítem por fila a ancho completo).
+      if (label === 'mobile') {
+        const maxItemWidth = Math.max(...result.items.map((it) => it.width));
+        if (maxItemWidth > result.ulWidth * 0.92) {
+          throw new Error(
+            `[${label}] single column collapse: max item ${maxItemWidth.toFixed(0)}px ≈ full row`,
+          );
+        }
+      }
+    }
+  } finally {
+    await browser.close();
+  }
+}

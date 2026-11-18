@@ -6,6 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {harnessOutPath} from '../lib/verify-carousel-slides.mjs';
 
 const theme = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 
@@ -19,10 +20,6 @@ const placeholderLogo = {
 function loadSectionSource() {
   const src = fs.readFileSync(path.join(theme, 'sections', 'a-logo-motto.liquid'), 'utf8');
   return src.replace(/\{%-?\s*schema\s*-?%\}[\s\S]*?\{%-?\s*endschema\s*-?%\}/, '');
-}
-
-export function harnessOutPath(root, name) {
-  return path.join(root, 'tools', 'snippet-harness', '.out', `${name}.html`);
 }
 
 export default async ({engine}) => {

@@ -187,20 +187,11 @@ const PLT_CUSTOM_STYLE_CASES = new Set([
 const pltCustomStyleExtra = PLT_CUSTOM_STYLE_CASES.has(name)
   ? `<style data-source="a-plt-custom-style.css">${readAsset('a-plt-custom-style.css')}</style>`
   : '';
-const DAWN_GRID_COMPAT_CASES = new Set([
-  'a-matrix-blocks',
-  'featured-collection-slider',
-  'collection-product-grid',
-]);
-const dawnGridCompatExtra = DAWN_GRID_COMPAT_CASES.has(name)
-  ? `<style data-source="plt-dawn-grid-compat.css">${readAsset('plt-dawn-grid-compat.css')}</style>`
-  : '';
 const styles = [
   legacyLayer ? '<style>@layer legacy, theme, base, components, utilities;</style>' : '',
   pltTokens,
   `<style data-source="theme.css">${readAsset('theme.css')}</style>`,
   pltCustomStyleExtra,
-  dawnGridCompatExtra,
   ...['base.css'].map(legacyStyle),
   carouselExtras,
 ].join('\n');

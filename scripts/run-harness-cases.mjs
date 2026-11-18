@@ -8,6 +8,7 @@ import {fileURLToPath, pathToFileURL} from 'node:url';
 import {execFileSync} from 'node:child_process';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+process.env.LEGACY_LAYER ??= 'import';
 const casesDir = path.join(root, 'tools', 'snippet-harness', 'cases');
 const renderScript = path.join(root, 'tools', 'snippet-harness', 'render.mjs');
 
@@ -30,6 +31,10 @@ for (const name of cases) {
       cwd: root,
       stdio: 'pipe',
       encoding: 'utf8',
+      env: {
+        ...process.env,
+        LEGACY_LAYER: process.env.LEGACY_LAYER ?? 'import',
+      },
     });
     const casePath = path.join(casesDir, `${name}.mjs`);
     const caseMod = await import(pathToFileURL(casePath).href);
