@@ -1,7 +1,7 @@
 /**
  * Header cart count bubble (#cart-icon-bubble).
- * Primary contract: plt:cart-updated (PR #31 / fase-5-cart-store-retire).
- * Fallback on main without #31: Dawn pubsub cartUpdate + Alpine.store sync (removable after #31 merges).
+ * Primary: plt:cart-updated from plt-cart-drawer-bridge.js (item_count in detail).
+ * Fallback: Dawn pubsub PUB_SUB_EVENTS.cartUpdate when cartData arrives before bridge refresh.
  */
 (() => {
   const ROOT_ID = 'cart-icon-bubble';
@@ -58,7 +58,6 @@
     applyCount(event.detail?.item_count);
   });
 
-  /** Fallback until PlayLoveToys/PLT-liquid-theme#31 lands (emitCartUpdated in bridge). */
   function bindPubSubFallback() {
     if (typeof subscribe !== 'function' || typeof PUB_SUB_EVENTS === 'undefined') return;
     subscribe(PUB_SUB_EVENTS.cartUpdate, (event) => {
@@ -67,23 +66,8 @@
     });
   }
 
-  /** Fallback: bridge syncAlpineStore on main. TODO(PLT Alpine Migrator): drop after #31 merges. */
-  function bindAlpineFallback() {
-    const bind = () => {
-      const store = window.Alpine?.store?.('cart');
-      if (!store || store.__pltHeaderBubbleBound) return;
-      store.__pltHeaderBubbleBound = true;
-      if (typeof Alpine.effect === 'function') {
-        Alpine.effect(() => applyCount(store.item_count));
-      }
-    };
-    document.addEventListener('alpine:initialized', bind);
-    if (window.Alpine) bind();
-  }
-
   function init() {
     bindPubSubFallback();
-    bindAlpineFallback();
   }
 
   if (document.readyState === 'loading') {

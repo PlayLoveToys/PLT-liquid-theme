@@ -180,5 +180,5 @@ export default async ({engine}) => {
 <script defer>${bubbleAsset}
 document.dispatchEvent(new CustomEvent('plt:cart-updated', {bubbles:true, detail:{item_count:5}}));
 </script>
-<p class="theme-meta case">Simula <code>plt:cart-updated</code> → contador 5 (requiere PR #31 en storefront real para emisión automática).</p>`;
+<p class="theme-meta case">Simula <code>plt:cart-updated</code> → contador 5 (emisión automática vía <code>plt-cart-drawer-bridge.js</code>).</p>`;
 };
