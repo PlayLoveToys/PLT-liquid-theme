@@ -329,7 +329,7 @@
                       %}
                     {%- endcapture -%}
                     {%- liquid
-                      assign plt_qty_host_attrs = ' data-cart-quantity="' | append: cart_qty | append: '" data-min="' | append: qty_rule_min | append: '"'
+                      assign plt_qty_host_attrs = ' class="quantity" data-cart-quantity="' | append: cart_qty | append: '" data-min="' | append: qty_rule_min | append: '"'
                       if qty_rule_max != null
                         assign plt_qty_host_attrs = plt_qty_host_attrs | append: ' data-max="' | append: qty_rule_max | append: '"'
                       endif
