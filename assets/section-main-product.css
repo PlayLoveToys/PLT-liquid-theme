@@ -355,6 +355,17 @@ a.product__text {
   margin-bottom: 0.6rem;
 }
 
+/* PDP: plt-quantity-selector host (no .quantity in legacy layer). Mirror Dawn .quantity sizing. */
+.product-form__quantity plt-quantity-selector.quantity {
+  color: rgba(var(--color-foreground));
+  position: relative;
+  width: calc(14rem / var(--font-body-scale) + var(--inputs-border-width) * 2);
+  display: flex;
+  border-radius: var(--inputs-radius);
+  min-height: calc((var(--inputs-border-width) * 2) + 4.5rem);
+  box-sizing: border-box;
+}
+
 .price-per-item__label.form__label {
   margin-bottom: 0rem;
 }
