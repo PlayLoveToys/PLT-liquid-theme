@@ -128,8 +128,6 @@
       "add_to_cart": "Ajouter au panier",
       "description": "Description",
       "on_sale": "Promotion",
-      "free_shipping_badge": "Gratuit",
-      "savings_percentage_off": "{{ percent }} % de réduction",
       "product_variants": "Variantes de produits",
       "quantity": {
         "label": "Quantité",

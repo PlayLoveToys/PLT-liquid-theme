@@ -62,7 +62,7 @@
         <div class="collection page-width" id="product-grid" data-id="{{ section.id }}">
           <div class="loading-overlay gradient" style="display: none;"></div>
           <ul
-            class="grid product-grid contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} grid--2-col-tablet-down grid--4-col-desktop grid--5-col-widescreen"
+            class="grid product-grid contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} grid--2-col-tablet-down grid--4-col-desktop"
             role="list"
           >
             {%- assign skip_card_product_styles = false -%}
@@ -76,11 +76,8 @@
                   {% render 'card-product',
                     card_product: product,
                     show_vendor: true,
-                    show_type: true,
-                    show_free_shipping_badge: true,
-                    show_savings_percentage: true,
                     media_aspect_ratio: 'square',
-                    pad_color: 'ffffff',
+                    collection_grid_free_badge: true,
                     lazy_load: lazy_load,
                     skip_styles: skip_card_product_styles
                   %}

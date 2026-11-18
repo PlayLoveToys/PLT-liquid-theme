@@ -128,8 +128,6 @@
       "add_to_cart": "Agregar al carrito",
       "description": "Descripción",
       "on_sale": "Oferta",
-      "free_shipping_badge": "Gratis",
-      "savings_percentage_off": "{{ percent }}% dto.",
       "quantity": {
         "label": "Cantidad",
         "input_label": "Cantidad para {{ product }}",

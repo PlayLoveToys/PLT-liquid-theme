@@ -98,34 +98,16 @@
   margin-top: 1rem;
 }
 
+/* Collection grid only: “Free” shipping badge (legacy main-collection parity, Fase 5 #38) */
 .plt-product-card__media-link {
   position: relative;
   display: block;
 }
 
-.plt-product-card__free-shipping-badge {
+.plt-product-card__collection-free-badge {
   position: absolute;
   top: 0.5rem;
   left: 0.5rem;
   z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
   pointer-events: none;
-}
-
-.plt-product-card__free-shipping-icon {
-  flex-shrink: 0;
-}
-
-.price__savings-pill {
-  margin-inline-start: 0.35rem;
-  vertical-align: middle;
-}
-
-@media screen and (min-width: 1400px) {
-  .product-grid.grid--5-col-widescreen .grid__item {
-    width: calc(20% - var(--grid-desktop-horizontal-spacing) * 4 / 5);
-    max-width: calc(20% - var(--grid-desktop-horizontal-spacing) * 4 / 5);
-  }
 }
