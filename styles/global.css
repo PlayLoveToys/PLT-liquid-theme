@@ -73,14 +73,19 @@
     }
   }
 
-  /* Retired Bulma helpers (main-collection-sanity; sort lives in drawer / filter bar). */
-  @media screen and (max-width: 767px) {
+  /*
+   * Bulma helpers referenced in markup (b-style retirado): no aparecen en el historial
+   * de `assets/b-style.css` / `b-style.source.css` (f5446a9, origin/main,
+   * origin/store/aadigital-dev-00). Breakpoints alineados con Dawn `small-hide`
+   * (base.css 435–439) para cubrir 0–749px y ≥750px sin hueco.
+   */
+  @media screen and (max-width: 749px) {
     .c-small-screen-hide {
       display: none !important;
     }
   }
 
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 750px) {
     .screen-hide {
       display: none !important;
     }
