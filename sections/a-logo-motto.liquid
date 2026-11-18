@@ -1,8 +1,10 @@
 <style>
   @media (min-width: 769px) {
-    .logo-motto-text-{{ section.id }} {
-      margin-left: 2rem;
-    }
+    {% if section.settings.logo %}
+      .logo-motto-text-{{ section.id }} {
+        margin-left: 2rem;
+      }
+    {% endif %}
   }
 </style>
 
@@ -10,16 +12,18 @@
   <div class="page-width">
     <div class="d-card p-6">
       <div class="grid items-center gap-6 md:grid-cols-12">
-        <div class="md:col-span-3">
-          <figure class="aspect-square overflow-hidden">
-            {{
-              section.settings.logo
-              | image_url: width: 300
-              | image_tag: widths: '50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600', loading: 'lazy', class: 'h-full w-full object-cover'
-            }}
-          </figure>
-        </div>
-        <div class="md:col-span-8">
+        {% if section.settings.logo %}
+          <div class="md:col-span-3">
+            <figure class="aspect-square overflow-hidden">
+              {{
+                section.settings.logo
+                | image_url: width: 300
+                | image_tag: widths: '50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600', loading: 'lazy', class: 'h-full w-full object-cover'
+              }}
+            </figure>
+          </div>
+        {% endif %}
+        <div class="{% if section.settings.logo %}md:col-span-8{% else %}md:col-span-12{% endif %}">
           <div class="logo-motto-text-{{ section.id }}">
             <p class="h1 capitalize text-primary">
               {{ section.settings.motto_title }}
