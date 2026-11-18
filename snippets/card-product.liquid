@@ -2,17 +2,25 @@
   Product card: DS ProductCard markup (plt-product-card). Quick-add / ATC via
   product-form + quick-add-modal (no Alpine productCard).
 {%- endcomment -%}
-{%- unless skip_styles -%}
-  {{ 'component-rating.css' | asset_url | stylesheet_tag }}
-  {{ 'component-volume-pricing.css' | asset_url | stylesheet_tag }}
-  {{ 'component-price.css' | asset_url | stylesheet_tag }}
-  {{ 'quick-order-list.css' | asset_url | stylesheet_tag }}
-  {{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
-{%- endunless -%}
 {%- liquid
   assign quick_add = quick_add | default: 'none'
   assign card_section_id = section_id | default: section.id
 -%}
+{%- comment -%}
+  component-price.css is loaded by collection/search sections (Dawn legacy). Do not
+  load it here: Dawn `.price--on-sale` rules hide `.price__regular` and break DS
+  plt-product-card__price (sale/sold-out parity with main).
+{%- endcomment -%}
+{%- unless skip_styles -%}
+  {%- if show_rating -%}
+    {{ 'component-rating.css' | asset_url | stylesheet_tag }}
+  {%- endif -%}
+  {%- if quick_add != 'none' -%}
+    {{ 'component-volume-pricing.css' | asset_url | stylesheet_tag }}
+    {{ 'quick-order-list.css' | asset_url | stylesheet_tag }}
+    {{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
+  {%- endif -%}
+{%- endunless -%}
 {%- if card_product and card_product != empty -%}
   {%- liquid
     assign show_card_badge = false

@@ -97,3 +97,16 @@
 .collection__view-all a:not(.link) {
   margin-top: 1rem;
 }
+
+/* main-collection loads Dawn component-price.css; restore DS card price + visibility on sale/sold-out */
+#product-grid .plt-product-card .price.plt-product-card__price {
+  font-size: 0.875rem;
+  letter-spacing: var(--plt-price-tracking);
+  line-height: inherit;
+  color: var(--plt-color-primary);
+}
+
+#product-grid .plt-product-card .price--on-sale .price__regular,
+#product-grid .plt-product-card .price--sold-out .price__regular {
+  display: block;
+}
