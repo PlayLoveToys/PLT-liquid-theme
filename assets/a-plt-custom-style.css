@@ -79,24 +79,99 @@
 }
 
 /* Bulma b-has-background-info-light (carousel article cards) */
-.plt-legacy-bulma-info-light-card {
-  background-color: hsl(190deg 100% 95%);
+article.d-card.plt-legacy-bulma-info-light-card {
+  background-color: hsl(190deg 100% 95%) !important;
   color: hsl(190deg 100% 20%);
   font-family: var(--font-body-family);
 }
 
+article.plt-legacy-bulma-info-light-card h3 {
+  color: inherit;
+  font-family: var(--font-body-family);
+  font-weight: 700;
+  font-size: clamp(1rem, 0.3883vw + 0.909rem, 1.375rem);
+  letter-spacing: normal;
+}
+
+article.plt-legacy-bulma-info-light-card .plt-media-card__body,
+article.plt-legacy-bulma-info-light-card .plt-media-card__media {
+  font-family: var(--font-body-family);
+}
+
+article.plt-legacy-bulma-info-light-card .plt-media-card__media {
+  border-bottom: none;
+}
+
+/* Facets: Bulma b-is-primary b-is-light + drawer title (not in theme.css — arbitrary Tailwind) */
+.facets-wrapper > .sticky > button.d-btn {
+  border: 0;
+  background-color: hsl(346deg 89% 95%);
+  color: hsl(346deg 89% 40%);
+}
+
+.facets-wrapper > .sticky > button.d-btn:hover {
+  background-color: hsl(346deg 89% 90%);
+}
+
+.facets-drawer__panel > header > p {
+  color: hsl(346deg 89% 61%);
+  font-family: var(--font-body-family);
+}
+
 /* Bulma --b-link (hsl 346deg 89% 61%): legacy b-has-background-link on collection carousel cards */
-.plt-legacy-bulma-link-card {
+.plt-legacy-bulma-link-card.plt-collection-carousel-card {
+  border-radius: 0.75rem;
+  box-shadow:
+    0 0.5em 1em -0.125em hsla(221deg, 14%, 4%, 0.1),
+    0 0 0 1px hsla(221deg, 14%, 4%, 0.02);
   background-color: hsl(346deg 89% 61%);
   color: #fff;
   font-family: var(--font-body-family);
 }
 
-.plt-legacy-bulma-link-card .plt-collection-carousel-card__title,
-.plt-legacy-bulma-link-card .plt-collection-carousel-card__body,
-.plt-legacy-bulma-link-card .plt-collection-carousel-card__cta {
+.plt-legacy-bulma-link-card .plt-media-card__media {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  margin: 0;
+  border-bottom: none;
+}
+
+.plt-legacy-bulma-link-card .plt-media-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* base.css h3 { color: rgb(var(--color-foreground)); font-weight: var(--font-heading-weight) } wins without h3 + !important */
+.plt-legacy-bulma-link-card h3.plt-collection-carousel-card__title {
+  color: #fff !important;
+  font-family: var(--font-body-family) !important;
+  font-weight: 700 !important;
+  font-size: clamp(1rem, 0.3883vw + 0.909rem, 1.375rem) !important;
+  letter-spacing: normal;
+}
+
+.plt-legacy-bulma-link-card .plt-collection-carousel-card__body {
   color: #fff;
   font-family: inherit;
+}
+
+/* Main: b-button.b-is-link.b-is-dark → hsl(346deg 89% 34%) + b-has-text-white */
+.plt-legacy-bulma-link-card .plt-collection-carousel-card__cta {
+  color: #fff !important;
+  background-color: hsl(346deg 89% 34%);
+  font-family: var(--font-body-family);
+  font-size: clamp(1rem, 0.3883vw + 0.909rem, 1.375rem);
+  font-weight: 500;
+  padding: 0.5em 1em;
+  border-radius: 0.1406rem;
+  text-decoration: none;
+}
+
+.plt-legacy-bulma-link-card .plt-collection-carousel-card__cta:hover {
+  text-decoration: underline;
 }
 
 /* #38 carousel nav: restore borderless chrome (was b-carousel-nav; not PR #30 ds-carousel) */
