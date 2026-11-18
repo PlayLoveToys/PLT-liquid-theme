@@ -1,7 +1,7 @@
 # Inventario Alpine residual (Fase 5)
 
 Pin DS de referencia: `@playlovetoys/platform` → `c27304c` (`main` desde [PR #17](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/17)).  
-Contexto: tras **JS-C** (facets sin Alpine), el plan maestro fija **12** archivos Liquid con `x-data` ([`docs/ds-port-plan.md`](./ds-port-plan.md) § Fase 5; [`docs/ds-port-2b-js-plan.md`](./ds-port-2b-js-plan.md) § JS-C).
+Contexto: tras **JS-C** (facets sin Alpine), el plan maestro fija **9** archivos Liquid con `x-data` ([`docs/ds-port-plan.md`](./ds-port-plan.md) § Fase 5; [`docs/ds-port-2b-js-plan.md`](./ds-port-2b-js-plan.md) § JS-C). Antes de la higiene **(c)** eran **12**.
 
 **Alcance de este documento:** inventario y clasificación únicamente — **sin migración** de Liquid ni JS.
 
@@ -13,9 +13,21 @@ Comando: `rg 'x-data' --glob '*.liquid'` (excluyendo `docs/`).
 
 | Resultado | Detalle |
 |---|---|
-| **Archivos con `x-data`** | **12** — coincide con la lista del plan |
+| **Archivos con `x-data`** | **9** — coincide con la lista del plan |
 | **Faltantes** | Ninguno |
 | **Adicionales con `x-data`** | Ninguno en `.liquid` |
+
+### Código muerto retirado (2026-11-15)
+
+Verificación previa: `rg` en `templates/*.json`, `sections/*.json`, `layout/`, `render`, `asset_url` y `config/`.
+
+| Eliminado | Motivo |
+|---|---|
+| `sections/aa-banner-html-copy.liquid` | Sin `"type": "aa-banner-html-copy"` en templates; preset `AA-Slideshow-New` solo en schema de la section |
+| `sections/main-collection-plt.liquid` | Sin template; entrada huérfana en `config/settings_data.json` → `current.sections` (eliminada en el mismo PR) |
+| `snippets/predictive-search.liquid` | Sin `render 'predictive-search'`; shell Alpine alternativo nunca cableado |
+
+**Conservado (predictive search activo, Dawn):** `sections/predictive-search.liquid` (Section Rendering vía `section_id=predictive-search`), `assets/predictive-search.js` (`<predictive-search>` CE), `assets/component-predictive-search.css`, `snippets/header-search.liquid` en `sections/header.liquid` y `layout/theme.liquid`.
 
 ### Alpine sin `x-data` (residual, fuera de los 12)
 
@@ -49,8 +61,8 @@ Leyenda:
 |---|---:|---|
 | **(a)** | 5 | `b-carousel`, `aa-hero-toggle-content`, `collection-list`, `_collection-hero-collapsable-content`, `_collection-seo-faqs` |
 | **(b)** | 4 | `header`, `main-cart-footer`, `card-product`, `cart-item-b` |
-| **(c)** | 3 | `aa-banner-html-copy`, `main-collection-plt`, `predictive-search` |
-| **Total** | **12** | |
+| **(c)** | 0 | — (higiene 2026-11-15) |
+| **Total** | **9** | |
 
 ---
 
@@ -59,17 +71,14 @@ Leyenda:
 | archivo | rol Alpine | acción | dependencia | evidencia breve |
 |---|---|---|---|---|
 | `blocks/b-carousel.liquid` | Componente `carousel()` (autoplay, swipe, prev/next); `x-data` con array placeholder + hijos reales | **(a)** Sustituir por `Carousel` DS ([DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4)) o carrusel nativo con scroll-snap; mantener `c-carousel-buttons` o equivalente | `Alpine.data('carousel')` en `assets/alpine-bundle.js`; botones en `snippets/c-carousel-buttons.liquid` | Block tipo `b-carousel` en `sections/a-matrix.liquid` y `blocks/b-cell.liquid`; usado en `templates/index.json` y metaobjects (`a-matrix`) |
-| `sections/aa-banner-html-copy.liquid` | `slideshowSection_*()` inline: slides, dots, flechas, `x-html`, touch | **(c)** Eliminar o archivar tras confirmar con merchant; si se reactiva, **(a)** → `Carousel` DS | Script inline en la section; sin store Ajax | `rg 'aa-banner-html-copy'` en `templates/` → **0**; schema preset `AA-Slideshow-New` solo para theme editor |
 | `sections/aa-hero-toggle-content.liquid` | Estado `showContent` + iconos SVG + `x-transition` / `x-if` | **(a)** `d-collapse` / `<details>` + tokens; patrón duplicado en hero colección | Solo UI; contenido estático de settings | En `templates/collection*.json`, `metaobject/local_page.json`, etc. (`"type": "aa-hero-toggle-content"`) |
 | `sections/collection-list.liquid` | `carousel({ slides: '.slide-…', intervalTime: 3000 })` | **(a)** Mismo que `b-carousel` | Mismo plugin `carousel` + `c-carousel-buttons` | `collection-list` en home, colecciones, 404, list-collections, metaobjects |
 | `sections/header.liquid` | Burbuja contador: markup `data-header-cart-count`; `header-cart-bubble.js` escucha `plt:cart-updated` (bridge) + respaldo Dawn `cartUpdate` | **(b)** migrado (fase-5 header, apilado #32): sin Alpine en Liquid ni `bindAlpineFallback` | `plt-cart-drawer-bridge.js` emite `plt:cart-updated`; `cart-store.js` sigue para cards/PDP | Section global en `layout`; burbuja en `#cart-icon-bubble` |
 | `sections/main-cart-footer.liquid` | Contenedor `x-show` si hay ítems; total `x-text` del store; checkout `:disabled` | **(b)** Página `/cart`: reemplazar store por morph/`cart.js` o líneas WC Fase 3 | `$store.cart`, `CartApi`, `refreshCartFragment` | `templates/cart.json` → `main-cart-footer` |
-| `sections/main-collection-plt.liquid` | `isMobile` + resize; `@click` abre `#plt-product-modal` con `shopify-context` | **(c)** Decidir producto: retirar section o rehacer colección PLT sin Alpine (layout vía CSS; modal ya es `<dialog>` nativo) | Shopify Storefront Web Components + Alpine mínimo | `rg 'main-collection-plt'` en `templates/` → **0**; solo preset en `config/settings_data.json` |
 | `snippets/card-product.liquid` | `productCard({ productUrl, sectionId, productId })`; `x-show` errores quick-add | **(b)** Plan aparte: quick-add / `plt-quick-view` + errores en WC o `product-form` (explícitamente fuera de 2d/2b) | `Alpine.data('productCard')` en bundle + `alpine-product-card.js`; Cart Ajax + `PltCartDrawerHost` | `render 'card-product'` en colección, búsqueda, related-products, PDP, harness |
 | `snippets/cart-item-b.liquid` | Estado línea + `decrease`/`increase`/`remove` → `$store.cart.change` | **(b)** Sustituir por `plt-cart-line` / eventos `plt:cart-line-*` (Fase 3) o quantity WC en drawer | `$store.cart`, `CartApi.change`, `x-model` qty | `sections/main-cart-items.liquid` → `cart-item-b` |
 | `snippets/_collection-hero-collapsable-content.liquid` | Igual hero toggle: `showContent`, FAQs locales Sanity intro | **(a)** `d-collapse` / `<details>`; alinear con `aa-hero-toggle-content` en un solo snippet | Contenido Sanity vía `_sanity-value` | `main-collection-sanity.liquid` `render '_collection-hero-collapsable-content'` |
 | `snippets/_collection-seo-faqs.liquid` | Acordeón por ítem: `open`, iconos, `x-show` | **(a)** `Faq` DS (DS#4) conservando JSON-LD `FAQPage` | Metafields Sanity; sin Ajax | Mismo render desde `main-collection-sanity.liquid` |
-| `snippets/predictive-search.liquid` | `Alpine.data('predictiveSearch')` + fetch `search/suggest?section_id=predictive-search` | **(c)** Huérfano hoy; si se cablea al header → **(b)** + issue DS Search (defer Fase 3) | Section Rendering; no usa Dawn `predictive-search` CE | `rg "render 'predictive-search'"` → **0**; header usa `snippets/header-search.liquid` + `predictive-search.js` |
 
 ---
 
@@ -83,8 +92,8 @@ Prioridad: **bajo riesgo / alto reuse**, luego **carrito unificado**, luego **Aj
 | 2 | `fase-5-carousel` | `collection-list`, `blocks/b-carousel`, `c-carousel-buttons` | (a) | Un plugin Alpine (`carousel`); depende de Carousel DS |
 | 3 | `fase-5-cart-store-retire` | `header`, `main-cart-footer`, `cart-item-b` | (b) | Un solo eje: quitar `Alpine.store('cart')` cuando líneas/footer usen drawer/WC |
 | 4 | `fase-5-product-card-alpine` | `card-product` (+ `buy-buttons` / `alpine-product-card.js`) | (b) | Ajax add-to-cart + drawer; coordinar con quick-add WC |
-| 5 | `fase-5-predictive-search` | `predictive-search` **o** unificar con `header-search` | (c)→(b) | Solo tras decisión shell header; contrato DS pendiente |
-| 6 | `fase-5-dead-sections` | `aa-banner-html-copy`, `main-collection-plt` | (c) | Borrado o documentar excepción merchant antes de migrar UI |
+| — | ~~`fase-5-dead-sections`~~ | ~~`aa-banner-html-copy`, `main-collection-plt`, snippet Alpine `predictive-search`~~ | — | **Hecho** 2026-11-15 |
+| 5 | `fase-5-predictive-search-shell` | `header-search` + contrato DS Search (defer Fase 3) | (b) | Dawn `sections/predictive-search.liquid` + CE siguen activos; no confundir con el snippet Alpine borrado |
 
 **Dependencias cruzadas:**
 

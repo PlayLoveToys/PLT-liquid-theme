@@ -44,6 +44,31 @@ engine.registerTag('doc', {
   },
   *render() {},
 });
+engine.registerTag('form', {
+  parse(tagToken, remainTokens) {
+    this.hash = tagToken.hash;
+    this.templates = [];
+    const stream = this.liquid.parser.parseStream(remainTokens);
+    stream
+      .on('tag:endform', () => stream.stop())
+      .on('template', (tpl) => this.templates.push(tpl))
+      .on('end', () => {
+        throw new Error('form: missing endform');
+      });
+    stream.start();
+  },
+  *render(ctx, emitter) {
+    const id = this.hash?.id ? ` id="${this.hash.id}"` : '';
+    const klass = this.hash?.class ? ` class="${this.hash.class}"` : '';
+    emitter.write(`<form${id}${klass} method="post" action="/cart/add" data-harness-form>`);
+    yield this.liquid.renderer.renderTemplates(this.templates, ctx);
+    emitter.write('</form>');
+  },
+});
+engine.registerTag('endform', {
+  parse() {},
+  *render() {},
+});
 engine.registerFilter('t', (key, ...rest) =>
   translate(key, Object.fromEntries(rest.filter(Array.isArray))),
 );
