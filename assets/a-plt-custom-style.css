@@ -169,6 +169,18 @@ article.plt-legacy-bulma-info-light-card .plt-media-card__media {
   margin-top: 0.75rem;
 }
 
+/* DS product card titles: Bulma global link reset gone; avoid unstyled anchor defaults in grids */
+.plt-product-card .plt-media-card__title a,
+.plt-product-card .d-card-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.plt-product-card .plt-media-card__title a:hover,
+.plt-product-card .d-card-title a:hover {
+  text-decoration: underline;
+}
+
 /* Bulma --b-link + --b-card-radius 0.75rem: collection carousel cards (c-card-collection) */
 article.d-card.plt-legacy-bulma-link-card.plt-collection-carousel-card {
   display: block;
