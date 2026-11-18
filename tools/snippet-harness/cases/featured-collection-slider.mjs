@@ -99,7 +99,7 @@ export async function verify({root}) {
   const {chromium} = await import('playwright');
   const browser = await chromium.launch({headless: true});
   try {
-    const page = await browser.newPage({viewport: {width: 1280, height: 900}});
+    const page = await browser.newPage({viewport: {width: 1440, height: 900}});
     await page.goto(pathToFileURL(htmlPath).href, {waitUntil: 'load'});
     const result = await page.evaluate(() => {
       const ul = document.querySelector('#zone-featured-collection-slider ul.grid');
@@ -143,6 +143,14 @@ export async function verify({root}) {
 
     if (result.linkStyle?.textDecoration === 'underline' && result.linkStyle?.color === 'rgb(0, 0, 238)') {
       throw new Error('product title link still has default unstyled anchor (blue underline)');
+    }
+
+    const desktopWrap = await page.evaluate(() => {
+      const ul = document.querySelector('#zone-featured-collection-slider ul.grid');
+      return getComputedStyle(ul).flexWrap;
+    });
+    if (desktopWrap !== 'nowrap') {
+      throw new Error(`slider--desktop flexWrap=${desktopWrap}, expected nowrap at 1440`);
     }
     const pageMobile = await browser.newPage({viewport: {width: 390, height: 844}});
     await pageMobile.goto(pathToFileURL(htmlPath).href, {waitUntil: 'load'});

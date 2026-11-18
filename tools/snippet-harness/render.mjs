@@ -188,6 +188,8 @@ const PLT_CUSTOM_STYLE_CASES = new Set([
   'article-card-legacy-bulma',
   'a-matrix-blocks',
   'featured-collection-slider',
+  'featured-collection-tablet-grid',
+  'collection-facets-layout',
 ]);
 const pltCustomStyleExtra = PLT_CUSTOM_STYLE_CASES.has(name)
   ? `<style data-source="a-plt-custom-style.css">${readAsset('a-plt-custom-style.css')}</style>`
