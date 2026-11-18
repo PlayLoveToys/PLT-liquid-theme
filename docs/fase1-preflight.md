@@ -1,6 +1,6 @@
 # Fase 1: decisión sobre preflight de Tailwind
 
-**Fecha:** 2026-11-18 (sincronizado con `dev-ai`, head ≥ `c57f769`)  
+**Fecha:** 2026-11-18 (sincronizado con `dev-ai`, head ≥ `9a8593d`, incl. [#33](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/33) `a-logo-motto`)  
 **Contexto:** `docs/ds-port-plan.md`. Legacy actual: **solo Dawn** (`base.css` en `@layer legacy` vía `layout/theme.liquid`). **Bulma** (`b-style.css`) y **Alpine** (cart / directives en layout) **ya retirados** en `dev-ai` tras [PR #38](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/38). `assets/theme.css` sigue con capas `theme` + `utilities`, **sin** `@import "tailwindcss/preflight.css"`.
 
 **Confirmación en `dev-ai`:** `styles/global.css` **no importa preflight** (comentario explícito en el fichero). Este PR #36 **no lo activa**; el preflight **sigue diferido** hasta decisión de producto (Alejandro).
