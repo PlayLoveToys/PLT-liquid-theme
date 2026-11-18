@@ -1,6 +1,6 @@
 # Fase 1: mapeo `settings_schema` → tokens `--plt-*`
 
-**Rama:** `cursor/fase1-preflight-tokens-a5e3`  
+**Rama:** `cursor/fase1-preflight-tokens-a5e3` → base **`dev-ai`**  
 **Implementación:** `snippets/_plt-ds-token-vars.liquid` (invocado desde `layout/theme.liquid`).  
 **Ids de `config/settings_schema.json`:** sin cambios (restricción dura del port).
 
