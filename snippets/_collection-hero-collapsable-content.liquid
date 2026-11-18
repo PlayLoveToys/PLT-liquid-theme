@@ -40,86 +40,60 @@
 %}
 
 <section class="py-8">
-  <div
-    x-data="
-      {
-        has_image: {{ has_image }},
-        has_content: {{ has_content }},
-        showContent: false,
-        fold_svg: '{{ icon_fold_svg }}',
-        unfold_svg: '{{ icon_unfold_svg }}',
-      }
-    "
-  >
-    <div class="page-width">
-      <div class="d-card p-6">
-        <div class="grid grid-cols-1 items-center gap-6 md:grid-cols-12">
-          {% if has_image %}
-            <div class="content-center md:col-span-4">
-              <figure class="w-full">
-                {% assign alt_text = collection.title | append: ' - ' | append: 'hero image' %}
-                {{
-                  image
-                  | image_url: width: 1200
-                  | image_tag:
-                    widths: '300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200',
-                    preload: true,
-                    loading: 'eager',
-                    alt: alt_text,
-                    class: 'h-auto w-full'
-                }}
-              </figure>
-            </div>
-          {% endif %}
-          <div class="flex flex-col justify-evenly gap-4 px-0 md:col-span-8 md:px-6">
-            <div class="md:mx-4">
-              <h1 class="h1 max-md:text-xl md:text-4xl">
-                {{ localized_h1 }}
-              </h1>
+  <div class="page-width">
+    <div class="d-card p-6">
+      <div class="grid grid-cols-1 items-center gap-6 md:grid-cols-12">
+        {% if has_image %}
+          <div class="content-center md:col-span-4">
+            <figure class="w-full">
+              {% assign alt_text = collection.title | append: ' - ' | append: 'hero image' %}
+              {{
+                image
+                | image_url: width: 1200
+                | image_tag:
+                  widths: '300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200',
+                  preload: true,
+                  loading: 'eager',
+                  alt: alt_text,
+                  class: 'h-auto w-full'
+              }}
+            </figure>
+          </div>
+        {% endif %}
+        <div class="flex flex-col justify-evenly gap-4 px-0 md:col-span-8 md:px-6">
+          <div class="md:mx-4">
+            <h1 class="h1 max-md:text-xl md:text-4xl">
+              {{ localized_h1 }}
+            </h1>
 
-              {% if localized_subtitle != blank %}
-                <h2 class="mt-6 text-lg md:text-2xl">
-                  {{ localized_subtitle }}
-                </h2>
-              {% endif %}
-            </div>
-
-            {% if has_content %}
-              <div id="content-{{- section_id -}}">
-                <button
-                  class="d-btn d-btn-outline d-btn-link"
-                  @click.prevent="showContent = !showContent"
-                  :aria-expanded="showContent.toString()"
-                >
-                  <span class="inline-flex text-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="20" height="20">
-                      <path x-bind:d="showContent ? fold_svg : unfold_svg"/>
-                    </svg>
-                  </span>
-                  <span>{{ 'sections.collections.learn_more' | t }}</span>
-                </button>
-              </div>
+            {% if localized_subtitle != blank %}
+              <h2 class="mt-6 text-lg md:text-2xl">
+                {{ localized_subtitle }}
+              </h2>
             {% endif %}
           </div>
         </div>
       </div>
-      {% if has_content %}
-        <div x-show="showContent" x-transition>
-          <div class="alert relative mt-4 bg-primary/10 p-6">
-            <button
-              type="button"
-              class="d-btn d-btn-circle d-btn-ghost btn-sm absolute right-2 top-2"
-              @click="showContent = false"
-              aria-label="Close"
-            >
-              ×
-            </button>
-            <div class="rte my-6 text-base">
-              {{ localized_intro }}
-            </div>
-          </div>
-        </div>
-      {% endif %}
     </div>
+    {% if has_content %}
+      {% capture hero_summary %}
+        <span class="d-btn d-btn-outline d-btn-link">
+          {% render '_plt-collapse-icons', fold_path: icon_fold_svg, unfold_path: icon_unfold_svg, icon_class: 'inline-flex text-primary' %}
+          <span>{{ 'sections.collections.learn_more' | t }}</span>
+        </span>
+      {% endcapture %}
+      {% capture hero_body %}
+        <div class="rte my-6">
+          {{ localized_intro }}
+        </div>
+      {% endcapture %}
+      {% assign hero_panel_id = 'content-' | append: section_id %}
+      {% render '_plt-details-disclosure',
+        panel_id: hero_panel_id,
+        summary_markup: hero_summary,
+        content_markup: hero_body,
+        summary_class: 'plt-details-disclosure__summary mt-4'
+      %}
+    {% endif %}
   </div>
 </section>
