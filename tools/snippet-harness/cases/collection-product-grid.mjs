@@ -13,6 +13,7 @@ const media = (alt = 'Product photo') => ({
 const baseProduct = {
   id: 1001,
   title: 'Cheesecake vibrator',
+  type: 'Vibrators',
   url: '/products/cheesecake',
   vendor: 'Play Love Toys',
   available: true,
@@ -34,10 +35,19 @@ const baseProduct = {
   metafields: {reviews: {rating: {value: null}, rating_count: 0}},
 };
 
+const collectionFlags = {
+  show_vendor: true,
+  show_type: true,
+  show_free_shipping_badge: true,
+  show_savings_percentage: true,
+  media_aspect_ratio: 'square',
+  pad_color: 'ffffff',
+};
+
 export default async ({engine}) => {
   engine.registerFilter('money', money);
   engine.registerFilter('money_with_currency', (cents) => `${money(cents)} USD`);
-  engine.registerFilter('image_url', (source) => {
+  engine.registerFilter('image_url', (source, ...args) => {
     if (!source) return '';
     if (typeof source === 'string') return source;
     return source.src || source.url || '';
@@ -49,7 +59,6 @@ export default async ({engine}) => {
     const style = opts.style ?? '';
     return `<img src="${url}" alt="${alt}" loading="${loading}"${style ? ` style="${style}"` : ''}>`;
   });
-
   const data = {
     settings: {currency_code_enabled: false, card_style: 'card'},
     section: {id: 'harness-collection-grid'},
@@ -59,6 +68,7 @@ export default async ({engine}) => {
         ...baseProduct,
         id: 1002,
         title: 'On-sale toy',
+        type: 'Accessories',
         compare_at_price: 2999,
         price: 1999,
         price_min: 1999,
@@ -68,6 +78,20 @@ export default async ({engine}) => {
           compare_at_price: 2999,
         },
       },
+      {
+        ...baseProduct,
+        id: 1003,
+        title: 'Premium bundle',
+        type: 'Bundles',
+        price: 7900,
+        price_min: 7900,
+        compare_at_price: null,
+        selected_or_first_available_variant: {
+          ...baseProduct.selected_or_first_available_variant,
+          price: 7900,
+          compare_at_price: null,
+        },
+      },
     ],
   };
 
@@ -75,22 +99,30 @@ export default async ({engine}) => {
   for (const product of data.products) {
     cards.push(
       await engine.parseAndRender(
-        `<li class="grid__item">{% render 'card-product', card_product: product, show_vendor: true %}</li>`,
-        {product, settings: data.settings, section: data.section},
+        `{% render 'card-product',
+          card_product: product,
+          show_vendor: true,
+          show_type: true,
+          show_free_shipping_badge: true,
+          show_savings_percentage: true,
+          media_aspect_ratio: 'square',
+          pad_color: 'ffffff'
+        %}`,
+        {product, settings: data.settings, section: data.section, ...collectionFlags},
       ),
     );
   }
 
   return `
     <section class="case">
-      <h3>Collection product grid (4-col desktop pattern)</h3>
-      <div class="collection page-width" style="max-width:72rem;margin:0 auto">
+      <h3>Collection product grid (2/4 + 5 widescreen; free ship, type, % OFF)</h3>
+      <div class="collection" style="max-width:72rem;margin:0 auto">
         <ul
-          class="grid product-grid contains-card contains-card--product grid--2-col-tablet-down grid--4-col-desktop"
+          class="grid product-grid contains-card contains-card--product grid--2-col-tablet-down grid--4-col-desktop grid--5-col-widescreen"
           role="list"
           style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr))"
         >
-          ${cards.join('\n')}
+          ${cards.map((html) => `<li class="grid__item">${html}</li>`).join('\n')}
         </ul>
       </div>
     </section>`;
