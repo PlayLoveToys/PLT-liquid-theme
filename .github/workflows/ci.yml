@@ -4,13 +4,32 @@ on:
   push:
     branches:
       - main
+      - stage
+      - dev-ai
   pull_request:
+    branches:
+      - main
+      - stage
+      - dev-ai
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  branch-flow:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: check:branch-flow
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: node scripts/check-branch-flow.mjs --base "$BASE_REF" --head "$HEAD_REF"
+
   gates:
     runs-on: ubuntu-latest
     steps:

@@ -11,6 +11,7 @@
     "test:templates": "node scripts/validate-template-json.mjs",
     "test:templates:ci": "node scripts/test-templates-ci.mjs",
     "check:theme-check": "node scripts/check-theme-check-baseline.mjs",
+    "check:branch-flow": "node scripts/check-branch-flow.mjs",
     "check:no-legacy": "node scripts/check-no-legacy.mjs",
     "test:harness": "node scripts/run-harness-cases.mjs",
     "harness:snippet": "node tools/snippet-harness/render.mjs"

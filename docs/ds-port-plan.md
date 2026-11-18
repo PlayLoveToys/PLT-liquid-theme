@@ -7,7 +7,11 @@ specs Playwright), no de sections: solo comparten 18 de 65 sections y 9 de 89 sn
 
 > Este repo es **público**: todo lo que se commitee aquí se publica.
 
-**Última actualización:** 2026-11-15, sobre `main` @ `c9b6948`. Medido ese día (Fase 4 corte 1):
+### Git: `dev-ai` → `stage` → `main`
+
+Ramas de trabajo y PRs de port salen de **`dev-ai`** y apuntan a **`dev-ai`** (no abrir features directo a `main`). Promoción: **`dev-ai` → `stage`** (QA) → **`main`** (producción). Aprobaciones: Chief of Staff puede mergear en `dev-ai`; **`stage` y `main` requieren Alejandro**. Detalle en [`CONTRIBUTING.md`](../CONTRIBUTING.md) y [`AGENTS.md`](../AGENTS.md).
+
+**Última actualización:** 2026-11-15, línea histórica medida en `main` @ `c9b6948` (producción); integración activa en `dev-ai`. Medido ese día (Fase 4 corte 1):
 `theme check` 6 errores / 362 avisos; `check:plt`, `check:theme-css` y `test:templates` (40/42) en baseline; 7 snippets
 `plt-*` vendorizados.
 
@@ -26,7 +30,7 @@ specs Playwright), no de sections: solo comparten 18 de 65 sections y 9 de 89 sn
 | Momento | Errores | Avisos | Nota |
 |---|---:|---:|---|
 | **Histórico pre-port** (Fase 0, 2026-11-12) | 7 | 354 | Snapshot del theme antes de tooling DS / cortes 2* |
-| **Baseline vigente en `main`** (2026-11-13) | **6** | **362** | Techo para todo PR: `MissingAsset` (`facets.js`) resuelto en higiene 2c; +8 avisos por snippets vendorizados tras `sync:plt` |
+| **Baseline vigente** (CI en `dev-ai` / `stage` / `main`, 2026-11-13+) | **6** | **362** | Techo para todo PR hacia `dev-ai` (y promociones): `MissingAsset` (`facets.js`) resuelto en higiene 2c; +8 avisos por snippets vendorizados tras `sync:plt` |
 
 Los recuentos **históricos 7 / 354** no se mezclan con el baseline operativo **6 / 362**. No se arreglan
 como parte del port salvo que toquen el archivo migrado; sirven para detectar regresiones.
@@ -438,7 +442,7 @@ Una fila por ítem; sin duplicados.
 | **En curso** | Fase 4 `templates/collection.json` (corte 1) | Grid `main-collection` + tokens periféricos |
 | **Pendiente** | Fase 4 resto de templates | Checklist § Fase 4; `search.json` siguiente |
 | **Pendiente** | Fase 5 retirar Bulma → luego Alpine | Ver § Fase 5 + prioridades Alpine |
-| **Pendiente** | Fase 6 gates formales en CI | No hay GitHub Actions; ver § Fase 6 |
+| **Hecho** | Fase 6 gates en CI (`.github/workflows/ci.yml` en `dev-ai`) | PRs a `dev-ai` / push a `dev-ai`, `stage`, `main`; ver § Fase 6 |
 | **Bloqueado** | Carruseles Alpine (`b-carousel`, `collection-list`, `c-carousel-buttons`) | No hay componente **Carousel** en DS — [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
 | **Bloqueado** | FAQ colección (`_collection-seo-faqs`) → `d-collapse` / Faq DS | No hay componente **Faq** en DS — [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
 | **Bloqueado** | Inputs/alerts / botones Dawn globales masivos | Sin snippet acotado; por template Fase 4 |
@@ -460,7 +464,7 @@ Actualizado tras ejecutar P0. Gates locales en cada corte: `check:plt`, `check:t
 | **P1** | Harness `cart-drawer` (opcional; offline QA del adapter) | Mejora tooling, no bloquea |
 | **P2** | Fase 4 por template (orden § Fase 4): colección/búsqueda → home → contenido → blog → producto | Un PR por template |
 | **P3** | Fase 5: retirar Bulma (`b-*` → 0) → luego Alpine **9** archivos + residual `c-carousel-buttons` | Ver [inventario](./ds-port-alpine-inventory.md) |
-| **P4** | Fase 6: workflow CI + diff visual tras baseline | Sin Actions hoy |
+| **P4** | Fase 6: diff visual en CI tras baseline | Workflow gates en Actions; visual diff pendiente |
 | **—** | **Bloqueado DS:** Carousel + Faq ([DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4)) | Home carruseles + `_collection-seo-faqs` |
 | **—** | Adaptador `shopify` DS, preflight Tailwind, mapeo `settings_schema` → tokens | Fase 1 residual / Fase 5 |
 | **—** | Limpieza Dawn cart-notification (assets/snippets huérfanos) | Fase 5, tras validar drawer en tienda |
@@ -543,17 +547,15 @@ Carruseles y FAQ siguen **bloqueados** sin Carousel/Faq en DS ([DS#4](https://gi
 
 ### Fase 6: Gates de CI
 
-**Estado (2026-11-13): pendiente.** Este repo **no tiene workflows de GitHub Actions**; cada quien
-abre el PR ejecuta en local:
+**Estado (2026-11-18):** workflow [`ci.yml`](../.github/workflows/ci.yml) en `dev-ai` (y promociones). Se ejecuta en push y PR hacia **`dev-ai`**, **`stage`** y **`main`**. Ver también [`CONTRIBUTING.md`](../CONTRIBUTING.md).
 
-- `npm run check:plt`
-- `npm run check:theme-css`
-- `npm run test:templates` (40/42 baseline)
-- `shopify theme check` (CLI 3.91.0) ≤ **6 errores / 362 avisos**
-- harness `LEGACY_LAYER=import` cuando toque markup DS
-- diff visual / presupuesto CSS cuando existan capturas Fase 0
+- `check:theme-check` (Shopify CLI 3.91.0) ≤ **6 / 362**
+- `check:plt`, `check:theme-css`, `check:tailwind-arbitrary`, `check:no-legacy`
+- `test:templates:ci` (40/42 baseline)
+- `test:harness`
+- `check:branch-flow` en PRs (solo `dev-ai` → `stage`, `stage` → `main`)
 
-Objetivo futuro: automatizar lo anterior en CI tras baseline visual real.
+Diff visual automatizado sigue pendiente; capturas Fase 0 en local.
 
 ## 4. Huecos a implementar primero en el DS
 
