@@ -384,11 +384,6 @@
     <script src="{{ 'cart-api.js' | asset_url }}" defer></script>
     <script src="{{ 'cart-fragment.js' | asset_url }}" defer="defer"></script>
     {% comment %}
-      alpine-bundle.js: runtime para carruseles/heroes/FAQ pendientes (#29, #30).
-      Retirar el asset cuando esos PRs fusionen y la allowlist de check:no-legacy quede vacía.
-    {% endcomment %}
-    <script defer src="{{ 'alpine-bundle.js' | asset_url }}"></script>
-    {% comment %}
       JS-C: single WC + section-nav load sitewide. Adapters that already render
       on collection/search pass script_url: 'none'.
       WC bundle sitewide (same as JS-C). Cart drawer adapter passes script_url: 'none'.

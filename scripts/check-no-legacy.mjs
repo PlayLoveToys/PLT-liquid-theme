@@ -2,8 +2,7 @@
 /**
  * Anti-regression: retired Alpine cart assets, Alpine.store/$store, and (optionally) Bulma.
  *
- * Bulma rules run only when LEGACY_ENFORCE_BULMA=1 (enable after the Bulma-removal PR lands).
- * Alpine x-directives may remain in an explicit allowlist until carousel/hero PRs (#29, #30) merge.
+ * Bulma markup rules when LEGACY_ENFORCE_BULMA=1 (on in CI after #38).
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,18 +13,10 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const RETIRED_ASSET_FILENAMES = [
   'cart-store.js',
   'alpine-product-card.js',
+  'alpine-bundle.js',
   'b-style.css',
   'b-style.source.css',
 ];
-
-/** Liquid files still allowed to use Alpine directives until follow-up PRs merge. */
-const ALPINE_LIQUID_ALLOWLIST = new Set([
-  'blocks/b-carousel.liquid',
-  'sections/aa-hero-toggle-content.liquid',
-  'sections/collection-list.liquid',
-  'snippets/_collection-hero-collapsable-content.liquid',
-  'snippets/_collection-seo-faqs.liquid',
-]);
 
 const SKIP_DIR_NAMES = new Set([
   'node_modules',
@@ -83,7 +74,6 @@ function rel(p) {
 function isThemeSource(abs) {
   const r = rel(abs);
   if (r.startsWith('docs/')) return false;
-  if (r === 'assets/alpine-bundle.js') return false;
   return true;
 }
 
@@ -154,7 +144,7 @@ function collectViolations() {
       });
     }
 
-    if (ext === '.liquid' && !ALPINE_LIQUID_ALLOWLIST.has(r)) {
+    if (ext === '.liquid') {
       const directiveHits = lineHits(content, ALPINE_DIRECTIVE_PATTERNS);
       for (const hit of directiveHits) {
         violations.push({
@@ -183,8 +173,7 @@ function collectViolations() {
       const r = rel(p);
       return (
         !r.startsWith('docs/') &&
-        !r.startsWith('node_modules/') &&
-        r !== 'assets/alpine-bundle.js'
+        !r.startsWith('node_modules/')
       );
     });
     for (const abs of allFiles) {
@@ -244,8 +233,7 @@ function main() {
       ? 'Bulma markup enforcement on.'
       : 'Bulma markup scan off (assets b-style* always blocked).';
   process.stdout.write(
-    `check:no-legacy: ok — retired cart Alpine assets blocked; ` +
-      `${ALPINE_LIQUID_ALLOWLIST.size} Alpine allowlist file(s); ${bulmaNote}\n`,
+    `check:no-legacy: ok — retired Alpine/Bulma assets blocked; any x-data in Liquid forbidden; ${bulmaNote}\n`,
   );
 }
 
