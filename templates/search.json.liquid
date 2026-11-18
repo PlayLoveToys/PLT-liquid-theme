@@ -10,7 +10,7 @@
           "price": {{ product.price }},
           "compare_at_price": {{ product.compare_at_price }},
           "vendor": {{ product.vendor | json }},
-          "featured_image": {{ product.featured_image | image_url: width: 533 | json }},
+          "featured_image": {% if product.featured_image %}{{ product.featured_image | image_url: width: 533 | json }}{% else %}null{% endif %},
           "images": [
             {% for image in product.images limit: 2 %}
               {{ image | image_url: width: 533 | json }}{% unless forloop.last %},{% endunless %}
