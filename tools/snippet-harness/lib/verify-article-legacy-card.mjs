@@ -97,6 +97,4 @@ export async function verifyArticleLegacyCard(
   }
 }
 
-export function harnessOutPath(root, caseName) {
-  return path.join(root, 'tools', 'snippet-harness', '.out', `${caseName}.html`);
-}
+export {harnessOutPath} from './verify-carousel-slides.mjs';

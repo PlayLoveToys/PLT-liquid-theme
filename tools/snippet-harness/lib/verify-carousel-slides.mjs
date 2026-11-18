@@ -73,5 +73,8 @@ export async function verifyCarouselSlides(htmlPath, {track, slide, viewportWidt
 }
 
 export function harnessOutPath(root, caseName) {
-  return path.join(root, 'tools', 'snippet-harness', '.out', `${caseName}.html`);
+  const legacyLayer =
+    process.env.LEGACY_LAYER === '1' || process.env.LEGACY_LAYER === 'import';
+  const layeredSuffix = legacyLayer ? '.layered' : '';
+  return path.join(root, 'tools', 'snippet-harness', '.out', `${caseName}${layeredSuffix}.html`);
 }

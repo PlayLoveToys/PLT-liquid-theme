@@ -59,15 +59,15 @@ export default async ({engine}) => {
   };
 
   const cardCollection = await engine.parseAndRender(
-    `<div class="plt-a-matrix-card-cell min-w-0">{% render 'c-card-collection', block: block %}</div>`,
+    `<div class="plt-a-matrix-card-cell min-w-0 col-span-12 md:col-span-6 xl:col-span-3">{% render 'c-card-collection', block: block %}</div>`,
     {block: collectionBlock},
   );
   const cardArticle = await engine.parseAndRender(
-    `<div class="plt-a-matrix-card-cell min-w-0">{% render 'c-card-article', block: block %}</div>`,
+    `<div class="plt-a-matrix-card-cell min-w-0 col-span-12 md:col-span-6 xl:col-span-3">{% render 'c-card-article', block: block %}</div>`,
     {block: articleBlock},
   );
 
-  const fullWidthBanner = `<div class="plt-a-matrix-full-width carousel-wrapper relative" id="matrix-full-width-probe">
+  const fullWidthBanner = `<div class="plt-a-matrix-full-width carousel-wrapper relative col-span-12" id="matrix-full-width-probe">
     <p class="p-4 text-center">Full-width matrix block (not a b-card cell)</p>
   </div>`;
 
@@ -90,6 +90,9 @@ export async function verify({root}) {
     await page.goto(pathToFileURL(htmlPath).href, {waitUntil: 'load'});
     const result = await page.evaluate(() => {
       const grid = document.querySelector('#zone-a-matrix-blocks .grid.grid-cols-12');
+      if (getComputedStyle(grid).display !== 'grid') {
+        throw new Error(`a-matrix display is ${getComputedStyle(grid).display}, expected grid`);
+      }
       const cardCells = [...grid.querySelectorAll('.plt-a-matrix-card-cell')];
       const banner = document.getElementById('matrix-full-width-probe');
       return {
