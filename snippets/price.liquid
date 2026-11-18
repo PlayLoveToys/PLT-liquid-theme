@@ -8,6 +8,7 @@
   - show_badges: {Boolean} Renders 'Sale' and 'Sold Out' tags if the product matches the condition (optional)
   - price_class: {String} Adds a price class to the price element (optional)
   - show_compare_at_price: {Boolean} Renders the compare at price if the product matches the condition (optional)
+  - show_savings_percentage: {Boolean} Renders rounded savings % when on sale (optional; collection grid)
 
   Usage:
   {% render 'price', product: product %}
@@ -33,6 +34,14 @@
     assign money_price = price | money_with_currency
     assign money_price_min = price_min | money_with_currency
     assign money_price_max = price_max | money_with_currency
+  endif
+
+  assign savings_percent = 0
+  if show_savings_percentage and compare_at_price > price and available
+    assign saved_amount = compare_at_price | minus: price
+    if saved_amount > 0
+      assign savings_percent = saved_amount | times: 100 | divided_by: compare_at_price | round
+    endif
   endif
 
   if target == product and product.price_varies
@@ -120,6 +129,11 @@
                   {{ compare_at_price | money }}
                 {% endif %}
               </span>
+              {%- if show_savings_percentage and savings_percent > 0 -%}
+                <span class="d-badge d-badge-secondary theme-label-bold price__savings-pill">
+                  {{- 'products.product.savings_percentage_off' | t: percent: savings_percent -}}
+                </span>
+              {%- endif -%}
             {%- endunless -%}
           {% endif -%}
         {%- endif -%}

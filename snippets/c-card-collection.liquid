@@ -1,11 +1,14 @@
-<article class="d-card h-full bg-primary text-primary-content theme-bordered theme-elevated plt-media-card" {{ block.shopify_attributes }}>
-  <header class="px-4 py-3 border-b border-primary-content/10">
-    <h3 class="d-card-title theme-headline-sm capitalize m-0 text-primary-content">
+<article
+  class="d-card flex h-full flex-col overflow-hidden bg-primary text-primary-content shadow-md plt-media-card plt-collection-carousel-card"
+  {{ block.shopify_attributes }}
+>
+  <header class="shrink-0 px-3 py-2 md:px-4 md:py-3">
+    <h3 class="d-card-title theme-headline-sm m-0 capitalize text-primary-content">
       {{ block.settings.collection.title }}
     </h3>
   </header>
   {% if block.settings.collection.featured_image %}
-    <div class="plt-media-card__media aspect-square overflow-hidden">
+    <div class="plt-media-card__media aspect-square shrink-0 overflow-hidden">
       <figure class="m-0 h-full w-full">
         {{
           block.settings.collection.featured_image
@@ -19,17 +22,15 @@
       </figure>
     </div>
   {% endif %}
-  <div class="d-card-body plt-media-card__body p-4">
-    {% if block.settings.show_description %}
-      <div class="theme-body text-sm md:text-base text-primary-content/90">
-        {{ block.settings.collection.description | strip_html | truncatewords: block.settings.truncatewords, '...' }}
-      </div>
-    {% endif %}
-  </div>
-  <footer class="d-card-actions border-t border-primary-content/10 p-4">
+  {% if block.settings.show_description %}
+    <div class="d-card-body flex-grow p-2 pt-2 text-sm leading-snug text-primary-content md:p-4 md:text-base">
+      {{ block.settings.collection.description | strip_html | truncatewords: block.settings.truncatewords, '...' }}
+    </div>
+  {% endif %}
+  <footer class="mt-auto shrink-0 p-2 pb-3 md:px-4 md:pb-4">
     <a
       href="{{ block.settings.cta_url | default: block.settings.collection.url }}"
-      class="d-btn d-btn-link d-btn-block theme-label-bold capitalize text-primary-content"
+      class="block w-full text-center text-base font-medium capitalize text-primary-content no-underline hover:underline md:text-lg"
     >
       {{ block.settings.cta_text }}
     </a>
