@@ -1,0 +1,20 @@
+{% doc %}
+  Par de iconos Material (plegado / desplegado) para toggles sin Alpine.
+
+  @param {string} fold_path - path d del SVG plegado
+  @param {string} unfold_path - path d del SVG desplegado
+  @param {string} [icon_class] - Clases del contenedor b-icon
+{% enddoc %}
+
+{% liquid
+  assign icon_class = icon_class | default: 'b-icon b-has-text-info'
+%}
+
+<span class="{{ icon_class }}" aria-hidden="true">
+  <svg class="plt-details-disclosure__icon--closed" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+    <path d="{{ unfold_path }}"/>
+  </svg>
+  <svg class="plt-details-disclosure__icon--open" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+    <path d="{{ fold_path }}"/>
+  </svg>
+</span>

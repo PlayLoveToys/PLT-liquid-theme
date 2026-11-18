@@ -60,7 +60,7 @@
 
   <div class="glossary-related-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
     {% if block.settings.heading != blank %}
-      <h2 class="glossary-related__heading-{{ ai_gen_id }} b-title">
+      <h2 class="glossary-related__heading-{{ ai_gen_id }}">
         {{ block.settings.heading }}
       </h2>
     {% endif %}
@@ -69,7 +69,7 @@
       {% for link in related_links %}
         {% if link.url != blank and link.label != blank %}
           <li>
-            <a href="{{ link.url }}" class="glossary-related__link-{{ ai_gen_id }} b-link">
+            <a href="{{ link.url }}" class="glossary-related__link-{{ ai_gen_id }}">
               {{ link.label }}
             </a>
           </li>

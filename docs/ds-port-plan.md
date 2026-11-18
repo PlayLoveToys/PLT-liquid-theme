@@ -7,7 +7,7 @@ specs Playwright), no de sections: solo comparten 18 de 65 sections y 9 de 89 sn
 
 > Este repo es **público**: todo lo que se commitee aquí se publica.
 
-**Última actualización:** 2026-11-14, sobre `main` @ `8a2f70a`. Medido ese día:
+**Última actualización:** 2026-11-15, sobre `main` @ `c9b6948`. Medido ese día (Fase 4 corte 1):
 `theme check` 6 errores / 362 avisos; `check:plt`, `check:theme-css` y `test:templates` (40/42) en baseline; 7 snippets
 `plt-*` vendorizados.
 
@@ -435,7 +435,8 @@ Una fila por ítem; sin duplicados.
 | **Hecho** | Fase 0 capturas reales 390/768/1280 | Local `docs/visual-baseline/fase-0/` (9 rutas; gitignored); pre-port `f5446a9` vs `main` |
 | **Hecho** | Smoke tienda (filtros/qty/drawer/ATC) + layout checklist | 2026-11-14 en `aadigital-dev-00`; ver § Fase 0 |
 | **Pendiente** | Fase 3 shell header (`fase-3-header`; predictive search completo) | Siguiente; cart/footer/newsletter parcial ya en `main` |
-| **Pendiente** | Fase 4 sections por template | Orden § Fase 4; Alpine plegado según inventario |
+| **En curso** | Fase 4 `templates/collection.json` (corte 1) | Grid `main-collection` + tokens periféricos |
+| **Pendiente** | Fase 4 resto de templates | Checklist § Fase 4; `search.json` siguiente |
 | **Pendiente** | Fase 5 retirar Bulma → luego Alpine | Ver § Fase 5 + prioridades Alpine |
 | **Pendiente** | Fase 6 gates formales en CI | No hay GitHub Actions; ver § Fase 6 |
 | **Bloqueado** | Carruseles Alpine (`b-carousel`, `collection-list`, `c-carousel-buttons`) | No hay componente **Carousel** en DS — [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
@@ -501,6 +502,29 @@ Orden de migración Liquid (+ Alpine residual del inventario en el mismo orden d
    `featured-product` (JS-Q1 en `main`). `buy-buttons` Alpine residual retirado ([PR #25](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/25)).
 
 Inventario detallado por archivo: [`docs/ds-port-alpine-inventory.md`](./ds-port-alpine-inventory.md) (en `main` desde [PR #18](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/18)).
+
+#### Checklist Fase 4 por template (un PR por template)
+
+Orden de plantillas (mismo que arriba). Marcar **hecho** cuando las secciones migrables del JSON estén en DS; **excl.** = paralelo / bloqueo DS.
+
+| Orden | Template JSON | Secciones (tipo) | Estado | Notas |
+|---:|---|---|---|---|
+| 1 | `templates/collection.json` | `main-collection-banner` | hecho | tokens `theme-headline-sm` |
+| 1 | | `custom_section` (breadcrumb) | hecho | block `breadcrumb` ya 2c |
+| 1 | | `aa-hero-toggle-content` | excl. | collapse Alpine; no tocar en Fase 4 paralela |
+| 1 | | `main-collection` | hecho | grid Dawn + `card-product`; harness `collection-product-grid` |
+| 1 | | `custom_section` + `blog_post_display` | hecho | sin Bulma; markup AI-gen |
+| 1 | | `collection-list` | excl. | carrusel `b-carousel` → [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) |
+| 1 | | `featured-blog` | hecho | títulos/enlaces `theme-headline-sm` / `d-btn*` |
+| 1 | | `after-page-content` | hecho | sin `b-*`; metafields Sanity/CMS |
+| 1 | | `after-page-richtext-content` | hecho | `theme-body` en contenedor RTE |
+| 1 | | `_blocks` / `ai_gen_block_*` | hecho | sin Bulma |
+| 2 | `templates/search.json` | `custom_section` + `main-search` | pendiente | facets WC listos; cabecera búsqueda Dawn |
+| 2 | `templates/collection.plt.json` / `lingerie` / `sanity-*` | variantes colección | pendiente | `main-collection-plt` / `-sanity` aún Bulma |
+| 3 | `templates/index.json` | `slideshow`, `image-banner`, `multicolumn`, carruseles | excl. / pendiente | carruseles bloqueados DS#4 |
+| 4 | páginas FAQ / CMS | `collapsible-content`, `_collection-seo-faqs` | excl. / pendiente | Faq DS#4 |
+| 5 | `templates/blog*.json`, `article*.json` | grids blog + EditorialCard | pendiente | `article-card` parcial 2e |
+| 6 | `templates/product*.json` | `main-product`, bundles | pendiente | qty WC en `main`; PDP al final |
 
 Blocks `b-card-*` → EditorialCard / CollectionCard / ProductCard.
 **Se quedan en el theme**: portable-text de Sanity, JSON-LD/SEO, hreflang, metaobjects,

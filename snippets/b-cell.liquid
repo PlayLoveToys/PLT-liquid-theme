@@ -1,3 +1,14 @@
-<div class="b-cell {{ col_span }}">
+{%- liquid
+  assign span_class = col_span | default: ''
+  case span_class
+    when 'b-is-col-span-2'
+      assign span_class = 'col-span-2'
+    when 'b-is-col-span-3'
+      assign span_class = 'col-span-3'
+    when 'b-is-col-span-4'
+      assign span_class = 'col-span-4'
+  endcase
+-%}
+<div class="min-w-0 {{ span_class }}">
   {% render block %}
 </div>

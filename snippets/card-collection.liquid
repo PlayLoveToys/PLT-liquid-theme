@@ -10,47 +10,48 @@
   - placeholder_image: {String} Placeholder image when collection is empty (optional)
 {% endcomment %}
 
-<div class="b-card b-has-background-link" style="height: 100%;">
-  <div class="b-card-header b-has-background-link-dark">
-    <div class="b-card-header-title">
+<div class="card-wrapper collection-card-wrapper h-full">
+  <article class="d-card h-full bg-primary text-primary-content theme-bordered theme-elevated plt-media-card">
+  <div class="px-4 py-3 bg-primary/80 border-b border-primary-content/10">
       {%- if card_collection.title != blank -%}
-        <a href="{{ card_collection.url }}" class="b-is-ghost">
-          <span class="b-title b-is-5 b-has-text-white b-is-capitalized">{{- card_collection.title | escape -}}</span>
-        </a>
+        <h3 class="d-card-title theme-headline-sm capitalize m-0">
+          <a href="{{ card_collection.url }}" class="text-primary-content no-underline hover:underline">
+            {{- card_collection.title | escape -}}
+          </a>
+        </h3>
       {%- else -%}
-        <span class="b-title b-is-5 b-has-text-white b-is-capitalized">{{ 'onboarding.collection_title' | t }}</span>
+        <h3 class="d-card-title theme-headline-sm capitalize m-0 text-primary-content">
+          {{ 'onboarding.collection_title' | t }}
+        </h3>
       {%- endif -%}
     </div>
-  </div>
-  {%- if card_collection.featured_image -%}
-    <div class="b-card-image b-is-1by1">
-      <a href="{{ card_collection.url }}">
-        <figure class="b-image">
-          {{
-            card_collection.featured_image
-            | image_url: width: 350
-            | image_tag:
-              widths: '50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600',
-              loading: 'lazy',
-              preload: false
-          }}
-        </figure>
+    {%- if card_collection.featured_image -%}
+      <a class="plt-media-card__media block aspect-square overflow-hidden" href="{{ card_collection.url }}">
+        {{
+          card_collection.featured_image
+          | image_url: width: 350
+          | image_tag:
+            widths: '50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600',
+            loading: 'lazy',
+            preload: false,
+            class: 'h-full w-full object-cover'
+        }}
       </a>
-    </div>
-  {%- endif -%}
-  <div class="b-card-content">
-    <div class="b-content b-has-text-light">
+    {%- endif -%}
+    <div class="d-card-body plt-media-card__body">
       {%- if card_collection.description != blank -%}
-        {{- card_collection.description | strip_html | truncatewords: 18 -}}
+        <p class="theme-body text-primary-content/90">
+          {{- card_collection.description | strip_html | truncatewords: 18 -}}
+        </p>
       {%- endif -%}
     </div>
-  </div>
-  <footer class="b-card-footer">
-    <a
-      href="{{ card_collection.url }}"
-      class="b-card-footer-item b-is-button b-is-link b-is-size-5 b-is-capitalized b-has-text-link-dark"
-    >
-      Visit Collection
-    </a>
-  </footer>
+    <footer class="d-card-actions border-t border-primary-content/10 p-4">
+      <a
+        href="{{ card_collection.url }}"
+        class="d-btn d-btn-link d-btn-block theme-label-bold capitalize text-primary-content"
+      >
+        Visit Collection
+      </a>
+    </footer>
+  </article>
 </div>

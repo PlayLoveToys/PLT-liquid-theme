@@ -1,0 +1,61 @@
+{% comment %}
+  PLT Design System Carousel shell (contracts/components.md § Carousel).
+  Scroll, autoplay, and swipe are wired by assets/plt-carousel.js via data-plt-carousel on this root.
+
+  @param {string} [heading]
+  @param {string} [prev_label] — default Previous (aria + visible when icon unset)
+  @param {string} [next_label] — default Next
+  @param {string} [prev_icon] — optional pre-sanitized HTML for prev control
+  @param {string} [next_icon] — optional pre-sanitized HTML for next control
+  @param {boolean} [nav_overlay] — absolute side nav (Bulma carousel parity on mobile)
+  @param {string} [track_class] — extra classes on the track (e.g. b-carousel)
+  @param {number} [interval_ms] — autoplay interval; 0 disables
+{% endcomment %}
+{%- liquid
+  assign prev_l = prev_label | default: 'Previous'
+  assign next_l = next_label | default: 'Next'
+  assign interval = interval_ms | default: 0
+  assign track_extra = track_class | default: ''
+-%}
+{%- if nav_overlay and prev_icon == blank -%}
+  {%- capture prev_icon -%}
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M13.971 4.285A2 2 0 0 1 17 6v12a2 2 0 0 1-3.029 1.715l-9.997-5.998a2 2 0 0 1-.003-3.432z"/><path d="M21 20V4"/></svg>
+  {%- endcapture -%}
+{%- endif -%}
+{%- if nav_overlay and next_icon == blank -%}
+  {%- capture next_icon -%}
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M10.029 4.285A2 2 0 0 0 7 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z"/><path d="M3 4v16"/></svg>
+  {%- endcapture -%}
+{%- endif -%}
+<section
+  class="plt-carousel{% if nav_overlay %} plt-carousel--overlay-nav{% endif %}"
+  data-plt-carousel
+  {% if interval > 0 %}data-plt-carousel-interval="{{ interval }}"{% endif %}
+>
+  {%- if heading != blank -%}
+    <h2 class="theme-headline-lg plt-carousel__heading">{{ heading | escape }}</h2>
+  {%- endif -%}
+  <div class="plt-carousel__viewport">
+    <div class="plt-carousel__track{% if track_extra != blank %} {{ track_extra | escape }}{% endif %}" data-plt-carousel-track>
+      {{ slides }}
+    </div>
+  </div>
+  <div class="plt-carousel__nav" data-plt-carousel-nav>
+    <button
+      type="button"
+      class="d-btn d-btn-square d-btn-outline theme-bordered plt-carousel__btn plt-carousel__btn--prev"
+      data-plt-carousel-prev
+      aria-label="{{ prev_l | escape }}"
+    >
+      {%- if prev_icon != blank -%}{{ prev_icon }}{%- else -%}{{ prev_l | escape }}{%- endif -%}
+    </button>
+    <button
+      type="button"
+      class="d-btn d-btn-square d-btn-outline theme-bordered plt-carousel__btn plt-carousel__btn--next"
+      data-plt-carousel-next
+      aria-label="{{ next_l | escape }}"
+    >
+      {%- if next_icon != blank -%}{{ next_icon }}{%- else -%}{{ next_l | escape }}{%- endif -%}
+    </button>
+  </div>
+</section>

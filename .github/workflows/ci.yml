@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: shopify theme check (baseline)
+        run: npm run check:theme-check
+
+      - name: check:plt
+        run: npm run check:plt
+
+      - name: check:theme-css
+        run: npm run check:theme-css
+
+      - name: check:tailwind-arbitrary
+        run: npm run check:tailwind-arbitrary
+
+      - name: check:no-legacy
+        env:
+          LEGACY_ENFORCE_BULMA: '1'
+        run: npm run check:no-legacy
+
+      - name: test:templates (allowlist baseline)
+        run: npm run test:templates:ci
+
+      - name: snippet harness
+        run: npm run test:harness
