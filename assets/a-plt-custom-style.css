@@ -78,6 +78,45 @@
     line-height: calc(1 + 0.5 / var(--font-body-scale));
 }
 
+/* Bulma b-has-background-info-light (carousel article cards) */
+.plt-legacy-bulma-info-light-card {
+  background-color: hsl(190deg 100% 95%);
+  color: hsl(190deg 100% 20%);
+  font-family: var(--font-body-family);
+}
+
+/* Bulma --b-link (hsl 346deg 89% 61%): legacy b-has-background-link on collection carousel cards */
+.plt-legacy-bulma-link-card {
+  background-color: hsl(346deg 89% 61%);
+  color: #fff;
+  font-family: var(--font-body-family);
+}
+
+.plt-legacy-bulma-link-card .plt-collection-carousel-card__title,
+.plt-legacy-bulma-link-card .plt-collection-carousel-card__body,
+.plt-legacy-bulma-link-card .plt-collection-carousel-card__cta {
+  color: #fff;
+  font-family: inherit;
+}
+
+/* #38 carousel nav: restore borderless chrome (was b-carousel-nav; not PR #30 ds-carousel) */
+button.carousel-nav {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  cursor: pointer;
+  appearance: none;
+  line-height: 0;
+}
+
+button.carousel-nav:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
 
 
   .d-select:focus,

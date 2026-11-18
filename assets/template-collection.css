@@ -110,6 +110,27 @@
   left: 0.5rem;
   z-index: 1;
   pointer-events: none;
+  border: 0;
+  background-color: hsl(346deg 89% 61%);
+  color: #fff;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  padding: 0.2rem 0.45rem;
+  gap: 0.25rem;
+}
+
+@media screen and (min-width: 990px) {
+  .plt-product-card__collection-free-badge {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.55rem;
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  .plt-product-card__collection-free-badge {
+    font-size: 1rem;
+    padding: 0.3rem 0.65rem;
+  }
 }
 
 /* main-collection loads Dawn component-price.css; restore DS card price + visibility on sale/sold-out */
