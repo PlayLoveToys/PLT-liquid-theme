@@ -48,7 +48,7 @@ const ASSIGN_STRING =
 const JSON_STRING = /"(?:[^"\\]|\\.)*"/g;
 
 function escapeForSelector(className) {
-  return className.replace(/([\\:\[\].#%])/g, '\\$1');
+  return className.replace(/([\\:\[\].#%&()])/g, '\\$1');
 }
 
 /**
@@ -194,6 +194,8 @@ function runSelfTest() {
     '.hover\\:bg-\\[red\\]:hover{background:red}',
     '.md\\:px-\\[2rem\\]{padding-inline:2rem}',
     '.\\[\\&_svg\\]\\:size-full svg{width:100%}',
+    '.bg-\\[hsl\\(346deg_89\\%_95\\%\\)\\]{background:#fee7ec}',
+    '.hover\\:bg-\\[hsl\\(346deg_89\\%_90\\%\\)\\]:hover{background:#fbd5de}',
   ].join('');
 
   const cases = [
@@ -203,6 +205,8 @@ function runSelfTest() {
   { className: 'hover:bg-[red]', css: sampleCss, expect: true },
   { className: 'md:px-[2rem]', css: sampleCss, expect: true },
   { className: '[&_svg]:size-full', css: sampleCss, expect: true },
+  { className: 'bg-[hsl(346deg_89%_95%)]', css: sampleCss, expect: true },
+  { className: 'hover:bg-[hsl(346deg_89%_90%)]', css: sampleCss, expect: true },
   { className: 'min-w-[99vw]', css: sampleCss, expect: false },
   { className: 'bg-[missing]', css: sampleCss, expect: false },
 ];
