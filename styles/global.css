@@ -31,7 +31,7 @@
  * collection/PDP/footer grids, while compat sheets that reset flex also broke
  * slider nowrap. See docs/dawn-tailwind-class-collisions.md.
  */
-@source not inline("grid");
+@source not inline("{sm:,md:,lg:,xl:,2xl:,}grid");
 
 @layer utilities {
   /* CSS grid only when Tailwind track utilities are present (not Dawn grid--*). */
@@ -39,8 +39,13 @@
     [class*='grid-cols'],
     [class*='col-span'],
     [class*='row-span'],
+    [class*='grid-rows'],
+    [class*='grid-flow'],
     [class*='auto-rows'],
-    [class*='auto-cols']
+    [class*='auto-cols'],
+    [class*='place-items'],
+    [class*='place-content'],
+    [class*='justify-items']
   ) {
     display: grid;
   }

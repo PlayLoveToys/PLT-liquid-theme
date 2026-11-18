@@ -1,47 +1,88 @@
 # Colisiones Dawn (`@layer legacy`) vs utilidades Tailwind (`@layer utilities`)
 
-**Fecha:** 2026-11-18  
+**Fecha:** 2026-11-18 (actualizado post-#49)  
 **Contexto:** `layout/theme.liquid` declara `@layer legacy, theme, base, components, utilities;`, importa `theme.css` (sin capa) y `base.css` dentro de `layer(legacy)`. Las utilidades de Tailwind viven en `@layer utilities` y **ganan** a `legacy` a igualdad de especificidad.
 
 ## Solución adoptada (opción b + puente mínimo)
 
-1. **`@source not inline("grid")`** en `styles/global.css` — deja de generarse la utilidad global `.grid { display: grid }`.
-2. **Puente en `@layer utilities`** — `.grid` con clases Tailwind de pista (`grid-cols-*`, `col-span-*`, …) recupera `display: grid` sin afectar marcado Dawn (`grid--*`, `.grid__item`).
-3. **`flex-wrap: nowrap`** en `@layer utilities` para `.grid.slider*` — los sliders Dawn usan `flex-wrap: inherit` en `component-slider.css`; sin esto heredan `wrap` de `.grid` y el carril horizontal se rompe.
-4. **Retirado** `assets/plt-dawn-grid-compat.css` (parche Alpine Migrator #48).
-5. **a-matrix:** `col-span-12 md:col-span-6 xl:col-span-3` en bloques `b-card-*` (sustituye reglas del compat retirado).
+1. **`@source not inline("{sm:,md:,lg:,xl:,2xl:,}grid")`** en `styles/global.css` — no se generan utilidades `.grid` / `md:grid` / … (`display: grid`).
+2. **Puente en `@layer utilities`** — `.grid` con utilidades de pista Tailwind recupera `display: grid` (ver lista abajo).
+3. **`flex-wrap: nowrap`** en `@layer utilities` para `.grid.slider*`.
+4. **Retirado** `assets/plt-dawn-grid-compat.css` (aunque #48 lo reintrodujera en `dev-ai`; merge #50 lo mantiene fuera).
+5. **a-matrix:** `col-span-12 md:col-span-6 xl:col-span-3` en bloques `b-card-*`.
 
-**Por qué no prefijo ni opción (c):** prefijo Tailwind obligaría a tocar markup Dawn masivo y vendors DS; sacar solo reglas `.grid` de `base.css` duplica Dawn y aumenta riesgo en merges upstream. Excluir una utilidad + puente acotado es la menor superficie.
+**Variantes responsivas `md:grid`:** excluidas del build. No hay usos en markup propio sin `grid-cols-*`; el puente usa el atributo `class` completo (`md:grid-cols-12` coincide con `[class*='grid-cols']`).
 
-## Colisiones auditadas (`base.css` vs `theme.css`)
+### Pistas cubiertas por el puente (`display: grid`)
 
-| Clase / utilidad | Dawn (`base.css`) | Tailwind (`theme.css`) | Impacto en storefront | Acción en este PR |
-|------------------|-------------------|------------------------|------------------------|-------------------|
-| `.grid` | `display: flex` + `flex-wrap: wrap` | ~~`display: grid`~~ (excluida) | Rompía colecciones, PDP 2 col, footer, sliders | Excluir + puente + nowrap sliders |
-| `.hidden` | `display: none` | `display: none` | Equivalente funcional | Documentar |
-| `.isolate` | (Dawn: aislamiento de stacking) | `isolation: isolate` | Bajo en grillas; revisar z-index si aparece bug | Documentar |
-| `.overflow-hidden` | overflow en componentes Dawn | utilidad TW | Bajo salvo conflictos de scroll | Documentar |
-| `.uppercase` | tipografía Dawn | `text-transform` TW | Bajo | Documentar |
-| `.flex` | no en raíz Dawn | `display: flex` | Dawn no redefine; TW gana solo si clase presente | Sin cambio |
-| `.container` | ancho Dawn en legacy | breakpoints TW | Posible conflicto en marcado mixto | Documentar; no en alcance |
-| `.underline` | subrayado Dawn | utilidad TW | Bajo | Documentar |
-| `.list-unstyled` vs `.list-none` | Dawn usa `list-unstyled` | TW `list-none` | Sin colisión de nombre | N/A |
+`grid-cols-*`, `col-span-*`, `row-span-*`, `grid-rows-*`, `grid-flow-*`, `auto-rows-*`, `auto-cols-*`, `place-items-*`, `place-content-*`, `justify-items-*`.
 
-### Fuera de alcance (documentación de posible mismo mecanismo)
+## Auditoría: token de clase `grid` en markup propio
 
-Tras restaurar Dawn `.grid` como flex, **no** se corrigen en este PR (otro PR Alpine Migrator / componente):
+Ámbito: `sections/`, `blocks/`, `snippets/` (excl. `plt-*`), `layout/`, plantillas liquid en repo. Harness/tools listados aparte.
 
-- Input de cantidad 0×0 (`component` quantity) — revisar si hay utilidad TW o reset de capas; probable interacción con `display`/`width` del componente, no solo `.grid`.
-- `field__input` del newsletter en footer — estilos en `base.css` `@layer legacy`; si faltan, puede ser orden de capas vs utilidades TW en el input, no la colisión `.grid`.
-- Hero de artículo y collection-list móvil — mismo lote de CSS de componente; no editar aquí.
+### A) Intención Tailwind (debe verse `display: grid` vía puente)
 
-## Archivos de configuración / build
+| Ubicación | Clases relevantes | Estado |
+|-----------|-------------------|--------|
+| `sections/a-matrix.liquid` | `grid grid-cols-12` | OK — puente |
+| `sections/a-logo-motto.liquid` | `grid … md:grid-cols-12` | OK — `grid-cols` en atributo |
+| `sections/aa-hero-toggle-content.liquid` | `grid grid-cols-1 … md:grid-cols-12` | OK |
+| `sections/main-collection-sanity.liquid` (hero) | `grid grid-cols-1 … md:grid-cols-12` | OK |
+| `snippets/_collection-hero-collapsable-content.liquid` | idem | OK |
+| `snippets/aa-banner-slice.liquid` | idem | OK |
+| `blocks/_aa-banner-slice.liquid` | idem | OK |
+| `snippets/c-card-products-grid.liquid` | `grid grid-cols-2 … sm:grid-cols-3` | OK |
+| `snippets/c-card-collections-grid.liquid` | `grid grid-cols-2` | OK |
+| DS pin (`incentive-bar.liquid` vía `@source`) | `grid grid-cols-1 md:grid-cols-3` | OK — puente sin subir pin |
 
-- `styles/global.css` — exclusión y puentes.
-- `assets/theme.css` — regenerar con `npm run build:css`.
-- `layout/theme.liquid` — sin hoja `plt-dawn-grid-compat.css`.
+**No encontrado en markup propio:** `grid` solo con `gap-*` / `place-items-*` / `grid-rows-*` sin `grid-cols`; `md:grid` sin `grid-cols`; arbitrarios `[grid-template-areas]`.
 
-## Referencias
+### B) Intención Dawn flex (`grid--*`, `.grid__item`; debe quedar `display: flex`)
 
-- `docs/ds-port-plan.md` (orden de capas).
-- Harness: casos `dawn-flex-grids`, `featured-collection-slider`, `collection-product-grid`, `a-matrix-blocks`.
+| Patrón | Ejemplos | Estado |
+|--------|----------|--------|
+| Grillas producto | `main-collection`, `main-search`, `featured-collection`, `related-products`, … | OK — sin pista TW |
+| PDP | `main-product` → `.product.grid.grid--2-col-tablet` | OK — harness `main-product-pdp-shell` |
+| Footer | `footer__blocks-wrapper grid grid--…` | OK — `dawn-flex-grids` |
+| Multicolumn / slideshow / blog sliders | `grid … slider--mobile` | OK — flex + nowrap utilities |
+| `multicolumn-2x2.liquid` | `div.grid.w-full` (wrapper Dawn) | OK — flex; `w-full` es utilidad TW |
+| `image-with-text` / `multirow` / `collapsible-content` | `grid grid--gapless grid--N-col…` | OK |
+| `featured-product.liquid` | `grid … isolate grid--2-col-tablet` | OK flex; ver nota `isolate` abajo |
+
+### C) Otros (no usan utilidad Tailwind `.grid`)
+
+| Ubicación | Nota |
+|-----------|------|
+| `blocks/modern_blog_layout.liquid` | `tw-grid tw-grid-cols-*` (prefijo distinto; no afectado por exclusión de `.grid`) |
+| `blocks/glossary-term-related-links.liquid`, `masonry-collections.liquid`, `modern-2-column-blog.liquid` | `display: grid` en `<style>` inline, sin clase `.grid` |
+| `layout/theme.liquid` | `grid-template-rows` en `{% style %}`, sin clase `.grid` |
+| JSON schema `value: "grid"` en slideshow / blog | Config Dawn, no clase CSS TW |
+
+## Utilidades responsivas `md:grid` / `lg:grid`
+
+Excluidas explícitamente junto con `.grid`. Si en el futuro se necesitan sin `grid-cols-*`, habría que añadir utilidad con otro nombre (p. ej. `tw-layout-grid`) o ampliar el puente — hoy no hay casos en el theme.
+
+## Colisiones adicionales (`base.css` vs `theme.css`)
+
+| Clase | Dawn | Tailwind | Acción |
+|-------|------|----------|--------|
+| `.hidden` | `display: none` | `display: none` | Documentar; share-button usa `hidden` en PDP |
+| `.isolate` | stacking Dawn | `isolation: isolate` | `featured-product` combina ambos; equivalente funcional |
+| `.overflow-hidden` | componentes | utilidad TW | Documentar |
+| `.uppercase` | tipografía | TW | Documentar |
+
+### `.share-button__fallback` ~525px en móvil
+
+**Causa:** reglas Dawn en `base.css` (legacy), no colisión de utilidades: `.share-button__fallback { width: 100%; min-width: max-content; position: absolute; … }`. Con texto largo en el input, el bloque puede superar el viewport si el `<details>` está abierto.
+
+**Acción en #50:** sin editar `component-*` / `base.css`. Harness `main-product-pdp-shell` comprueba `document.documentElement.scrollWidth <= clientWidth + 2` con share **cerrado** (estado por defecto).
+
+## Fuera de alcance (Alpine Migrator / componente)
+
+- Quantity 0×0, `field__input` newsletter, hero artículo, collection-list móvil — otros PRs / CSS de componente.
+
+## Archivos y harness
+
+- `styles/global.css`, `assets/theme.css`, `layout/theme.liquid` (sin compat).
+- Harness: `main-product-pdp-shell`, `dawn-flex-grids`, `collection-product-grid`, `featured-collection-slider`, `a-matrix-blocks` (`LEGACY_LAYER=import`).
