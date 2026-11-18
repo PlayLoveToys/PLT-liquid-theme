@@ -35,6 +35,9 @@ jobs:
       - name: check:theme-css
         run: npm run check:theme-css
 
+      - name: check:no-legacy
+        run: npm run check:no-legacy
+
       - name: test:templates (allowlist baseline)
         run: npm run test:templates:ci
 

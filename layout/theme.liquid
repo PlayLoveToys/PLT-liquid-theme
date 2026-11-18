@@ -461,11 +461,10 @@
     {% render 'defer-stylesheet', asset: 'a-plt-custom-style.css' %}
 
     <script src="{{ 'cart-api.js' | asset_url }}" defer></script>
-    <script src="{{ 'cart-store.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'cart-fragment.js' | asset_url }}" defer="defer"></script>
     {% comment %}
-      theme-check-disable AssetPreload
-      <script src="{{ 'alpine-product-card.js' | asset_url }}" defer></script>
+      alpine-bundle.js: runtime para carruseles/heroes/FAQ pendientes (#29, #30).
+      Retirar el asset cuando esos PRs fusionen y la allowlist de check:no-legacy quede vacía.
     {% endcomment %}
     <script defer src="{{ 'alpine-bundle.js' | asset_url }}"></script>
     {% comment %}

@@ -115,21 +115,6 @@
     });
   }
 
-  async function syncAlpineStore(cart) {
-    const store = window.Alpine?.store?.('cart');
-    if (!store) return;
-    if (cart) {
-      store.cart = cart;
-      store.item_count = cart.item_count || 0;
-      store.total_price = cart.total_price || 0;
-      store.error = null;
-      return;
-    }
-    if (typeof store.refresh === 'function') {
-      await store.refresh();
-    }
-  }
-
   async function whenDrawerDefined() {
     const ready = await Promise.race([
       customElements.whenDefined('plt-cart-drawer').then(() => true),
@@ -158,7 +143,6 @@
     try {
       const cart = await fetchCart();
       applyCartToDrawer(cart, drawer);
-      await syncAlpineStore(cart);
       emitCartUpdated(cart);
     } catch (err) {
       console.error(err);
@@ -191,7 +175,6 @@
         return;
       }
       applyCartToDrawer(cart, drawer);
-      await syncAlpineStore(cart);
       emitCartUpdated(cart);
       if (typeof window.refreshCartFragment === 'function') {
         await window.refreshCartFragment();
