@@ -57,9 +57,23 @@
   }
 
   .plt-carousel__track.b-carousel > .b-carousel-item {
+    min-width: auto;
     flex: 1 0 calc(25% - 0.75rem);
     max-width: calc(25% - 0.75rem);
     width: auto;
+  }
+
+  .plt-carousel__track.plt-carousel-track {
+    flex-wrap: wrap;
+    overflow: visible;
+    scroll-snap-type: none;
+    gap: 1rem;
+  }
+
+  .plt-carousel__track.plt-carousel-track > .carousel-item {
     min-width: auto;
+    flex: 1 0 calc(25% - 0.75rem);
+    max-width: calc(25% - 0.75rem);
+    width: auto;
   }
 }
