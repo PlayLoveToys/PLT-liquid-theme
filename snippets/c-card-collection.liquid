@@ -1,9 +1,9 @@
 <article
-  class="d-card flex h-full flex-col overflow-hidden bg-primary text-primary-content shadow-md plt-media-card plt-collection-carousel-card"
+  class="d-card plt-collection-carousel-card plt-legacy-bulma-link-card flex h-full flex-col overflow-hidden shadow-md border-0"
   {{ block.shopify_attributes }}
 >
   <header class="shrink-0 px-3 py-2 md:px-4 md:py-3">
-    <h3 class="d-card-title theme-headline-sm m-0 capitalize text-primary-content">
+    <h3 class="plt-collection-carousel-card__title m-0 text-base font-semibold capitalize md:text-lg">
       {{ block.settings.collection.title }}
     </h3>
   </header>
@@ -23,14 +23,14 @@
     </div>
   {% endif %}
   {% if block.settings.show_description %}
-    <div class="d-card-body flex-grow p-2 pt-2 text-sm leading-snug text-primary-content md:p-4 md:text-base">
+    <div class="plt-collection-carousel-card__body flex-grow p-2 text-sm leading-snug md:p-4 md:text-base">
       {{ block.settings.collection.description | strip_html | truncatewords: block.settings.truncatewords, '...' }}
     </div>
   {% endif %}
   <footer class="mt-auto shrink-0 p-2 pb-3 md:px-4 md:pb-4">
     <a
       href="{{ block.settings.cta_url | default: block.settings.collection.url }}"
-      class="block w-full text-center text-base font-medium capitalize text-primary-content no-underline hover:underline md:text-lg"
+      class="plt-collection-carousel-card__cta block w-full text-center text-base font-medium capitalize no-underline hover:underline md:text-lg"
     >
       {{ block.settings.cta_text }}
     </a>

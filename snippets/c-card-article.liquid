@@ -1,6 +1,9 @@
-<article class="d-card h-full bg-info/20 theme-bordered theme-elevated plt-media-card">
-  <header class="px-4 py-3 border-b border-base-content/10">
-    <h3 class="d-card-title theme-headline-sm capitalize m-0">
+<article class="d-card plt-legacy-bulma-info-light-card h-full theme-bordered theme-elevated plt-media-card border-0">
+  <header class="px-3 py-2 md:px-4 md:py-3">
+    <h3
+      class="m-0 text-base font-semibold capitalize md:text-lg"
+      style="font-family: var(--font-body-family)"
+    >
       {{ block.settings.article.title }}
     </h3>
   </header>
@@ -20,8 +23,8 @@
     </div>
   {% endif %}
   {% if block.settings.show_excerpt %}
-    <div class="d-card-body plt-media-card__body p-4">
-      <div class="theme-body">
+    <div class="plt-media-card__body p-2 md:p-4 text-sm md:text-base" style="font-family: var(--font-body-family)">
+      <div>
         {{
           block.settings.article.excerpt
           | default: block.settings.article.content
@@ -31,10 +34,11 @@
       </div>
     </div>
   {% endif %}
-  <footer class="d-card-actions border-t border-base-content/10 p-4">
+  <footer class="p-2 pb-3 md:px-4 md:pb-4">
     <a
       href="{{ block.settings.article.url }}"
-      class="d-btn d-btn-outline d-btn-info theme-label-bold"
+      class="d-btn d-btn-outline d-btn-info d-btn-sm theme-label-bold w-full md:w-auto"
+      style="font-family: var(--font-body-family)"
     >
       {{ 'general.read_more' | t }}
     </a>

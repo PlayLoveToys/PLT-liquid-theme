@@ -68,7 +68,7 @@
   <div class="sticky top-4 z-[1] flex flex-wrap items-center justify-between gap-3 border-b border-base-300 px-4 pb-3">
     <button
       type="button"
-      class="d-btn d-btn-primary d-btn-outline theme-label-bold gap-2"
+      class="d-btn theme-label-bold gap-2 border-0 bg-[hsl(346deg_89%_95%)] text-[hsl(346deg_89%_40%)] hover:bg-[hsl(346deg_89%_90%)]"
       onclick="document.getElementById('FacetsDrawer').showModal()"
     >
       <span class="inline-flex size-5 shrink-0 [&_svg]:size-full">
@@ -93,7 +93,7 @@
   >
     <div class="facets-drawer__panel flex h-full flex-col px-4 py-6">
       <header class="flex items-center justify-between gap-3 border-b border-base-300 py-4">
-        <p class="theme-headline-sm text-primary m-0 text-2xl md:text-3xl">
+        <p class="m-0 text-2xl font-semibold text-[hsl(346deg_89%_61%)] md:text-3xl" style="font-family: var(--font-body-family)">
           {{ 'products.facets.filter_and_sort' | t }}
         </p>
         <button
