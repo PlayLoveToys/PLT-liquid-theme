@@ -41,3 +41,15 @@
 .plt-carousel--overlay-nav .plt-carousel__track.b-carousel {
   display: flex;
 }
+
+/* Bulma: .b-carousel > .b-carousel-item { max-width: 85vw }. DS track sets flex: 0 0 auto on
+   children, so slides need an explicit min-width on mobile (no Tailwind min-w-[85vw] in Liquid). */
+.plt-carousel__track.b-carousel > .b-carousel-item {
+  min-width: 85vw;
+}
+
+@media screen and (min-width: 1152px) {
+  .plt-carousel__track.b-carousel > .b-carousel-item {
+    min-width: auto;
+  }
+}
