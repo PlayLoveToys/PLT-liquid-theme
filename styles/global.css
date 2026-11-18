@@ -50,14 +50,39 @@
     display: grid;
   }
 
-  /* Dawn sliders: keep horizontal track (component-slider uses flex-wrap: inherit). */
-  .grid:where(
-    .slider,
-    .slider--mobile,
-    .slider--tablet,
-    .slider--desktop,
-    .slider--everywhere
-  ) {
+  /* Dawn sliders: nowrap only at each slider breakpoint (parity with component-slider.css). */
+  .grid:where(.slider--everywhere) {
     flex-wrap: nowrap;
+  }
+
+  @media screen and (max-width: 749px) {
+    .grid:where(.slider--mobile) {
+      flex-wrap: nowrap;
+    }
+  }
+
+  @media screen and (max-width: 989px) {
+    .grid:where(.slider--tablet) {
+      flex-wrap: nowrap;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .grid:where(.slider--desktop) {
+      flex-wrap: nowrap;
+    }
+  }
+
+  /* Retired Bulma helpers (main-collection-sanity; sort lives in drawer / filter bar). */
+  @media screen and (max-width: 767px) {
+    .c-small-screen-hide {
+      display: none !important;
+    }
+  }
+
+  @media screen and (min-width: 768px) {
+    .screen-hide {
+      display: none !important;
+    }
   }
 }
