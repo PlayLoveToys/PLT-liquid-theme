@@ -1,8 +1,21 @@
-{% for block in block.blocks -%}
-  <div class="b-column b-is-col-span-2">
-    {% render block %}
+{%- liquid
+  assign span_class = block.settings.col_span
+  case span_class
+    when 'b-is-col-span-2', 'col-span-2'
+      assign span_class = 'col-span-2'
+    when 'b-is-col-span-3', 'col-span-3'
+      assign span_class = 'col-span-3'
+    when 'b-is-col-span-4', 'col-span-4'
+      assign span_class = 'col-span-4'
+    else
+      assign span_class = ''
+  endcase
+-%}
+{% for child in block.blocks -%}
+  <div class="min-w-0 {{ span_class }}">
+    {% render child %}
   </div>
-{% endfor %}
+{%- endfor %}
 
 {% schema %}
 {
@@ -15,9 +28,9 @@
       "default": "",
       "options": [
         { "value": "", "label": "Auto" },
-        { "value": "b-is-col-span-2", "label": "2" },
-        { "value": "b-is-col-span-3", "label": "3" },
-        { "value": "b-is-col-span-4", "label": "4" }
+        { "value": "col-span-2", "label": "2" },
+        { "value": "col-span-3", "label": "3" },
+        { "value": "col-span-4", "label": "4" }
       ]
     }
   ],

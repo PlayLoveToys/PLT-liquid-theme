@@ -44,67 +44,69 @@
     display: block;
   }
 
-  .facets-drawer .b-drawer-panel {
+  .facets-drawer__panel {
     position: absolute;
     top: 0;
     left: 0;
-    width: var(--b-drawer-width, 420px);
+    width: var(--facets-drawer-width, 420px);
     max-width: 85vw;
     height: 100%;
     margin: 0;
     transform: none;
+    background: rgb(var(--color-background));
+    box-shadow: var(--plt-shadow-offset, 2px 2px 0) rgba(var(--color-shadow), 0.15);
+  }
+
+  .facets-drawer__footer {
+    margin-top: auto;
+    border-top: 1px solid rgba(var(--color-foreground), 0.12);
+    background: rgb(var(--color-background));
   }
 </style>
 
-<div class="b-container facets-wrapper">
-  <!-- Trigger Sticky -->
-  <div class="b-level b-top-4 b-px-4 b-border-bottom-light">
-    <div class="b-level-left">
-      <button
-        type="button"
-        class="b-button b-is-primary b-is-light"
-        onclick="document.getElementById('FacetsDrawer').showModal()"
-      >
-        <span class="b-icon">
-          {{ 'icon-filter.svg' | inline_asset_content }}
-        </span>
-        <span class="b-is-size-5">{{ 'products.facets.filter_and_sort' | t }}</span>
-      </button>
-    </div>
+<div class="facets-wrapper w-full">
+  <div class="sticky top-4 z-[1] flex flex-wrap items-center justify-between gap-3 border-b border-base-300 px-4 pb-3">
+    <button
+      type="button"
+      class="d-btn d-btn-primary d-btn-outline theme-label-bold gap-2"
+      onclick="document.getElementById('FacetsDrawer').showModal()"
+    >
+      <span class="inline-flex size-5 shrink-0 [&_svg]:size-full">
+        {{ 'icon-filter.svg' | inline_asset_content }}
+      </span>
+      <span class="text-lg">{{ 'products.facets.filter_and_sort' | t }}</span>
+    </button>
 
-    <div class="b-level-right">
-      <p class="b-is-size-5">
-        {% if results.results_count %}
-          {{ 'templates.search.results_with_count' | t: terms: results.terms, count: results.results_count }}
-        {% else %}
-          {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
-        {% endif %}
-      </p>
-    </div>
+    <p class="text-lg theme-meta m-0">
+      {% if results.results_count %}
+        {{ 'templates.search.results_with_count' | t: terms: results.terms, count: results.results_count }}
+      {% else %}
+        {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
+      {% endif %}
+    </p>
   </div>
 
-  <!-- Native dialog drawer (Escape + backdrop click close without Alpine) -->
   <dialog
     id="FacetsDrawer"
     class="facets-drawer"
     onclick="if (event.target === this) this.close()"
   >
-    <div class="b-drawer-panel b-is-flex b-is-flex-direction-column b-h-full b-px-4 b-py-6">
-      <!-- Header -->
-      <header class="b-level b-is-mobile b-is-align-items-center b-py-4 b-px-4 b-border-bottom-light">
-        <p class="b-title b-is-3 b-is-4-mobile b-my-0 b-has-text-primary ">
+    <div class="facets-drawer__panel flex h-full flex-col px-4 py-6">
+      <header class="flex items-center justify-between gap-3 border-b border-base-300 py-4">
+        <p class="theme-headline-sm text-primary m-0 text-2xl md:text-3xl">
           {{ 'products.facets.filter_and_sort' | t }}
         </p>
         <button
           type="button"
-          class="b-delete"
+          class="d-btn d-btn-sm d-btn-circle d-btn-ghost"
           aria-label="{{ 'accessibility.close' | t }}"
           onclick="this.closest('dialog').close()"
-        ></button>
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
       </header>
 
-      <!-- Body: WC controls (own forms — do not wrap in an outer <form>) -->
-      <section class="b-px-4 b-py-4 b-is-flex-grow-1">
+      <section class="flex-1 overflow-y-auto px-0 py-4">
         {% render 'plt-sort-select',
           options: results.sort_options,
           current: sort_by,
@@ -115,7 +117,7 @@
           script_url: 'none'
         %}
 
-        <hr class="b-dropdown-divider">
+        <hr class="theme-divider my-4">
 
         {% render 'plt-filter-bar',
           filters: results.filters,
@@ -128,28 +130,26 @@
           clear_label: clear_label,
           script_url: 'none'
         %}
-
       </section>
 
-      <!-- Footer -->
-      <div class="b-drawer-footer b-is-radiusless">
-        <div class="b-level b-is-mobile">
+      <footer class="facets-drawer__footer px-0 py-4">
+        <div class="flex flex-wrap items-stretch justify-between gap-3">
           <button
             type="button"
-            class="b-button b-level-item b-is-primary b-is-small"
+            class="d-btn d-btn-primary d-btn-sm theme-label-bold flex-1"
             onclick="this.closest('dialog').close()"
           >
             {{ apply_label }}
           </button>
           <a
             href="{{ results_url }}"
-            class="b-button b-level-item b-is-ghost b-has-text-link"
+            class="d-btn d-btn-ghost d-btn-sm theme-label-bold link flex-1 gap-2"
           >
-            <span class="b-delete b-mr-2"></span>
+            <span aria-hidden="true">&times;</span>
             {{- clear_label -}}
           </a>
         </div>
-      </div>
+      </footer>
     </div>
   </dialog>
 </div>

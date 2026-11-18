@@ -85,9 +85,7 @@ const body = await build({engine});
 const bundle = fs
   .readFileSync(path.join(theme, 'assets', 'plt-web-components.bundle.js'), 'utf8')
   .replace(/<\/script/g, '<\\/script');
-// LEGACY_LAYER mirrors layout/theme.liquid (docs/ds-port-plan.md, cut 2b): the Dawn/Bulma CSS goes into a
-// cascade layer below the design system's. `1` wraps it in `@layer legacy {}`; `import` loads it through
-// `@import url(...) layer(legacy)` (data: URLs, the same syntax the layout uses with the CDN asset URL).
+// LEGACY_LAYER mirrors layout/theme.liquid: Dawn base.css in @layer legacy below theme.css.
 const legacyLayer = process.env.LEGACY_LAYER === '1' || process.env.LEGACY_LAYER === 'import';
 const readAsset = (file) => fs.readFileSync(path.join(theme, 'assets', file), 'utf8');
 const legacyStyle = (file) => {
@@ -101,7 +99,7 @@ const legacyStyle = (file) => {
 const styles = [
   legacyLayer ? '<style>@layer legacy, theme, base, components, utilities;</style>' : '',
   `<style data-source="theme.css">${readAsset('theme.css')}</style>`,
-  ...['base.css', 'b-style.css'].map(legacyStyle),
+  ...['base.css'].map(legacyStyle),
 ].join('\n');
 const page = `<!doctype html>
 <html lang="en" data-theme="brand">
@@ -111,7 +109,7 @@ const page = `<!doctype html>
 <title>${name} harness</title>
 ${styles}
 <style>
-  :root { --font-body-scale: 1; --font-heading-scale: 1; --font-body-family: system-ui; --b-family-primary: system-ui; }
+  :root { --font-body-scale: 1; --font-heading-scale: 1; --font-body-family: system-ui; }
   .case { padding: 12px 24px; border-bottom: 1px dashed #bbb; }
   .row { display: flex; gap: 48px; flex-wrap: wrap; }
   .case h3, .case h4 { margin: 4px 0; font: 600 13px system-ui; color: #555; }

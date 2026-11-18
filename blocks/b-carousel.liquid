@@ -1,6 +1,6 @@
 <div
   {{ block.shopify_attributes }}
-  class="b-column b-is-3-desktop b-is-6-tablet b-carousel-wrapper"
+  class="carousel-wrapper relative col-span-6 md:col-span-3"
   x-data="
     carousel({
     intervalTime: 3500,
@@ -24,22 +24,22 @@
 
   {% case block.blocks.first.type %}
     {% when 'b-card-collection' %}
-      <div class="b-column b-is-3-desktop b-is-6-tablet">
+      <div class="col-span-6 md:col-span-3">
         {% render 'c-card-collection', block: block.blocks.first, main_carousel_slide: true %}
       </div>
 
     {% when 'b-card-article' %}
-      <div class="b-column b-is-3-desktop b-is-6-tablet">
+      <div class="col-span-6 md:col-span-3">
         {% render 'c-card-article', block: block.blocks.first, main_carousel_slide: true %}
       </div>
 
     {% when 'b-card-products-grid' %}
-      <div class="b-column b-is-3-desktop b-is-6-tablet">
+      <div class="col-span-6 md:col-span-3">
         {% render 'c-card-products-grid', block: block.blocks.first, main_carousel_slide: true %}
       </div>
 
     {% when 'b-card-collections-grid' %}
-      <div class="b-column b-is-3-desktop b-is-6-tablet">
+      <div class="col-span-6 md:col-span-3">
         {% render 'c-card-collections-grid', block: block.blocks.first, main_carousel_slide: true %}
       </div>
   {% endcase %}
@@ -48,22 +48,22 @@
 {% for child_block in block.blocks offset: 1 %}
   {% case child_block.type %}
     {% when 'b-card-collection' %}
-      <div class="b-column b-is-3-desktop b-is-6-tablet">
+      <div class="col-span-6 md:col-span-3">
         {% render 'c-card-collection', block: child_block, carousel_slide: true %}
       </div>
 
     {% when 'b-card-article' %}
-      <div class="b-column b-is-3-desktop b-is-6-tablet">
+      <div class="col-span-6 md:col-span-3">
         {% render 'c-card-article', block: child_block, carousel_slide: true %}
       </div>
 
     {% when 'b-card-products-grid' %}
-      <div class="b-column b-is-3-desktop b-is-6-tablet">
+      <div class="col-span-6 md:col-span-3">
         {% render 'c-card-products-grid', block: child_block, carousel_slide: true %}
       </div>
 
     {% when 'b-card-collections-grid' %}
-      <div class="b-column b-is-3-desktop b-is-6-tablet">
+      <div class="col-span-6 md:col-span-3">
         {% render 'c-card-collections-grid', block: child_block, carousel_slide: true %}
       </div>
   {% endcase %}

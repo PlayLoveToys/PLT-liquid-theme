@@ -97,10 +97,10 @@ export default async ({engine}) => {
 
   const cardBadges = `
     <div style="position:relative;width:180px;height:120px;border:1px solid #ccc;background:#f3f0ea">
-      <span class="b-tag-bottom-right d-badge theme-label-bold">Sold out</span>
+      <span class="d-badge theme-label-bold">Sold out</span>
     </div>
     <div style="position:relative;width:180px;height:120px;border:1px solid #ccc;background:#f3f0ea">
-      <span class="b-tag-bottom-right d-badge d-badge-secondary theme-label-bold">Sale</span>
+      <span class="d-badge d-badge-secondary theme-label-bold">Sale</span>
     </div>`;
 
   // Mirrors sections/main-product.liquid: outer #price-{{ section.id }} is what

@@ -47,7 +47,7 @@
 
   <div class="glossary-external-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
     {% if block.settings.heading != blank %}
-      <h2 class="glossary-external__heading-{{ ai_gen_id }} b-title">
+      <h2 class="glossary-external__heading-{{ ai_gen_id }}">
         {{ block.settings.heading }}
       </h2>
     {% endif %}
@@ -58,7 +58,7 @@
           <li class="glossary-external__item-{{ ai_gen_id }}">
             <a
               href="{{ link.url }}"
-              class="glossary-external__link-{{ ai_gen_id }} b-link"
+              class="glossary-external__link-{{ ai_gen_id }}"
               target="_blank"
               rel="noopener noreferrer"
             >

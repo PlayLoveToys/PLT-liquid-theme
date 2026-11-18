@@ -1,20 +1,55 @@
-<div class="b-card b-card-horizontal">
-  <!-- Pestaña Vertical -->
-  <header
-    class="b-card-header b-header-vertical {{ block.settings.tab_color }} b-has-text-white"
-  >
-    <div class="b-header-content-rotate">
-      <p class="b-is-uppercase b-has-text-weight-bold">
-        {{ block.settings.tab_title }}
-      </p>
-    </div>
+{% liquid
+  assign tab_bg = 'bg-info text-info-content'
+  case block.settings.tab_color
+    when 'b-has-background-primary'
+      assign tab_bg = 'bg-primary text-primary-content'
+    when 'b-has-background-danger'
+      assign tab_bg = 'bg-error text-error-content'
+    when 'b-has-background-link'
+      assign tab_bg = 'bg-accent text-accent-content'
+    when 'b-has-background-dark'
+      assign tab_bg = 'bg-neutral text-neutral-content'
+    when 'b-has-background-info'
+      assign tab_bg = 'bg-info text-info-content'
+  endcase
+%}
+
+{% style %}
+  .vertical-tab-card-{{ block.id }} {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    border-radius: var(--rounded-box, 1rem);
+    border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  }
+
+  .vertical-tab-card-{{ block.id }}__tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3rem;
+    padding: 1rem 0.5rem;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .vertical-tab-card-{{ block.id }}__body {
+    flex: 1;
+    padding: 1.25rem;
+  }
+{% endstyle %}
+
+<div class="d-card vertical-tab-card-{{ block.id }}" {{ block.shopify_attributes }}>
+  <header class="vertical-tab-card-{{ block.id }}__tab {{ tab_bg }}">
+    {{ block.settings.tab_title }}
   </header>
 
-  <!-- Contenido -->
-  <div class="b-card-content">
-    <div class="b-content">
+  <div class="vertical-tab-card-{{ block.id }}__body">
+    <div class="rte">
       {% if block.settings.content_title != blank %}
-        <h3 class="b-title b-is-4">{{ block.settings.content_title }}</h3>
+        <h3 class="h3 mb-2">{{ block.settings.content_title }}</h3>
       {% endif %}
 
       {% if block.settings.content_text != blank %}
@@ -22,13 +57,14 @@
       {% endif %}
 
       {% if block.settings.image != blank %}
-        <figure class="b-image">
+        <figure class="mt-4 max-w-full">
           {{
             block.settings.image
             | image_url: height: 140, pad_color: 'ffffff'
             | image_tag:
               widths: '50, 80, 100, 120, 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 550, 600',
-              preload: block.settings.priority
+              preload: block.settings.priority,
+              class: 'h-auto max-w-full'
           }}
         </figure>
       {% endif %}

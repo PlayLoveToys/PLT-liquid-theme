@@ -1,25 +1,30 @@
-<section class="b-section" {{ section.shopify_attributes }}>
+{{ 'section-collection-list.css' | asset_url | stylesheet_tag }}
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+
+<section class="page-width py-8 section-collection-list" {{ section.shopify_attributes }}>
   {%- unless section.settings.title == blank -%}
-    <div class="b-block">
-      <h2 class="b-title b-is-4-mobile b-is-3-tablet b-is-2-desktop b-has-text-primary">
+    <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+      <h2 class="theme-headline-sm text-primary m-0 text-2xl md:text-3xl lg:text-4xl">
         {{ section.settings.title }}
       </h2>
 
-      <a href="{{ routes.collections_url }}" class="b-button b-is-text b-has-text-primary">
+      <a href="{{ routes.collections_url }}" class="d-btn d-btn-link text-primary theme-label-bold">
         {{- 'sections.collection_list.view_all' | t -}}
       </a>
     </div>
   {%- endunless -%}
 
   <div
-    class="b-carousel-wrapper"
+    class="relative w-full"
     x-data="carousel({slides: '.slide-{{ section.id }}', intervalTime: 3000})"
   >
-    <div class="b-carousel">
+    <div
+      class="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth max-lg:flex-nowrap lg:grid lg:grid-cols-3 lg:overflow-visible lg:snap-none"
+    >
       {%- for block in section.blocks -%}
         <div
           id="Slide-{{ section.id }}-{{ forloop.index }}"
-          class="b-carousel-item slide-{{ section.id }}"
+          class="slide-{{ section.id }} min-w-[85vw] shrink-0 snap-start lg:min-w-0"
           {{ block.shopify_attributes }}
         >
           {% render 'card-collection', card_collection: block.settings.collection %}
@@ -30,8 +35,8 @@
     {% render 'c-carousel-buttons' %}
   </div>
 
-  <div class="b-section">
-    <a href="{{ routes.collections_url }}" class="b-button b-is-link b-is-dark b-is-fullwidth b-is-large">
+  <div class="mt-8">
+    <a href="{{ routes.collections_url }}" class="d-btn d-btn-neutral d-btn-block d-btn-lg theme-label-bold">
       Check all collections
     </a>
   </div>

@@ -23,12 +23,32 @@
   endif
 -%}
 
-<div class="b-columns">
+{%- liquid
+  assign heading_size_class = section.settings.heading_size
+  case heading_size_class
+    when 'b-is-1'
+      assign heading_size_class = 'hxxl'
+    when 'b-is-2'
+      assign heading_size_class = 'hxl'
+    when 'b-is-3'
+      assign heading_size_class = 'h0'
+    when 'b-is-4'
+      assign heading_size_class = 'h1'
+    when 'b-is-5'
+      assign heading_size_class = 'h2'
+    when 'b-is-6'
+      assign heading_size_class = 'h3'
+    when 'b-is-7'
+      assign heading_size_class = 'h4'
+  endcase
+-%}
+
+<div class="grid w-full">
   <div class="">
     {%- unless section.settings.title == blank -%}
-      <div class="b-block">
+      <div class="mb-4 block">
         {% assign heading_tag = section.settings.heading_tag %}
-        <{{ heading_tag }} class="b-title {{ section.settings.heading_size }}">
+        <{{ heading_tag }} class="inline-richtext {{ heading_size_class }}">
           {{ section.settings.title }}
         </{{ heading_tag }}>
         {%- if section.settings.button_label != blank and show_mobile_slider -%}
@@ -232,35 +252,35 @@
       "id": "heading_size",
       "options": [
         {
-          "value": "b-is-1",
+          "value": "hxxl",
           "label": "t:sections.all.heading_size.options__1.label"
         },
         {
-          "value": "b-is-2",
+          "value": "hxl",
           "label": "t:sections.all.heading_size.options__2.label"
         },
         {
-          "value": "b-is-3",
+          "value": "h0",
           "label": "t:sections.all.heading_size.options__3.label"
         },
         {
-          "value": "b-is-4",
+          "value": "h1",
           "label": "t:sections.all.heading_size.options__4.label"
         },
         {
-          "value": "b-is-5",
+          "value": "h2",
           "label": "t:sections.all.heading_size.options__5.label"
         },
         {
-          "value": "b-is-6",
+          "value": "h3",
           "label": "t:sections.all.heading_size.options__6.label"
         },
         {
-          "value": "b-is-7",
+          "value": "h4",
           "label": "t:sections.all.heading_size.options__7.label"
         }
       ],
-      "default": "b-is-4",
+      "default": "h1",
       "label": "t:sections.all.heading_size.label"
     },
     {
