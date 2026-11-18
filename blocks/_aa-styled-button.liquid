@@ -1,54 +1,106 @@
 {% if block.settings.button_text != blank and block.settings.button_url != blank %}
   {% liquid
-    assign button_classes = 'b-button'
+    assign button_classes = 'd-btn theme-label-bold'
     assign alignment_classes = ''
 
-    # Size classes
-    assign button_classes = button_classes | append: ' b-is-' | append: block.settings.button_size
+    case block.settings.button_size
+      when 'small'
+        assign button_classes = button_classes | append: ' d-btn-sm'
+      when 'large', 'medium'
+        assign button_classes = button_classes | append: ' d-btn-lg'
+    endcase
 
-    # Boolean style classes
     if block.settings.b_is_outlined
-      assign button_classes = button_classes | append: ' b-is-outlined'
-    endif
-
-    if block.settings.b_is_text
-      assign button_classes = button_classes | append: ' b-is-text'
+      assign button_classes = button_classes | append: ' d-btn-outline'
     endif
 
     if block.settings.b_is_ghost
-      assign button_classes = button_classes | append: ' b-is-ghost'
+      assign button_classes = button_classes | append: ' d-btn-ghost'
     endif
 
-    if block.settings.b_is_light
-      assign button_classes = button_classes | append: ' b-is-light'
+    if block.settings.b_is_text
+      assign button_classes = button_classes | append: ' d-btn-link'
     endif
 
-    if block.settings.b_is_responsive
-      assign button_classes = button_classes | append: ' b-is-responsive'
-    endif
-
-    if block.settings.b_is_rounded
-      assign button_classes = button_classes | append: ' b-is-rounded'
+    if block.settings.b_is_light and block.settings.b_is_outlined == false
+      assign button_classes = button_classes | append: ' d-btn-outline'
     endif
 
     if block.settings.b_is_fullwidth
-      assign button_classes = button_classes | append: ' b-is-fullwidth'
+      assign button_classes = button_classes | append: ' d-btn-block'
     endif
 
-    # Color style classes (select/radio)
-    assign button_classes = button_classes | append: ' b-is-' | append: block.settings.button_color_style
+    if block.settings.b_is_rounded
+      assign button_classes = button_classes | append: ' d-btn-circle'
+    endif
+
+    case block.settings.button_color_style
+      when 'primary'
+        assign button_classes = button_classes | append: ' d-btn-primary'
+      when 'link'
+        assign button_classes = button_classes | append: ' d-btn-link'
+      when 'info', 'success'
+        assign button_classes = button_classes | append: ' d-btn-secondary'
+      when 'warning', 'danger'
+        assign button_classes = button_classes | append: ' d-btn-neutral'
+      else
+        assign button_classes = button_classes | append: ' d-btn-primary'
+    endcase
 
     assign alignment_settings = 'button_alignment_mobile,button_alignment_tablet,button_alignment_desktop,button_alignment_widescreen,button_alignment_fullhd' | split: ','
 
     for setting in alignment_settings
       assign value = block.settings[setting]
       if value != ''
-        assign alignment_classes = alignment_classes | append: ' ' | append: value
+        assign mapped_alignment = value
+        case value
+          when 'b-has-text-centered-mobile'
+            assign mapped_alignment = 'max-md:text-center'
+          when 'b-has-text-justified-mobile'
+            assign mapped_alignment = 'max-md:text-justify'
+          when 'b-has-text-left-mobile'
+            assign mapped_alignment = 'max-md:text-left'
+          when 'b-has-text-right-mobile'
+            assign mapped_alignment = 'max-md:text-right'
+          when 'b-has-text-centered-tablet'
+            assign mapped_alignment = 'md:text-center'
+          when 'b-has-text-justified-tablet'
+            assign mapped_alignment = 'md:text-justify'
+          when 'b-has-text-left-tablet'
+            assign mapped_alignment = 'md:text-left'
+          when 'b-has-text-right-tablet'
+            assign mapped_alignment = 'md:text-right'
+          when 'b-has-text-centered-desktop'
+            assign mapped_alignment = 'lg:text-center'
+          when 'b-has-text-justified-desktop'
+            assign mapped_alignment = 'lg:text-justify'
+          when 'b-has-text-left-desktop'
+            assign mapped_alignment = 'lg:text-left'
+          when 'b-has-text-right-desktop'
+            assign mapped_alignment = 'lg:text-right'
+          when 'b-has-text-centered-widescreen'
+            assign mapped_alignment = 'xl:text-center'
+          when 'b-has-text-justified-widescreen'
+            assign mapped_alignment = 'xl:text-justify'
+          when 'b-has-text-left-widescreen'
+            assign mapped_alignment = 'xl:text-left'
+          when 'b-has-text-right-widescreen'
+            assign mapped_alignment = 'xl:text-right'
+          when 'b-has-text-centered-fullhd'
+            assign mapped_alignment = '2xl:text-center'
+          when 'b-has-text-justified-fullhd'
+            assign mapped_alignment = '2xl:text-justify'
+          when 'b-has-text-left-fullhd'
+            assign mapped_alignment = '2xl:text-left'
+          when 'b-has-text-right-fullhd'
+            assign mapped_alignment = '2xl:text-right'
+        endcase
+        assign alignment_classes = alignment_classes | append: ' ' | append: mapped_alignment
       endif
     endfor
   %}
 
-  <div class="{{ alignment_classes }}">
+  <div class="{{ alignment_classes | strip }}">
     <a
       href="{{ block.settings.button_url }}"
       class="{{ button_classes }}"
@@ -93,7 +145,7 @@
 
     {
       "type": "paragraph",
-      "content": "Control button alignment for different screen sizes using Bulma's responsive alignment classes."
+      "content": "Control button alignment for different screen sizes using responsive Tailwind text utilities on the wrapper."
     },
 
     {
@@ -102,10 +154,10 @@
       "label": "Mobile (up to 768px)",
       "options": [
         { "value": "", "label": "Default" },
-        { "value": "b-has-text-centered-mobile", "label": "Centered" },
-        { "value": "b-has-text-justified-mobile", "label": "Justified" },
-        { "value": "b-has-text-left-mobile", "label": "Left" },
-        { "value": "b-has-text-right-mobile", "label": "Right" }
+        { "value": "max-md:text-center", "label": "Centered" },
+        { "value": "max-md:text-justify", "label": "Justified" },
+        { "value": "max-md:text-left", "label": "Left" },
+        { "value": "max-md:text-right", "label": "Right" }
       ],
       "default": ""
     },
@@ -116,10 +168,10 @@
       "label": "Tablet (769px+)",
       "options": [
         { "value": "", "label": "Default" },
-        { "value": "b-has-text-centered-tablet", "label": "Centered" },
-        { "value": "b-has-text-justified-tablet", "label": "Justified" },
-        { "value": "b-has-text-left-tablet", "label": "Left" },
-        { "value": "b-has-text-right-tablet", "label": "Right" }
+        { "value": "md:text-center", "label": "Centered" },
+        { "value": "md:text-justify", "label": "Justified" },
+        { "value": "md:text-left", "label": "Left" },
+        { "value": "md:text-right", "label": "Right" }
       ],
       "default": ""
     },
@@ -130,10 +182,10 @@
       "label": "Desktop (1024px+)",
       "options": [
         { "value": "", "label": "Default" },
-        { "value": "b-has-text-centered-desktop", "label": "Centered" },
-        { "value": "b-has-text-justified-desktop", "label": "Justified" },
-        { "value": "b-has-text-left-desktop", "label": "Left" },
-        { "value": "b-has-text-right-desktop", "label": "Right" }
+        { "value": "lg:text-center", "label": "Centered" },
+        { "value": "lg:text-justify", "label": "Justified" },
+        { "value": "lg:text-left", "label": "Left" },
+        { "value": "lg:text-right", "label": "Right" }
       ],
       "default": ""
     },
@@ -144,10 +196,10 @@
       "label": "Widescreen (1216px+)",
       "options": [
         { "value": "", "label": "Default" },
-        { "value": "b-has-text-centered-widescreen", "label": "Centered" },
-        { "value": "b-has-text-justified-widescreen", "label": "Justified" },
-        { "value": "b-has-text-left-widescreen", "label": "Left" },
-        { "value": "b-has-text-right-widescreen", "label": "Right" }
+        { "value": "xl:text-center", "label": "Centered" },
+        { "value": "xl:text-justify", "label": "Justified" },
+        { "value": "xl:text-left", "label": "Left" },
+        { "value": "xl:text-right", "label": "Right" }
       ],
       "default": ""
     },
@@ -158,10 +210,10 @@
       "label": "Full HD (1408px+)",
       "options": [
         { "value": "", "label": "Default" },
-        { "value": "b-has-text-centered-fullhd", "label": "Centered" },
-        { "value": "b-has-text-justified-fullhd", "label": "Justified" },
-        { "value": "b-has-text-left-fullhd", "label": "Left" },
-        { "value": "b-has-text-right-fullhd", "label": "Right" }
+        { "value": "2xl:text-center", "label": "Centered" },
+        { "value": "2xl:text-justify", "label": "Justified" },
+        { "value": "2xl:text-left", "label": "Left" },
+        { "value": "2xl:text-right", "label": "Right" }
       ],
       "default": ""
     },

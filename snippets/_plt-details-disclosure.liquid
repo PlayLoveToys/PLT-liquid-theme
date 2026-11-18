@@ -1,0 +1,63 @@
+{% doc %}
+  Panel expandible accesible (`<details>` / `<summary>`) sin Alpine.
+  Reutilizado en heroes colección / aa-hero y patrones similares.
+
+  @param {string} panel_id - Id estable para summary aria-controls / anclas
+  @param {boolean} [initial_open] - Estado abierto inicial
+  @param {string} summary_markup - HTML del control (icono + etiqueta)
+  @param {string} content_markup - Cuerpo expandible
+  @param {string} [summary_class] - Clases del summary
+  @param {string} [panel_class] - Clases del contenedor details
+  @param {string} [content_wrapper_class] - Clases del panel interior (p. ej. b-notification)
+{% enddoc %}
+
+{% liquid
+  assign summary_class = summary_class | default: 'plt-details-disclosure__summary'
+  assign panel_class = panel_class | default: 'plt-details-disclosure'
+  assign content_wrapper_class = content_wrapper_class | default: 'alert relative mt-6 bg-primary/10 p-6'
+%}
+
+<details
+  id="{{ panel_id }}"
+  class="{{ panel_class }}"
+  {% if initial_open %}
+    open
+  {% endif %}
+>
+  <summary class="{{ summary_class }}">
+    {{ summary_markup }}
+  </summary>
+  <div class="{{ content_wrapper_class }}">
+    <button
+      type="button"
+      class="d-btn d-btn-circle d-btn-ghost btn-sm absolute right-2 top-2"
+      aria-label="{{ 'accessibility.close' | t | default: 'Close' }}"
+      onclick="this.closest('details')?.removeAttribute('open')"
+    >
+      ×
+    </button>
+    {{ content_markup }}
+  </div>
+</details>
+
+{% stylesheet %}
+  .plt-details-disclosure__summary {
+    list-style: none;
+    cursor: pointer;
+  }
+  .plt-details-disclosure__summary::-webkit-details-marker {
+    display: none;
+  }
+  .plt-details-disclosure__summary .plt-details-disclosure__icon--open {
+    display: none;
+  }
+  .plt-details-disclosure[open] .plt-details-disclosure__summary .plt-details-disclosure__icon--closed {
+    display: none;
+  }
+  .plt-details-disclosure[open] .plt-details-disclosure__summary .plt-details-disclosure__icon--open {
+    display: inline-flex;
+  }
+  .plt-faq .d-collapse-title {
+    cursor: pointer;
+  }
+{% endstylesheet %}

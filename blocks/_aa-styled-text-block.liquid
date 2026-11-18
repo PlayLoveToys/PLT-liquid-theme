@@ -9,14 +9,130 @@
     for setting in alignment_settings
       assign value = block.settings[setting]
       if value != ''
-        assign alignment_classes = alignment_classes | append: ' ' | append: value
+        assign mapped_alignment = value
+        case value
+          when 'b-has-text-centered-mobile'
+            assign mapped_alignment = 'max-md:text-center'
+          when 'b-has-text-justified-mobile'
+            assign mapped_alignment = 'max-md:text-justify'
+          when 'b-has-text-left-mobile'
+            assign mapped_alignment = 'max-md:text-left'
+          when 'b-has-text-right-mobile'
+            assign mapped_alignment = 'max-md:text-right'
+          when 'b-has-text-centered-tablet'
+            assign mapped_alignment = 'md:text-center'
+          when 'b-has-text-justified-tablet'
+            assign mapped_alignment = 'md:text-justify'
+          when 'b-has-text-left-tablet'
+            assign mapped_alignment = 'md:text-left'
+          when 'b-has-text-right-tablet'
+            assign mapped_alignment = 'md:text-right'
+          when 'b-has-text-centered-desktop'
+            assign mapped_alignment = 'lg:text-center'
+          when 'b-has-text-justified-desktop'
+            assign mapped_alignment = 'lg:text-justify'
+          when 'b-has-text-left-desktop'
+            assign mapped_alignment = 'lg:text-left'
+          when 'b-has-text-right-desktop'
+            assign mapped_alignment = 'lg:text-right'
+          when 'b-has-text-centered-widescreen'
+            assign mapped_alignment = 'xl:text-center'
+          when 'b-has-text-justified-widescreen'
+            assign mapped_alignment = 'xl:text-justify'
+          when 'b-has-text-left-widescreen'
+            assign mapped_alignment = 'xl:text-left'
+          when 'b-has-text-right-widescreen'
+            assign mapped_alignment = 'xl:text-right'
+          when 'b-has-text-centered-fullhd'
+            assign mapped_alignment = '2xl:text-center'
+          when 'b-has-text-justified-fullhd'
+            assign mapped_alignment = '2xl:text-justify'
+          when 'b-has-text-left-fullhd'
+            assign mapped_alignment = '2xl:text-left'
+          when 'b-has-text-right-fullhd'
+            assign mapped_alignment = '2xl:text-right'
+        endcase
+        assign alignment_classes = alignment_classes | append: ' ' | append: mapped_alignment
       endif
     endfor
 
     for setting in size_settings
       assign value = block.settings[setting]
       if value != ''
-        assign size_classes = size_classes | append: ' ' | append: value
+        assign mapped_size = value
+        case value
+          when 'b-is-size-1-mobile'
+            assign mapped_size = 'max-md:text-5xl'
+          when 'b-is-size-2-mobile'
+            assign mapped_size = 'max-md:text-4xl'
+          when 'b-is-size-3-mobile'
+            assign mapped_size = 'max-md:text-3xl'
+          when 'b-is-size-4-mobile'
+            assign mapped_size = 'max-md:text-2xl'
+          when 'b-is-size-5-mobile'
+            assign mapped_size = 'max-md:text-xl'
+          when 'b-is-size-6-mobile'
+            assign mapped_size = 'max-md:text-base'
+          when 'b-is-size-7-mobile'
+            assign mapped_size = 'max-md:text-sm'
+          when 'b-is-size-1-tablet'
+            assign mapped_size = 'md:text-5xl'
+          when 'b-is-size-2-tablet'
+            assign mapped_size = 'md:text-4xl'
+          when 'b-is-size-3-tablet'
+            assign mapped_size = 'md:text-3xl'
+          when 'b-is-size-4-tablet'
+            assign mapped_size = 'md:text-2xl'
+          when 'b-is-size-5-tablet'
+            assign mapped_size = 'md:text-xl'
+          when 'b-is-size-6-tablet'
+            assign mapped_size = 'md:text-base'
+          when 'b-is-size-7-tablet'
+            assign mapped_size = 'md:text-sm'
+          when 'b-is-size-1-desktop'
+            assign mapped_size = 'lg:text-5xl'
+          when 'b-is-size-2-desktop'
+            assign mapped_size = 'lg:text-4xl'
+          when 'b-is-size-3-desktop'
+            assign mapped_size = 'lg:text-3xl'
+          when 'b-is-size-4-desktop'
+            assign mapped_size = 'lg:text-2xl'
+          when 'b-is-size-5-desktop'
+            assign mapped_size = 'lg:text-xl'
+          when 'b-is-size-6-desktop'
+            assign mapped_size = 'lg:text-base'
+          when 'b-is-size-7-desktop'
+            assign mapped_size = 'lg:text-sm'
+          when 'b-is-size-1-widescreen'
+            assign mapped_size = 'xl:text-5xl'
+          when 'b-is-size-2-widescreen'
+            assign mapped_size = 'xl:text-4xl'
+          when 'b-is-size-3-widescreen'
+            assign mapped_size = 'xl:text-3xl'
+          when 'b-is-size-4-widescreen'
+            assign mapped_size = 'xl:text-2xl'
+          when 'b-is-size-5-widescreen'
+            assign mapped_size = 'xl:text-xl'
+          when 'b-is-size-6-widescreen'
+            assign mapped_size = 'xl:text-base'
+          when 'b-is-size-7-widescreen'
+            assign mapped_size = 'xl:text-sm'
+          when 'b-is-size-1-fullhd'
+            assign mapped_size = '2xl:text-5xl'
+          when 'b-is-size-2-fullhd'
+            assign mapped_size = '2xl:text-4xl'
+          when 'b-is-size-3-fullhd'
+            assign mapped_size = '2xl:text-3xl'
+          when 'b-is-size-4-fullhd'
+            assign mapped_size = '2xl:text-2xl'
+          when 'b-is-size-5-fullhd'
+            assign mapped_size = '2xl:text-xl'
+          when 'b-is-size-6-fullhd'
+            assign mapped_size = '2xl:text-base'
+          when 'b-is-size-7-fullhd'
+            assign mapped_size = '2xl:text-sm'
+        endcase
+        assign size_classes = size_classes | append: ' ' | append: mapped_size
       endif
     endfor
   %}
@@ -106,7 +222,7 @@
 
     {
       "type": "paragraph",
-      "content": "Control text alignment for different screen sizes using Bulma's responsive alignment classes."
+      "content": "Control text alignment for different screen sizes using responsive Tailwind text utilities."
     },
 
     {
@@ -115,10 +231,10 @@
       "label": "Mobile (up to 768px)",
       "options": [
         { "value": "", "label": "Default" },
-        { "value": "b-has-text-centered-mobile", "label": "Centered" },
-        { "value": "b-has-text-justified-mobile", "label": "Justified" },
-        { "value": "b-has-text-left-mobile", "label": "Left" },
-        { "value": "b-has-text-right-mobile", "label": "Right" }
+        { "value": "max-md:text-center", "label": "Centered" },
+        { "value": "max-md:text-justify", "label": "Justified" },
+        { "value": "max-md:text-left", "label": "Left" },
+        { "value": "max-md:text-right", "label": "Right" }
       ],
       "default": ""
     },
@@ -129,10 +245,10 @@
       "label": "Tablet (769px+)",
       "options": [
         { "value": "", "label": "Default" },
-        { "value": "b-has-text-centered-tablet", "label": "Centered" },
-        { "value": "b-has-text-justified-tablet", "label": "Justified" },
-        { "value": "b-has-text-left-tablet", "label": "Left" },
-        { "value": "b-has-text-right-tablet", "label": "Right" }
+        { "value": "md:text-center", "label": "Centered" },
+        { "value": "md:text-justify", "label": "Justified" },
+        { "value": "md:text-left", "label": "Left" },
+        { "value": "md:text-right", "label": "Right" }
       ],
       "default": ""
     },
@@ -143,10 +259,10 @@
       "label": "Desktop (1024px+)",
       "options": [
         { "value": "", "label": "Default" },
-        { "value": "b-has-text-centered-desktop", "label": "Centered" },
-        { "value": "b-has-text-justified-desktop", "label": "Justified" },
-        { "value": "b-has-text-left-desktop", "label": "Left" },
-        { "value": "b-has-text-right-desktop", "label": "Right" }
+        { "value": "lg:text-center", "label": "Centered" },
+        { "value": "lg:text-justify", "label": "Justified" },
+        { "value": "lg:text-left", "label": "Left" },
+        { "value": "lg:text-right", "label": "Right" }
       ],
       "default": ""
     },
@@ -157,10 +273,10 @@
       "label": "Widescreen (1216px+)",
       "options": [
         { "value": "", "label": "Default" },
-        { "value": "b-has-text-centered-widescreen", "label": "Centered" },
-        { "value": "b-has-text-justified-widescreen", "label": "Justified" },
-        { "value": "b-has-text-left-widescreen", "label": "Left" },
-        { "value": "b-has-text-right-widescreen", "label": "Right" }
+        { "value": "xl:text-center", "label": "Centered" },
+        { "value": "xl:text-justify", "label": "Justified" },
+        { "value": "xl:text-left", "label": "Left" },
+        { "value": "xl:text-right", "label": "Right" }
       ],
       "default": ""
     },
@@ -171,10 +287,10 @@
       "label": "Full HD (1408px+)",
       "options": [
         { "value": "", "label": "Default" },
-        { "value": "b-has-text-centered-fullhd", "label": "Centered" },
-        { "value": "b-has-text-justified-fullhd", "label": "Justified" },
-        { "value": "b-has-text-left-fullhd", "label": "Left" },
-        { "value": "b-has-text-right-fullhd", "label": "Right" }
+        { "value": "2xl:text-center", "label": "Centered" },
+        { "value": "2xl:text-justify", "label": "Justified" },
+        { "value": "2xl:text-left", "label": "Left" },
+        { "value": "2xl:text-right", "label": "Right" }
       ],
       "default": ""
     },
@@ -186,7 +302,7 @@
 
     {
       "type": "paragraph",
-      "content": "Control font sizes for different screen sizes using Bulma's typography scale."
+      "content": "Control font sizes for different screen sizes using responsive Tailwind text scale utilities."
     },
 
     {
@@ -195,13 +311,13 @@
       "label": "Mobile Size (up to 768px)",
       "options": [
         { "value": "", "label": "Default" },
-        { "value": "b-is-size-1-mobile", "label": "Size 1 (3rem)" },
-        { "value": "b-is-size-2-mobile", "label": "Size 2 (2.5rem)" },
-        { "value": "b-is-size-3-mobile", "label": "Size 3 (2rem)" },
-        { "value": "b-is-size-4-mobile", "label": "Size 4 (1.5rem)" },
-        { "value": "b-is-size-5-mobile", "label": "Size 5 (1.25rem)" },
-        { "value": "b-is-size-6-mobile", "label": "Size 6 (1rem)" },
-        { "value": "b-is-size-7-mobile", "label": "Size 7 (0.75rem)" }
+        { "value": "max-md:text-5xl", "label": "Size 1 (3rem)" },
+        { "value": "max-md:text-4xl", "label": "Size 2 (2.5rem)" },
+        { "value": "max-md:text-3xl", "label": "Size 3 (2rem)" },
+        { "value": "max-md:text-2xl", "label": "Size 4 (1.5rem)" },
+        { "value": "max-md:text-xl", "label": "Size 5 (1.25rem)" },
+        { "value": "max-md:text-base", "label": "Size 6 (1rem)" },
+        { "value": "max-md:text-sm", "label": "Size 7 (0.75rem)" }
       ],
       "default": ""
     },
@@ -212,13 +328,13 @@
       "label": "Tablet Size (769px+)",
       "options": [
         { "value": "", "label": "Default" },
-        { "value": "b-is-size-1-tablet", "label": "Size 1 (3rem)" },
-        { "value": "b-is-size-2-tablet", "label": "Size 2 (2.5rem)" },
-        { "value": "b-is-size-3-tablet", "label": "Size 3 (2rem)" },
-        { "value": "b-is-size-4-tablet", "label": "Size 4 (1.5rem)" },
-        { "value": "b-is-size-5-tablet", "label": "Size 5 (1.25rem)" },
-        { "value": "b-is-size-6-tablet", "label": "Size 6 (1rem)" },
-        { "value": "b-is-size-7-tablet", "label": "Size 7 (0.75rem)" }
+        { "value": "md:text-5xl", "label": "Size 1 (3rem)" },
+        { "value": "md:text-4xl", "label": "Size 2 (2.5rem)" },
+        { "value": "md:text-3xl", "label": "Size 3 (2rem)" },
+        { "value": "md:text-2xl", "label": "Size 4 (1.5rem)" },
+        { "value": "md:text-xl", "label": "Size 5 (1.25rem)" },
+        { "value": "md:text-base", "label": "Size 6 (1rem)" },
+        { "value": "md:text-sm", "label": "Size 7 (0.75rem)" }
       ],
       "default": ""
     },
@@ -229,13 +345,13 @@
       "label": "Desktop Size (1024px+)",
       "options": [
         { "value": "", "label": "Default" },
-        { "value": "b-is-size-1-desktop", "label": "Size 1 (3rem)" },
-        { "value": "b-is-size-2-desktop", "label": "Size 2 (2.5rem)" },
-        { "value": "b-is-size-3-desktop", "label": "Size 3 (2rem)" },
-        { "value": "b-is-size-4-desktop", "label": "Size 4 (1.5rem)" },
-        { "value": "b-is-size-5-desktop", "label": "Size 5 (1.25rem)" },
-        { "value": "b-is-size-6-desktop", "label": "Size 6 (1rem)" },
-        { "value": "b-is-size-7-desktop", "label": "Size 7 (0.75rem)" }
+        { "value": "lg:text-5xl", "label": "Size 1 (3rem)" },
+        { "value": "lg:text-4xl", "label": "Size 2 (2.5rem)" },
+        { "value": "lg:text-3xl", "label": "Size 3 (2rem)" },
+        { "value": "lg:text-2xl", "label": "Size 4 (1.5rem)" },
+        { "value": "lg:text-xl", "label": "Size 5 (1.25rem)" },
+        { "value": "lg:text-base", "label": "Size 6 (1rem)" },
+        { "value": "lg:text-sm", "label": "Size 7 (0.75rem)" }
       ],
       "default": ""
     },
@@ -246,13 +362,13 @@
       "label": "Widescreen Size (1216px+)",
       "options": [
         { "value": "", "label": "Default" },
-        { "value": "b-is-size-1-widescreen", "label": "Size 1 (3rem)" },
-        { "value": "b-is-size-2-widescreen", "label": "Size 2 (2.5rem)" },
-        { "value": "b-is-size-3-widescreen", "label": "Size 3 (2rem)" },
-        { "value": "b-is-size-4-widescreen", "label": "Size 4 (1.5rem)" },
-        { "value": "b-is-size-5-widescreen", "label": "Size 5 (1.25rem)" },
-        { "value": "b-is-size-6-widescreen", "label": "Size 6 (1rem)" },
-        { "value": "b-is-size-7-widescreen", "label": "Size 7 (0.75rem)" }
+        { "value": "xl:text-5xl", "label": "Size 1 (3rem)" },
+        { "value": "xl:text-4xl", "label": "Size 2 (2.5rem)" },
+        { "value": "xl:text-3xl", "label": "Size 3 (2rem)" },
+        { "value": "xl:text-2xl", "label": "Size 4 (1.5rem)" },
+        { "value": "xl:text-xl", "label": "Size 5 (1.25rem)" },
+        { "value": "xl:text-base", "label": "Size 6 (1rem)" },
+        { "value": "xl:text-sm", "label": "Size 7 (0.75rem)" }
       ],
       "default": ""
     },
@@ -263,13 +379,13 @@
       "label": "Full HD Size (1408px+)",
       "options": [
         { "value": "", "label": "Default" },
-        { "value": "b-is-size-1-fullhd", "label": "Size 1 (3rem)" },
-        { "value": "b-is-size-2-fullhd", "label": "Size 2 (2.5rem)" },
-        { "value": "b-is-size-3-fullhd", "label": "Size 3 (2rem)" },
-        { "value": "b-is-size-4-fullhd", "label": "Size 4 (1.5rem)" },
-        { "value": "b-is-size-5-fullhd", "label": "Size 5 (1.25rem)" },
-        { "value": "b-is-size-6-fullhd", "label": "Size 6 (1rem)" },
-        { "value": "b-is-size-7-fullhd", "label": "Size 7 (0.75rem)" }
+        { "value": "2xl:text-5xl", "label": "Size 1 (3rem)" },
+        { "value": "2xl:text-4xl", "label": "Size 2 (2.5rem)" },
+        { "value": "2xl:text-3xl", "label": "Size 3 (2rem)" },
+        { "value": "2xl:text-2xl", "label": "Size 4 (1.5rem)" },
+        { "value": "2xl:text-xl", "label": "Size 5 (1.25rem)" },
+        { "value": "2xl:text-base", "label": "Size 6 (1rem)" },
+        { "value": "2xl:text-sm", "label": "Size 7 (0.75rem)" }
       ],
       "default": ""
     },

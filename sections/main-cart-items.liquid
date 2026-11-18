@@ -1,34 +1,36 @@
 <div
-  class="b-container b-is-max-tablet b-py-3 b-px-3"
+  class="page-width cart-page-shell mx-auto py-3 px-3"
   data-cart-fragment
 >
-  <div class="b-is-flex b-is-justify-content-space-between b-is-align-items-center b-mb-5 b-mx-2">
-    <h1 class="b-title b-is-3 m-0">
+  <div class="mb-5 mx-2 flex items-center justify-between">
+    <h1 class="m-0 h1">
       {{ 'sections.cart.title' | t }}
     </h1>
 
     <a
       href="{{ routes.all_products_collection_url }}"
-      class="b-button b-is-outline b-is-small b-is-primary b-is-rounded b-is-outlined"
+      class="d-btn d-btn-outline d-btn-primary d-btn-sm"
     >
       {{ 'general.continue_shopping' | t }}
     </a>
   </div>
 
   {% if cart == empty %}
-    <div class="b-has-text-centered b-py-6">
-      <p class="b-is-size-4 b-mb-4">
+    <div class="cart-page-shell__empty py-6 text-center">
+      <p class="cart-page-shell__empty-text mb-4 text-lg">
         {{ 'sections.cart.empty' | t }}
       </p>
-      <a href="{{ routes.all_products_collection_url }}" class="b-button b-is-primary">
+      <a href="{{ routes.all_products_collection_url }}" class="d-btn d-btn-primary">
         {{ 'general.continue_shopping' | t }}
       </a>
     </div>
   {% else %}
     <form action="{{ routes.cart_url }}" method="post" id="cart">
-      {% for item in cart.items %}
-        {% render 'cart-item-b', item: item, line_number: forloop.index %}
-      {% endfor %}
+      <ul class="plt-cart-lines cart-page__lines">
+        {% for item in cart.items %}
+          {% render 'cart-item-b', item: item %}
+        {% endfor %}
+      </ul>
     </form>
   {% endif %}
 </div>

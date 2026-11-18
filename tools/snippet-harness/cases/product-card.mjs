@@ -1,4 +1,4 @@
-// Fixtures for snippets/card-product.liquid → DS plt-product-card markup (Alpine shell kept).
+// Fixtures for snippets/card-product.liquid → DS plt-product-card markup (sin Alpine).
 const money = (cents) => `$${(Number(cents || 0) / 100).toFixed(2)}`;
 
 const media = (alt = 'Product photo') => ({

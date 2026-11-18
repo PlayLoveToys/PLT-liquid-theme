@@ -30,7 +30,7 @@
       <div class="title-wrapper-with-link{% if posts_displayed > 2 %} title-wrapper--self-padded-tablet-down{% else %} title-wrapper--self-padded-mobile{% endif %} title-wrapper--no-top-margin">
         <h2
           id="SectionHeading-{{ section.id }}"
-          class="blog__title inline-richtext {{ section.settings.heading_size }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+          class="blog__title theme-headline-sm inline-richtext {{ section.settings.heading_size }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
           {% if settings.animations_reveal_on_scroll %}
             data-cascade
           {% endif %}
@@ -44,7 +44,7 @@
         -%}
           <a
             href="{{ section.settings.blog.url }}"
-            class="link underlined-link large-up-hide{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+            class="d-btn d-btn-link theme-label-bold large-up-hide{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
           >
             {{ 'sections.featured_blog.view_all' | t }}
           </a>
@@ -180,7 +180,7 @@
         <a
           href="{{ section.settings.blog.url }}"
           id="ViewAll-{{ section.id }}"
-          class="blog__button button"
+          class="blog__button d-btn d-btn-outline theme-label-bold"
           aria-labelledby="ViewAll-{{ section.id }} SectionHeading-{{ section.id }}"
         >
           {{ 'sections.featured_blog.view_all' | t }}

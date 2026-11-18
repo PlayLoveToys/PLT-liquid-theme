@@ -2,9 +2,16 @@
  * Theme bridge for <plt-cart-drawer>.
  * Owns cart mutations (CartApi /cart/change.js), maps /cart.js → lines/subtotal,
  * and exposes a cart-notification-compatible host for product-form / quick-add / Alpine.
+ *
+ * Cart sync for non-Alpine consumers (header bubble, cart page lines):
+ *   document.addEventListener('plt:cart-updated', (e) => {
+ *     const { item_count, total_price, cart } = e.detail || {};
+ *   });
+ * `detail.cart` is the Shopify Ajax cart object from /cart.js or /cart/change.js.
  */
 (() => {
   const DRAWER_READY_TIMEOUT_MS = 3000;
+  const CART_UPDATED_EVENT = 'plt:cart-updated';
 
   function getConfig() {
     return window.PltCartDrawerConfig || {};
@@ -88,19 +95,24 @@
     drawer.error = '';
   }
 
-  async function syncAlpineStore(cart) {
-    const store = window.Alpine?.store?.('cart');
-    if (!store) return;
-    if (cart) {
-      store.cart = cart;
-      store.item_count = cart.item_count || 0;
-      store.total_price = cart.total_price || 0;
-      store.error = null;
-      return;
-    }
-    if (typeof store.refresh === 'function') {
-      await store.refresh();
-    }
+  function emitCartUpdated(cart) {
+    if (!cart) return;
+    document.dispatchEvent(
+      new CustomEvent(CART_UPDATED_EVENT, {
+        bubbles: true,
+        detail: {
+          item_count: cart.item_count || 0,
+          total_price: cart.total_price || 0,
+          cart,
+        },
+      })
+    );
+  }
+
+  function setCartPageLinesBusy(busy) {
+    document.querySelectorAll('plt-cart-line').forEach((el) => {
+      el.busy = busy;
+    });
   }
 
   async function whenDrawerDefined() {
@@ -131,7 +143,7 @@
     try {
       const cart = await fetchCart();
       applyCartToDrawer(cart, drawer);
-      await syncAlpineStore(cart);
+      emitCartUpdated(cart);
     } catch (err) {
       console.error(err);
     }
@@ -143,6 +155,7 @@
     const { lineId, quantity } = event.detail || {};
     if (!lineId || changingQty) return;
     changingQty = true;
+    setCartPageLinesBusy(true);
     const drawer = getDrawer();
     if (drawer) {
       drawer.busy = true;
@@ -162,12 +175,13 @@
         return;
       }
       applyCartToDrawer(cart, drawer);
-      await syncAlpineStore(cart);
+      emitCartUpdated(cart);
       if (typeof window.refreshCartFragment === 'function') {
         await window.refreshCartFragment();
       }
     } finally {
       changingQty = false;
+      setCartPageLinesBusy(false);
       if (drawer) drawer.busy = false;
     }
   }
@@ -223,10 +237,19 @@
     window.CartNotificationCompat = host;
   }
 
+  async function emitInitialCart() {
+    try {
+      const cart = await fetchCart();
+      emitCartUpdated(cart);
+    } catch {
+      /* ignore */
+    }
+  }
+
   function init() {
     exposeHost();
-    if (!getDrawer()) return;
     bindListeners();
+    void emitInitialCart();
   }
 
   if (document.readyState === 'loading') {
