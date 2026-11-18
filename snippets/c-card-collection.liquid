@@ -1,15 +1,15 @@
 <article
-  class="d-card plt-collection-carousel-card plt-legacy-bulma-link-card flex h-full flex-col overflow-hidden shadow-md border-0"
+  class="d-card plt-collection-carousel-card plt-legacy-bulma-link-card overflow-hidden shadow-md border-0"
   {{ block.shopify_attributes }}
 >
-  <header class="shrink-0 px-3 py-2 md:px-4 md:py-3">
+  <header class="plt-collection-carousel-card__header">
     <h3 class="plt-collection-carousel-card__title m-0 text-base font-semibold capitalize md:text-lg">
       {{ block.settings.collection.title }}
     </h3>
   </header>
   {% if block.settings.collection.featured_image %}
-    <div class="plt-media-card__media aspect-square shrink-0 overflow-hidden">
-      <figure class="m-0 h-full w-full">
+    <div class="plt-media-card__media plt-collection-carousel-card__image">
+      <figure class="plt-collection-carousel-card__figure m-0">
         {{
           block.settings.collection.featured_image
           | image_url: width: 800
@@ -17,17 +17,17 @@
             widths: '50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600',
             loading: 'lazy',
             preload: block.settings.priority,
-            class: 'h-full w-full object-cover'
+            class: 'plt-collection-carousel-card__img'
         }}
       </figure>
     </div>
   {% endif %}
   {% if block.settings.show_description %}
-    <div class="plt-collection-carousel-card__body flex-grow p-2 text-sm leading-snug md:p-4 md:text-base">
+    <div class="plt-collection-carousel-card__body p-2 text-sm leading-snug md:text-base">
       {{ block.settings.collection.description | strip_html | truncatewords: block.settings.truncatewords, '...' }}
     </div>
   {% endif %}
-  <footer class="mt-auto shrink-0 p-2 pb-3 md:px-4 md:pb-4">
+  <footer class="plt-collection-carousel-card__footer">
     <a
       href="{{ block.settings.cta_url | default: block.settings.collection.url }}"
       class="plt-collection-carousel-card__cta block w-full text-center text-base font-medium capitalize no-underline hover:underline md:text-lg"

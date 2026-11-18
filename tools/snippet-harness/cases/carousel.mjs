@@ -27,6 +27,6 @@ export default async ({engine}) => {
   return `<section class="case">
     <h3>DS Carousel shell + plt-carousel.js (3s autoplay, overlay nav)</h3>
     <div class="b-carousel-wrapper" style="max-width:480px;margin:auto">${html}</div>
-    <p class="hint">Desktop ≥1152px: grid sin autoplay. Reducir viewport para probar swipe y flechas.</p>
+    <p class="hint">Desktop ≥1152px: slides 25% (Bulma). Reducir viewport para swipe, flechas y 85vw.</p>
   </section>`;
 };

@@ -65,5 +65,8 @@ jobs:
       - name: test:templates (allowlist baseline)
         run: npm run test:templates:ci
 
+      - name: Install Playwright (carousel harness layout checks)
+        run: npx playwright install chromium
+
       - name: snippet harness
         run: npm run test:harness
