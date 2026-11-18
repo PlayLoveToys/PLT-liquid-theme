@@ -1,6 +1,6 @@
 # Inventario Alpine residual (Fase 5)
 
-Pin DS de referencia: `@playlovetoys/platform` → `c27304c` (`main` desde [PR #17](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/17)).  
+Pin DS de referencia: `@playlovetoys/platform` → `c27304c` (producción en `main` desde [PR #17](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/17); trabajo nuevo vía `dev-ai`, ver [`CONTRIBUTING.md`](../CONTRIBUTING.md)).  
 Contexto: tras **JS-C** (facets sin Alpine), el plan maestro fija **9** archivos Liquid con `x-data` ([`docs/ds-port-plan.md`](./ds-port-plan.md) § Fase 5; [`docs/ds-port-2b-js-plan.md`](./ds-port-2b-js-plan.md) § JS-C). Antes de la higiene **(c)** eran **12**.
 
 **Alcance de este documento:** inventario y clasificación únicamente — **sin migración** de Liquid ni JS.
