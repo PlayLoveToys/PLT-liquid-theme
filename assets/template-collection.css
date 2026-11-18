@@ -145,3 +145,16 @@
 #product-grid .plt-product-card .price--sold-out .price__regular {
   display: block;
 }
+
+/* #27: savings % pill + 5-col widescreen (badge Free CSS en pila #38/#39) */
+.price__savings-pill {
+  margin-inline-start: 0.35rem;
+  vertical-align: middle;
+}
+
+@media screen and (min-width: 1400px) {
+  .product-grid.grid--5-col-widescreen .grid__item {
+    width: calc(20% - var(--grid-desktop-horizontal-spacing) * 4 / 5);
+    max-width: calc(20% - var(--grid-desktop-horizontal-spacing) * 4 / 5);
+  }
+}

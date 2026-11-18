@@ -35,6 +35,9 @@ jobs:
       - name: check:theme-css
         run: npm run check:theme-css
 
+      - name: check:tailwind-arbitrary
+        run: npm run check:tailwind-arbitrary
+
       - name: check:no-legacy
         env:
           LEGACY_ENFORCE_BULMA: '1'

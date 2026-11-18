@@ -1,6 +1,8 @@
 {%- comment -%}
   Product card: DS ProductCard markup (plt-product-card). Quick-add / ATC via
   product-form + quick-add-modal (no Alpine productCard).
+  Collection-only (main-collection): collection_grid_free_badge, show_type, show_savings_percentage,
+  pad_color, media_aspect_ratio.
 {%- endcomment -%}
 {%- liquid
   assign quick_add = quick_add | default: 'none'
@@ -23,6 +25,7 @@
 {%- endunless -%}
 {%- if card_product and card_product != empty -%}
   {%- liquid
+    assign image_pad_color = pad_color | default: '000'
     assign show_collection_free_badge = false
     if collection_grid_free_badge and card_product.price >= 7500
       assign show_collection_free_badge = true
@@ -51,18 +54,31 @@
           tabindex="-1"
         >
           {%- assign card_alt = card_product.featured_media.alt | default: card_product.title -%}
-          {{
-            card_product.featured_media
-            | image_url: width: 600, pad_color: '000'
-            | image_tag:
-              widths: '300, 350, 400, 450, 500, 550, 600',
-              preload: false,
-              loading: 'lazy',
-              style: 'object-fit: contain;',
-              alt: card_alt
-          }}
+          {%- if media_aspect_ratio == 'square' -%}
+            {{
+              card_product.featured_media
+              | image_url: width: 600, height: 600, pad_color: image_pad_color
+              | image_tag:
+                widths: '300, 350, 400, 450, 500, 550, 600',
+                preload: false,
+                loading: 'lazy',
+                style: 'object-fit: contain;',
+                alt: card_alt
+            }}
+          {%- else -%}
+            {{
+              card_product.featured_media
+              | image_url: width: 600, pad_color: image_pad_color
+              | image_tag:
+                widths: '300, 350, 400, 450, 500, 550, 600',
+                preload: false,
+                loading: 'lazy',
+                style: 'object-fit: contain;',
+                alt: card_alt
+            }}
+          {%- endif -%}
           {%- if show_collection_free_badge -%}
-            <span class="plt-product-card__collection-free-badge theme-label-bold inline-flex items-center font-semibold">
+            <span class="d-badge plt-product-card__collection-free-badge theme-label-bold inline-flex items-center font-semibold">
               <svg
                 class="plt-product-card__collection-free-icon shrink-0"
                 xmlns="http://www.w3.org/2000/svg"
@@ -107,6 +123,10 @@
           <p class="theme-meta plt-media-card__meta">{{ card_product.vendor | escape }}</p>
         {%- endif -%}
 
+        {%- if show_type and card_product.type != blank -%}
+          <p class="theme-meta plt-media-card__meta plt-product-card__type">{{ card_product.type | escape }}</p>
+        {%- endif -%}
+
         {%- if show_rating and card_product.metafields.reviews.rating.value != blank -%}
           {% liquid
             assign rating_decimal = 0
@@ -138,7 +158,12 @@
         {%- endif -%}
 
         <div class="d-card-actions plt-media-card__actions">
-          {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
+          {% render 'price',
+            product: card_product,
+            price_class: '',
+            show_compare_at_price: true,
+            show_savings_percentage: show_savings_percentage
+          %}
         </div>
 
         {%- if card_product.quantity_price_breaks_configured? -%}
