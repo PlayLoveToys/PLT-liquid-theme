@@ -1,5 +1,5 @@
 /** a-matrix block wrappers (col-span) @ 1280 — reproduces home matrix card columns. */
-import path from 'node:path';
+import {harnessOutPath} from '../lib/verify-carousel-slides.mjs';
 import {pathToFileURL} from 'node:url';
 
 export default async ({engine}) => {
@@ -78,7 +78,7 @@ export default async ({engine}) => {
 };
 
 export async function verify({root}) {
-  const htmlPath = path.join(root, 'tools', 'snippet-harness', '.out', 'a-matrix-blocks.layered.html');
+  const htmlPath = harnessOutPath(root, 'a-matrix-blocks');
   const {chromium} = await import('playwright');
   const browser = await chromium.launch({headless: true});
   try {

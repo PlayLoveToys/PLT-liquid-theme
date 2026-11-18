@@ -5,6 +5,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
+import {harnessOutPath} from '../lib/verify-carousel-slides.mjs';
 
 const SECTION_ID = 'harness-featured-collection';
 
@@ -94,13 +95,7 @@ export default async ({engine}) => {
 };
 
 export async function verify({root}) {
-  const htmlPath = path.join(
-    root,
-    'tools',
-    'snippet-harness',
-    '.out',
-    'featured-collection-slider.layered.html',
-  );
+  const htmlPath = harnessOutPath(root, 'featured-collection-slider');
   const {chromium} = await import('playwright');
   const browser = await chromium.launch({headless: true});
   try {
