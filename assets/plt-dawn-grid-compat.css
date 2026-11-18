@@ -1,0 +1,48 @@
+/**
+ * Dawn product/collection grids use `.grid { display: flex }` in base.css (@layer legacy).
+ * Tailwind utilities define `.grid { display: grid }`, which wins over legacy layers and
+ * collapses featured-collection sliders, multicolumn lists, and similar Dawn markup.
+ *
+ * Restore flex only for Dawn grids (`.grid__item` children). Intentional Tailwind grids
+ * (`grid-cols-*`, matrix sections) keep display:grid from theme.css.
+ */
+ul.grid:has(> .grid__item),
+ol.grid:has(> .grid__item),
+.grid:has(> .grid__item):not([class*='grid-cols-']) {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Unlayered compat sheet: no !important so layered Tailwind utilities stay below these rules. */
+.grid.grid-cols-12,
+.grid[class*='grid-cols-'] {
+  display: grid;
+}
+
+/* Full-width matrix row (banners, titles); b-carousel keeps Tailwind col-span-* on its wrapper. */
+.a-matrix .grid.grid-cols-12 > .shopify-block > .plt-a-matrix-full-width,
+.a-matrix .grid.grid-cols-12 > .plt-a-matrix-full-width {
+  grid-column: span 12 / span 12;
+  min-width: 0;
+}
+
+/* a-matrix b-card-* only (not b-carousel col-span-6/3 or plt-a-matrix-full-width). */
+.a-matrix .grid.grid-cols-12 > .shopify-block > .plt-a-matrix-card-cell,
+.a-matrix .grid.grid-cols-12 > .plt-a-matrix-card-cell {
+  grid-column: span 12 / span 12;
+  min-width: 0;
+}
+
+@media screen and (min-width: 768px) {
+  .a-matrix .grid.grid-cols-12 > .shopify-block > .plt-a-matrix-card-cell,
+  .a-matrix .grid.grid-cols-12 > .plt-a-matrix-card-cell {
+    grid-column: span 6 / span 6;
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  .a-matrix .grid.grid-cols-12 > .shopify-block > .plt-a-matrix-card-cell,
+  .a-matrix .grid.grid-cols-12 > .plt-a-matrix-card-cell {
+    grid-column: span 3 / span 3;
+  }
+}
