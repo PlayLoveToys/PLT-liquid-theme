@@ -11,7 +11,12 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-const RETIRED_ASSET_FILENAMES = ['cart-store.js', 'alpine-product-card.js'];
+const RETIRED_ASSET_FILENAMES = [
+  'cart-store.js',
+  'alpine-product-card.js',
+  'b-style.css',
+  'b-style.source.css',
+];
 
 /** Liquid files still allowed to use Alpine directives until follow-up PRs merge. */
 const ALPINE_LIQUID_ALLOWLIST = new Set([
@@ -53,10 +58,11 @@ const ALPINE_DIRECTIVE_PATTERNS = [
 
 /** @click is common in non-Alpine docs; only flag in Liquid with x-data family nearby is hard — skip bare @click. */
 
-const BULMA_PATTERNS = [
+const BULMA_BANNED_RE = [
   /\bfrom\s+['"]bulma/i,
   /\bbulma\/css/i,
-  /assets\/b-style\.css/,
+  /assets\/b-style(?:\.source)?\.css/,
+  /\bclass="[^"]*\bb-(?:button|columns|column|box|container|card|content|field|input|label|level|media|navbar|section|title|is-|has-)\b/,
 ];
 
 function walkFiles(dir, out = []) {
@@ -161,24 +167,38 @@ function collectViolations() {
     }
   }
 
+  for (const name of ['b-style.css', 'b-style.source.css']) {
+    const p = path.join(root, 'assets', name);
+    if (fs.existsSync(p)) {
+      violations.push({
+        kind: 'bulma-asset',
+        file: `assets/${name}`,
+        detail: 'Bulma CSS bundle must stay deleted',
+      });
+    }
+  }
+
   if (process.env.LEGACY_ENFORCE_BULMA === '1') {
     const allFiles = walkFiles(root).filter((p) => {
       const r = rel(p);
-      return !r.startsWith('docs/') && !r.startsWith('node_modules/');
+      return (
+        !r.startsWith('docs/') &&
+        !r.startsWith('node_modules/') &&
+        r !== 'assets/alpine-bundle.js'
+      );
     });
     for (const abs of allFiles) {
       const r = rel(abs);
       if (!/\.(liquid|css|js|mjs|json)$/.test(abs)) continue;
       const content = fs.readFileSync(abs, 'utf8');
-      for (const re of BULMA_PATTERNS) {
-        if (re.test(content)) {
-          violations.push({
-            kind: 'bulma',
-            file: r,
-            detail: `matches ${re}`,
-          });
-          break;
-        }
+      const hits = lineHits(content, BULMA_BANNED_RE);
+      for (const hit of hits) {
+        violations.push({
+          kind: 'bulma',
+          file: r,
+          line: hit.line,
+          detail: hit.text.trim(),
+        });
       }
     }
   }
@@ -216,18 +236,13 @@ function main() {
       const loc = v.line ? `${v.file}:${v.line}` : v.file;
       process.stderr.write(`  [${v.kind}] ${loc} — ${v.detail}\n`);
     }
-    if (process.env.LEGACY_ENFORCE_BULMA !== '1') {
-      process.stderr.write(
-        '\n(Bulma enforcement is off; set LEGACY_ENFORCE_BULMA=1 after the Bulma-removal PR merges.)\n',
-      );
-    }
     process.exit(1);
   }
 
   const bulmaNote =
     process.env.LEGACY_ENFORCE_BULMA === '1'
-      ? 'Bulma enforcement on.'
-      : 'Bulma enforcement off (LEGACY_ENFORCE_BULMA=1 when Bulma PR lands).';
+      ? 'Bulma markup enforcement on.'
+      : 'Bulma markup scan off (assets b-style* always blocked).';
   process.stdout.write(
     `check:no-legacy: ok — retired cart Alpine assets blocked; ` +
       `${ALPINE_LIQUID_ALLOWLIST.size} Alpine allowlist file(s); ${bulmaNote}\n`,

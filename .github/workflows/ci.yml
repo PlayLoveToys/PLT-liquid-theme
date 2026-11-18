@@ -36,6 +36,8 @@ jobs:
         run: npm run check:theme-css
 
       - name: check:no-legacy
+        env:
+          LEGACY_ENFORCE_BULMA: '1'
         run: npm run check:no-legacy
 
       - name: test:templates (allowlist baseline)
