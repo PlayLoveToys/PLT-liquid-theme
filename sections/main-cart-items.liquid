@@ -1,5 +1,5 @@
 <div
-  class="page-width mx-auto max-w-3xl py-3 px-3"
+  class="page-width cart-page-shell mx-auto py-3 px-3"
   data-cart-fragment
 >
   <div class="mb-5 mx-2 flex items-center justify-between">
@@ -16,8 +16,8 @@
   </div>
 
   {% if cart == empty %}
-    <div class="py-12 text-center">
-      <p class="mb-4 text-lg">
+    <div class="cart-page-shell__empty py-6 text-center">
+      <p class="cart-page-shell__empty-text mb-4 text-lg">
         {{ 'sections.cart.empty' | t }}
       </p>
       <a href="{{ routes.all_products_collection_url }}" class="d-btn d-btn-primary">

@@ -80,6 +80,7 @@
 
 /* Bulma b-has-background-info-light (carousel article cards) */
 article.d-card.plt-legacy-bulma-info-light-card {
+  border-radius: 0.75rem !important;
   background-color: hsl(190deg 100% 95%) !important;
   color: hsl(190deg 100% 20%);
   font-family: var(--font-body-family);
@@ -128,9 +129,50 @@ article.plt-legacy-bulma-info-light-card .plt-media-card__media {
   font-family: var(--font-body-family);
 }
 
-/* Bulma --b-link (hsl 346deg 89% 61%): legacy b-has-background-link on collection carousel cards */
-.plt-legacy-bulma-link-card.plt-collection-carousel-card {
-  border-radius: 0.75rem;
+/* Facets drawer: panel chrome closer to legacy (plain CSS; no Tailwind arbitrary) */
+.facets-drawer__panel {
+  font-family: var(--font-body-family);
+}
+
+.facets-drawer__panel > header {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.facets-drawer__footer .d-btn {
+  font-family: var(--font-body-family);
+  min-height: 2.75rem;
+}
+
+/* Cart page: Bulma b-is-max-tablet (704px) + empty state spacing */
+.cart-page-shell {
+  max-width: 44rem;
+}
+
+.cart-page-shell .h1 {
+  font-size: clamp(1.5rem, 0.3883vw + 1.409rem, 2rem);
+  font-weight: 600;
+  line-height: 1.125;
+}
+
+.cart-page-shell__empty-text {
+  font-size: 1.25rem;
+}
+
+.cart-page-shell .plt-cart-lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cart-page-shell .cart-page__line + .cart-page__line {
+  margin-top: 0.75rem;
+}
+
+/* Bulma --b-link + --b-card-radius 0.75rem: collection carousel cards (c-card-collection) */
+article.d-card.plt-legacy-bulma-link-card.plt-collection-carousel-card {
+  display: block;
+  border-radius: 0.75rem !important;
   box-shadow:
     0 0.5em 1em -0.125em hsla(221deg, 14%, 4%, 0.1),
     0 0 0 1px hsla(221deg, 14%, 4%, 0.02);
@@ -139,15 +181,34 @@ article.plt-legacy-bulma-info-light-card .plt-media-card__media {
   font-family: var(--font-body-family);
 }
 
-.plt-legacy-bulma-link-card .plt-media-card__media {
+.plt-legacy-bulma-link-card.plt-collection-carousel-card .plt-collection-carousel-card__header {
+  padding: 0.75rem 0.75rem 0.5rem;
+}
+
+.plt-legacy-bulma-link-card.plt-collection-carousel-card .plt-collection-carousel-card__footer {
+  padding: 0.5rem 0.75rem 0.75rem;
+}
+
+.plt-legacy-bulma-link-card .plt-collection-carousel-card__image {
   display: block;
+  position: relative;
   width: 100%;
-  aspect-ratio: 1;
   margin: 0;
   border-bottom: none;
 }
 
-.plt-legacy-bulma-link-card .plt-media-card__media img {
+/* Bulma b-image.b-is-square: square crop without flex column stretch */
+.plt-legacy-bulma-link-card .plt-collection-carousel-card__figure {
+  display: block;
+  position: relative;
+  margin: 0;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.plt-legacy-bulma-link-card .plt-collection-carousel-card__img {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
