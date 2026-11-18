@@ -102,6 +102,8 @@
   }
 {%- endstyle -%}
 
+{% render 'defer-stylesheet', asset: 'plt-header-nav-compat.css' %}
+
 {% comment %} <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script> {% endcomment %}
 <script src="{{ 'sticky-header.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'header-cart-bubble.js' | asset_url }}" defer="defer"></script>
