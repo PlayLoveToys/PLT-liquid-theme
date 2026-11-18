@@ -329,7 +329,7 @@
                       %}
                     {%- endcapture -%}
                     {%- liquid
-                      assign plt_qty_host_attrs = ' class="quantity" data-cart-quantity="' | append: cart_qty | append: '" data-min="' | append: qty_rule_min | append: '"'
+                      assign plt_qty_host_attrs = ' data-cart-quantity="' | append: cart_qty | append: '" data-min="' | append: qty_rule_min | append: '"'
                       if qty_rule_max != null
                         assign plt_qty_host_attrs = plt_qty_host_attrs | append: ' data-max="' | append: qty_rule_max | append: '"'
                       endif
@@ -338,8 +338,12 @@
                       assign plt_quantity_selector_html = plt_quantity_selector_html | replace_first: '<plt-quantity-selector', plt_qty_host_open
                       assign plt_qty_fallback_form = 'data-plt-fallback form="' | append: product_form_id | append: '"'
                       assign plt_quantity_selector_html = plt_quantity_selector_html | replace_first: 'data-plt-fallback', plt_qty_fallback_form
-                      echo plt_quantity_selector_html
+                      assign plt_quantity_selector_html = plt_quantity_selector_html | replace_first: 'class="d-input"', 'class="quantity__input d-input"'
+                      assign plt_quantity_selector_html = plt_quantity_selector_html | replace_first: 'name="quantity"', 'name="quantity-fallback"'
                     -%}
+                    <quantity-input class="quantity">
+                      {{ plt_quantity_selector_html }}
+                    </quantity-input>
                     {%- liquid
                       assign volume_pricing_array = product.selected_or_first_available_variant.quantity_price_breaks | sort: 'quantity' | reverse
                       assign current_qty_for_volume_pricing = cart_qty | plus: product.selected_or_first_available_variant.quantity_rule.min

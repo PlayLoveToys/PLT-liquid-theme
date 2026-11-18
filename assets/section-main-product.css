@@ -355,8 +355,8 @@ a.product__text {
   margin-bottom: 0.6rem;
 }
 
-/* PDP: plt-quantity-selector host (no .quantity in legacy layer). Mirror Dawn .quantity sizing. */
-.product-form__quantity plt-quantity-selector.quantity {
+/* PDP: Dawn <quantity-input class="quantity"> + plt-quantity-selector (JS-Q3). */
+.product-form__quantity quantity-input.quantity {
   color: rgba(var(--color-foreground));
   position: relative;
   width: calc(14rem / var(--font-body-scale) + var(--inputs-border-width) * 2);
@@ -364,6 +364,19 @@ a.product__text {
   border-radius: var(--inputs-radius);
   min-height: calc((var(--inputs-border-width) * 2) + 4.5rem);
   box-sizing: border-box;
+}
+
+.product-form__quantity quantity-input.quantity plt-quantity-selector {
+  width: 100%;
+}
+
+.product-form__quantity quantity-input.quantity plt-quantity-selector .plt-quantity-selector {
+  width: 100%;
+}
+
+.product-form__quantity quantity-input.quantity plt-quantity-selector input[name='quantity'] {
+  min-height: calc((var(--inputs-border-width) * 2) + 2.6rem);
+  flex: 1 1 auto;
 }
 
 .price-per-item__label.form__label {
@@ -397,10 +410,21 @@ a.product__text {
 }
 
 @media screen and (max-width: 749px) {
+  .product__media-wrapper {
+    overflow-x: clip;
+    max-width: 100%;
+  }
+
+  .product__media-wrapper slider-component.slider-mobile-gutter {
+    overflow-x: clip;
+    max-width: 100%;
+  }
+
   .product__media-list {
     margin-left: -2.5rem;
     margin-bottom: 3rem;
     width: calc(100% + 4rem);
+    max-width: 100vw;
   }
 
   .product__media-wrapper slider-component:not(.thumbnail-slider--no-slide) {

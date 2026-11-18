@@ -11,10 +11,12 @@ export default async function build() {
   const img =
     'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-lifestyle-1_large.png';
   return `${blogCss ? `<style data-source="section-blog-post.css">${blogCss}</style>` : ''}
-<article class="page-width mx-auto max-w-5xl case" id="zone-article-hero">
-  <figure class="w-full">
+<article class="page-width mx-auto max-w-5xl overflow-x-clip case" id="zone-article-hero" style="width:100%;max-width:100%;box-sizing:border-box;padding:0 1.5rem">
+  <div class="mb-6 max-w-full">
+  <figure class="w-full max-w-full">
     <img src="${img}" width="1200" height="800" alt="Hero" class="w-full h-auto max-w-full" />
   </figure>
+  </div>
 </article>`;
 }
 
@@ -49,6 +51,15 @@ export async function verify({root}) {
     }
     if (result.imgW > result.clientW + 2) {
       throw new Error(`hero img ${result.imgW.toFixed(1)}px overflows viewport ${result.clientW}px`);
+    }
+    const hero = await page.evaluate(() => {
+      const el = document.querySelector('#zone-article-hero figure');
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      return {right: r.right, clientW: document.documentElement.clientWidth};
+    });
+    if (hero && hero.right > hero.clientW + 1) {
+      throw new Error(`hero figure right ${hero.right} > viewport ${hero.clientW}`);
     }
   } finally {
     await browser.close();

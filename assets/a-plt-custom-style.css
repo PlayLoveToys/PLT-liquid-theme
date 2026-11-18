@@ -169,6 +169,30 @@ article.plt-legacy-bulma-info-light-card .plt-media-card__media {
   margin-top: 0.75rem;
 }
 
+/* Product grid cards: match production title typography (no uppercase theme-headline-sm). */
+.plt-product-card .plt-media-card__title.theme-headline-sm,
+.plt-product-card .plt-media-card__title.theme-headline-sm a {
+  --plt-heading-transform: none;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-size: 0.8125rem;
+  line-height: 1.25;
+}
+
+@media screen and (min-width: 750px) {
+  .plt-product-card .plt-media-card__title.theme-headline-sm,
+  .plt-product-card .plt-media-card__title.theme-headline-sm a {
+    font-size: 0.9625rem;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .plt-product-card .plt-media-card__title.theme-headline-sm,
+  .plt-product-card .plt-media-card__title.theme-headline-sm a {
+    font-size: 1.1875rem;
+  }
+}
+
 /* DS product card titles: Bulma global link reset gone; avoid unstyled anchor defaults in grids */
 .plt-product-card .plt-media-card__title a,
 .plt-product-card .d-card-title a {
