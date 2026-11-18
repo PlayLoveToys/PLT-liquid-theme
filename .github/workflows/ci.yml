@@ -54,6 +54,9 @@ jobs:
       - name: check:theme-css
         run: npm run check:theme-css
 
+      - name: check:theme-schemas
+        run: npm run check:theme-schemas -- --self-test && npm run check:theme-schemas
+
       - name: check:tailwind-arbitrary
         run: npm run check:tailwind-arbitrary
 
