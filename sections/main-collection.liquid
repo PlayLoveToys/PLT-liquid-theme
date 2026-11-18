@@ -42,7 +42,7 @@
     <div class="product-grid-container" id="ProductGridContainer">
       {%- if collection.products.size == 0 -%}
         <div
-          class="collection collection--empty"
+          class="collection collection--empty page-width"
           id="product-grid"
           data-id="{{ section.id }}"
         >
@@ -59,7 +59,7 @@
           </div>
         </div>
       {%- else -%}
-        <div class="collection" id="product-grid" data-id="{{ section.id }}">
+        <div class="collection page-width" id="product-grid" data-id="{{ section.id }}">
           <div class="loading-overlay gradient" style="display: none;"></div>
           <ul
             class="grid product-grid contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} grid--2-col-tablet-down grid--4-col-desktop grid--5-col-widescreen"

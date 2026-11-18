@@ -98,7 +98,20 @@
   margin-top: 1rem;
 }
 
-/* #27 only: savings % pill + 5-col widescreen (#38/#37 badge/price rules live on stack) */
+/* #37: main-collection loads Dawn component-price.css; DS card price on sale/sold-out */
+#product-grid .plt-product-card .price.plt-product-card__price {
+  font-size: 0.875rem;
+  letter-spacing: var(--plt-price-tracking);
+  line-height: inherit;
+  color: var(--plt-color-primary);
+}
+
+#product-grid .plt-product-card .price--on-sale .price__regular,
+#product-grid .plt-product-card .price--sold-out .price__regular {
+  display: block;
+}
+
+/* #27: savings % pill + 5-col widescreen (badge Free CSS en pila #38/#39) */
 .price__savings-pill {
   margin-inline-start: 0.35rem;
   vertical-align: middle;

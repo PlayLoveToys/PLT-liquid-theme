@@ -8,6 +8,7 @@
     "check:plt": "node scripts/sync-plt.mjs --check",
     "check:theme-css": "node scripts/check-theme-css.mjs",
     "test:templates": "node scripts/validate-template-json.mjs",
+    "check:no-legacy": "node scripts/check-no-legacy.mjs",
     "harness:snippet": "node tools/snippet-harness/render.mjs"
   },
   "dependencies": {
