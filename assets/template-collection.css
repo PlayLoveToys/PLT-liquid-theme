@@ -98,7 +98,7 @@
   margin-top: 1rem;
 }
 
-/* Collection grid only: “Free” shipping badge (legacy main-collection parity, Fase 5 #38) */
+/* Collection grid only: “Free” badge (#38); markup uses plt-product-card__collection-free-badge */
 .plt-product-card__media-link {
   position: relative;
   display: block;
@@ -133,7 +133,7 @@
   }
 }
 
-/* main-collection loads Dawn component-price.css; restore DS card price + visibility on sale/sold-out */
+/* #37 @ 41a719d: main-collection loads Dawn component-price.css; DS card price on sale/sold-out */
 #product-grid .plt-product-card .price.plt-product-card__price {
   font-size: 0.875rem;
   letter-spacing: var(--plt-price-tracking);
