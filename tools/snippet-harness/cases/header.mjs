@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {harnessOutPath} from '../lib/verify-carousel-slides.mjs';
 
 const theme = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 
@@ -38,7 +39,10 @@ const sectionFixture = {
               handle: 'collections',
               url: '/collections',
               current: false,
-              links: [],
+              links: [
+                {title: 'Lingerie', handle: 'lingerie', url: '/collections/lingerie', current: false},
+                {title: 'Toys', handle: 'toys', url: '/collections/toys', current: false},
+              ],
             },
           ],
         },
@@ -48,12 +52,53 @@ const sectionFixture = {
   },
 };
 
+const dawnRootTypo = `
+<style data-harness="dawn-root-type">
+  :root {
+    --font-body-scale: 1.1;
+    --font-scale-mobile: 0.8;
+    --font-scale-tablet: 1;
+    --font-scale-desktop: 1.1;
+    --font-scale-widescreen: 1.2;
+    --font-scale-fullhd: 1.3;
+  }
+  html {
+    font-size: calc(var(--font-body-scale) * var(--font-scale-mobile) * 62.5%);
+  }
+  body { font-size: 1.5rem; margin: 0; }
+  @media screen and (min-width: 769px) {
+    html { font-size: calc(var(--font-body-scale) * var(--font-scale-tablet) * 62.5%); }
+  }
+  @media screen and (min-width: 1024px) {
+    html { font-size: calc(var(--font-body-scale) * var(--font-scale-desktop) * 62.5%); }
+  }
+</style>`;
+
 const legacyCartBubble = `
   <a href="/cart" class="header__icon header__icon--cart link focus-inset" id="cart-icon-bubble-legacy">
     <span class="b-icon"><i class="b-icon">…</i></span>
     <div class="cart-count-bubble"><span aria-hidden="true">3</span></div>
     <p class="theme-meta">main @ c9b6948: Bulma b-icon + Alpine x-show/x-text</p>
   </a>`;
+
+const drawerMarkup = (open = true) => `
+  <header-drawer data-breakpoint="tablet">
+    <details id="Details-menu-drawer-container" class="menu-drawer-container"${open ? ' open' : ''}>
+      <summary class="header__icon header__icon--menu header__icon--summary link focus-inset" aria-label="Menu">
+        <span>☰</span>
+      </summary>
+      <div id="menu-drawer" class="gradient menu-drawer motion-reduce color-scheme-1">
+        <div class="menu-drawer__inner-container">
+          <nav class="menu-drawer__navigation">
+            <ul class="menu-drawer__menu list-menu" role="list">
+              <li><a class="menu-drawer__menu-item list-menu__item link link--text" href="/collections/all">Shop</a></li>
+              <li><a class="menu-drawer__menu-item list-menu__item link link--text" href="/pages/about">About</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </details>
+  </header-drawer>`;
 
 export default async ({engine}) => {
   const bubbleAsset = fs.readFileSync(path.join(theme, 'assets', 'header-cart-bubble.js'), 'utf8');
@@ -82,28 +127,9 @@ export default async ({engine}) => {
   };
 
   const megaOpen = await engine.parseAndRender(
-    `{% render 'header-mega-menu' %}`,
+    `{% render 'header-mega-menu', section: section %}`,
     {section: sectionFixture},
   );
-
-  const drawerOpen = `
-    <header-drawer data-breakpoint="tablet">
-      <details id="Details-menu-drawer-container" class="menu-drawer-container" open>
-        <summary class="header__icon header__icon--menu header__icon--summary link focus-inset" aria-label="Menu">
-          <span>☰</span>
-        </summary>
-        <div id="menu-drawer" class="gradient menu-drawer motion-reduce color-scheme-1">
-          <div class="menu-drawer__inner-container">
-            <nav class="menu-drawer__navigation">
-              <ul class="menu-drawer__menu list-menu" role="list">
-                <li><a class="menu-drawer__menu-item link" href="/collections/all">Shop</a></li>
-                <li><a class="menu-drawer__menu-item link" href="/pages/about">About</a></li>
-              </ul>
-            </nav>
-          </div>
-        </div>
-      </details>
-    </header-drawer>`;
 
   const bubble0 = await renderCartAnchor(cartEmpty);
   const bubble3 = await renderCartAnchor(cartBusy);
@@ -122,8 +148,20 @@ export default async ({engine}) => {
     {section: sectionFixture, settings: {predictive_search_enabled: false}, routes, search: {terms: ''}},
   );
 
+  const mobileHeaderShell = (caseId) => `
+  <div class="shopify-section section-header" data-harness-case="${caseId}">
+    <header class="header header--middle-left header--mobile-center drawer-menu page-width header--has-menu">
+      ${drawerMarkup(true)}
+      <a href="/" class="header__heading-link link link--text focus-inset">
+        <div class="header__heading-logo-wrapper" style="width:130px;height:32px;background:#eee" aria-hidden="true"></div>
+      </a>
+      <div class="header__icons">${searchModal}${bubble3}</div>
+    </header>
+  </div>`;
+
   return `
 <style data-harness="header-components">${extraStyles}</style>
+${dawnRootTypo}
 <style>
   .harness-header-bar {
     display: flex; align-items: center; justify-content: space-between;
@@ -131,50 +169,39 @@ export default async ({engine}) => {
     min-height: 64px;
   }
   .harness-viewport { max-width: 100%; margin: 0 auto; }
-  .harness-viewport--390 { max-width: 390px; }
-  .harness-viewport--768 { max-width: 768px; }
-  .harness-viewport--1280 { max-width: 1280px; }
   .mega-menu[open] .mega-menu__content,
   details.mega-menu[open] .mega-menu__content { opacity: 1; transform: translateY(0); }
-  details[open].menu-drawer-container .menu-drawer { visibility: visible; }
+  details[open].menu-drawer-container .menu-drawer { visibility: visible; transform: translateX(0); }
   .header__inline-menu { display: inline-flex; }
   @media (max-width: 989px) { .header__inline-menu { display: none; } }
 </style>
 
 <section class="case"><h3>Antes (main): burbuja Bulma + Alpine</h3>
-  <div class="harness-header-bar harness-viewport harness-viewport--1280">${legacyCartBubble}</div>
+  <div class="harness-header-bar harness-viewport">${legacyCartBubble}</div>
 </section>
 
 <section class="case"><h3>Después: burbuja svg-wrapper + data-header-cart-count (cart vacío / 3 ítems)</h3>
-  <div class="harness-header-bar harness-viewport harness-viewport--1280">
+  <div class="harness-header-bar harness-viewport">
     ${bubble0}
     <span style="margin:0 24px">→</span>
     ${bubble3}
   </div>
 </section>
 
-<section class="case"><h3>Desktop 1280 — mega menu abierto</h3>
-  <div class="header-wrapper color-scheme-1 gradient harness-viewport harness-viewport--1280">
+<section class="case" data-harness-case="header-desktop-1440"><h3>Desktop 1440 — mega menu abierto</h3>
+  <div class="header-wrapper color-scheme-1 gradient shopify-section section-header">
     <header class="header header--middle-left page-width header--has-menu" style="position:relative">
       ${megaOpen.replace('<details id="Details-HeaderMenu-1"', '<details id="Details-HeaderMenu-1" open')}
     </header>
   </div>
 </section>
 
-<section class="case"><h3>Tablet 768 — barra + búsqueda (tokens d-input / theme-label-bold)</h3>
-  <div class="harness-header-bar harness-viewport harness-viewport--768">
-    ${searchModal}
-    ${bubble3}
-  </div>
+<section class="case" data-harness-case="header-tablet-768"><h3>Tablet 768 — drawer abierto</h3>
+  ${mobileHeaderShell('header-tablet-768')}
 </section>
 
-<section class="case"><h3>Móvil 390 — drawer abierto</h3>
-  <div class="harness-viewport harness-viewport--390 gradient color-scheme-1">
-    <header class="header header--mobile-center drawer-menu page-width">
-      ${drawerOpen}
-      <div class="header__icons">${bubble3}</div>
-    </header>
-  </div>
+<section class="case" data-harness-case="header-mobile-390"><h3>Móvil 390 — drawer abierto</h3>
+  ${mobileHeaderShell('header-mobile-390')}
 </section>
 
 <script defer>${bubbleAsset}
@@ -182,3 +209,74 @@ document.dispatchEvent(new CustomEvent('plt:cart-updated', {bubbles:true, detail
 </script>
 <p class="theme-meta case">Simula <code>plt:cart-updated</code> → contador 5 (emisión automática vía <code>plt-cart-drawer-bridge.js</code>).</p>`;
 };
+
+export async function verify({root}) {
+  const {chromium} = await import('playwright');
+  const htmlPath = harnessOutPath(root, 'header');
+  const browser = await chromium.launch({headless: true});
+
+  try {
+    for (const [caseId, viewport, assert] of [
+      [
+        'header-mobile-390',
+        {width: 390, height: 900},
+        async (page) => {
+          const itemFont = await page.$eval(
+            '#Details-menu-drawer-container .menu-drawer__menu-item',
+            (el) => parseFloat(getComputedStyle(el).fontSize),
+          );
+          if (itemFont < 20) {
+            throw new Error(`móvil drawer: font-size ${itemFont}px < 20px`);
+          }
+          const headerH = await page.$eval('[data-harness-case="header-mobile-390"] .header', (el) =>
+            el.getBoundingClientRect().height,
+          );
+          if (headerH > 90) {
+            throw new Error(`móvil header alto ${headerH}px > 90px`);
+          }
+        },
+      ],
+      [
+        'header-tablet-768',
+        {width: 768, height: 900},
+        async (page) => {
+          const drawerW = await page.$eval('#menu-drawer.menu-drawer', (el) =>
+            el.getBoundingClientRect().width,
+          );
+          if (drawerW < 600) {
+            throw new Error(`tablet drawer ancho ${drawerW}px < 600px`);
+          }
+          const itemFont = await page.$eval(
+            '#Details-menu-drawer-container .menu-drawer__menu-item',
+            (el) => parseFloat(getComputedStyle(el).fontSize),
+          );
+          if (itemFont < 20) {
+            throw new Error(`tablet drawer: font-size ${itemFont}px < 20px`);
+          }
+        },
+      ],
+      [
+        'header-desktop-1440',
+        {width: 1440, height: 900},
+        async (page) => {
+          const linkCount = await page.$$eval('.mega-menu__link', (els) => els.length);
+          if (linkCount < 4) {
+            throw new Error(`mega-menu: expected links, got ${linkCount}`);
+          }
+          const level2Font = await page.$eval('.mega-menu__link--level-2', (el) =>
+            parseFloat(getComputedStyle(el).fontSize),
+          );
+          if (level2Font < 14) {
+            throw new Error(`mega-menu level-2 font ${level2Font}px < 14px`);
+          }
+        },
+      ],
+    ]) {
+      const page = await browser.newPage({viewport});
+      await page.goto(`file://${path.resolve(htmlPath)}`, {waitUntil: 'load'});
+      await assert(page);
+    }
+  } finally {
+    await browser.close();
+  }
+}

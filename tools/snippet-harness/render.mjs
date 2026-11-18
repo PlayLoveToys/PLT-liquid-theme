@@ -179,6 +179,11 @@ const carouselExtras = CAROUSEL_HARNESS_CASES.has(name)
       `<script defer>${readAsset('plt-carousel.js')}</script>`,
     ].join('\n')
   : '';
+const PLT_HEADER_NAV_CASES = new Set(['header']);
+const pltHeaderNavExtra = PLT_HEADER_NAV_CASES.has(name)
+  ? `<style data-source="plt-header-nav-compat.css">${readAsset('plt-header-nav-compat.css')}</style>`
+  : '';
+
 const PLT_CUSTOM_STYLE_CASES = new Set([
   'article-card-legacy-bulma',
   'a-matrix-blocks',
@@ -193,6 +198,7 @@ const styles = [
   legacyLayer ? '<style>@layer legacy, theme, base, components, utilities;</style>' : '',
   pltTokens,
   `<style data-source="theme.css">${readAsset('theme.css')}</style>`,
+  pltHeaderNavExtra,
   pltCustomStyleExtra,
   ...['base.css'].map(legacyStyle),
   carouselExtras,
