@@ -117,9 +117,14 @@ const carouselExtras = CAROUSEL_HARNESS_CASES.has(name)
       `<script defer>${readAsset('plt-carousel.js')}</script>`,
     ].join('\n')
   : '';
+const PLT_CUSTOM_STYLE_CASES = new Set(['article-card-legacy-bulma']);
+const pltCustomStyleExtra = PLT_CUSTOM_STYLE_CASES.has(name)
+  ? `<style data-source="a-plt-custom-style.css">${readAsset('a-plt-custom-style.css')}</style>`
+  : '';
 const styles = [
   legacyLayer ? '<style>@layer legacy, theme, base, components, utilities;</style>' : '',
   `<style data-source="theme.css">${readAsset('theme.css')}</style>`,
+  pltCustomStyleExtra,
   ...['base.css'].map(legacyStyle),
   carouselExtras,
 ].join('\n');
