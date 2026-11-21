@@ -7,16 +7,24 @@
     "sync:plt": "node scripts/sync-plt.mjs",
     "check:plt": "node scripts/sync-plt.mjs --check",
     "check:theme-css": "node scripts/check-theme-css.mjs",
+    "check:theme-schemas": "node scripts/check-theme-schemas.mjs",
+    "check:tailwind-arbitrary": "node scripts/check-tailwind-arbitrary.mjs --build",
     "test:templates": "node scripts/validate-template-json.mjs",
+    "test:templates:ci": "node scripts/test-templates-ci.mjs",
+    "check:theme-check": "node scripts/check-theme-check-baseline.mjs",
+    "check:branch-flow": "node scripts/check-branch-flow.mjs",
+    "check:no-legacy": "node scripts/check-no-legacy.mjs",
+    "test:harness": "node scripts/run-harness-cases.mjs",
     "harness:snippet": "node tools/snippet-harness/render.mjs"
   },
   "dependencies": {
-    "@playlovetoys/platform": "github:PlayLoveToys/PLT-design-system#c27304c693f646f62617a00c345b819f2f7b3ed9",
+    "@playlovetoys/platform": "github:PlayLoveToys/PLT-design-system#bad8290",
     "@tailwindcss/cli": "^4.3.2",
     "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
     "daisyui": "^5.6.6",
-    "liquidjs": "^10.30.1"
+    "liquidjs": "^10.30.1",
+    "playwright": "^1.49.1"
   }
 }

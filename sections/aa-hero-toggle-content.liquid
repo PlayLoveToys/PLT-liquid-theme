@@ -20,90 +20,66 @@
   endif
 %}
 
-<!-- Hero section with toggle functionality -->
-<section class="b-section">
-  <div
-    x-data="
-      {
-        has_image: {{ has_image }},
-        has_content: {{ has_content }},
-        showContent: {% if section.settings.initial_expanded %}true{% else %}false{% endif %},
-        fold_svg: '{{ icon_fold_svg }}',
-        unfold_svg: '{{ icon_unfold_svg }}',
-      }
-    "
-  >
-    <div class="b-page-width b-container">
-      <div class="b-box">
-        <div class="b-columns">
-          <!-- Left column - Image -->
-          {% if has_image %}
-            <div class="b-column b-is-3-tablet b-is-4-desktop b-is-align-content-center">
-              <div class="b-image b-is-fullwidth">
-                {{
-                  image
-                  | image_url: width: 1200
-                  | image_tag:
-                    widths: '300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200',
-                    preload: true,
-                    loading: 'eager'
-                }}
-              </div>
+<section class="py-8">
+  <div class="page-width">
+    <div class="d-card p-6">
+      <div class="grid grid-cols-1 items-center gap-6 md:grid-cols-12">
+        {% if has_image %}
+          <div class="content-center md:col-span-4">
+            <figure class="w-full">
+              {{
+                image
+                | image_url: width: 1200
+                | image_tag:
+                  widths: '300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200',
+                  preload: true,
+                  loading: 'eager',
+                  class: 'h-auto w-full'
+              }}
+            </figure>
+          </div>
+        {% endif %}
+        <div class="flex flex-col justify-evenly gap-4 px-0 md:col-span-8 md:px-6">
+          <div>
+            <{{ title_htag }} class="h1 max-md:text-xl md:text-4xl">
+              {{- section.settings.this_title -}}
+            </{{ title_htag }}>
+          </div>
+          <div>
+            <{{ subtitle_htag }} class="mt-6 text-lg md:text-2xl">
+              {{- section.settings.this_subtitle -}}
+            </{{ subtitle_htag }}>
+          </div>
+          {% if section.settings.button_text and section.settings.button_url %}
+            <div>
+              <a href="{{ section.settings.button_url }}" class="d-btn d-btn-lg d-btn-primary">
+                <strong>{{ section.settings.button_text }}</strong>
+              </a>
             </div>
           {% endif %}
-          <!-- Right column - Content -->
-          <div class="b-column b-is-align-content-space-evenly b-px-6-tablet b-mx-6-tablet">
-            <div class="b-block">
-              <{{ title_htag }} class="b-title b-is-size-1-desktop b-is-size-4">
-                {{- section.settings.this_title -}}
-              </{{ title_htag }}>
-            </div>
-            <div class="b-block">
-              <{{ subtitle_htag }} class="b-subtitle b-mt-6 b-is-size-3-desktop b-is-size-5">
-                {{- section.settings.this_subtitle -}}
-              </{{ subtitle_htag }}>
-            </div>
-            {% if section.settings.button_text and section.settings.button_url %}
-              <div class="b-block">
-                <a
-                  href="{{ section.settings.button_url }}"
-                  class="b-button b-is-large b-is-primary"
-                >
-                  <strong>{{ section.settings.button_text }}</strong>
-                </a>
-              </div>
-            {% endif %}
-            <!-- Toggle button -->
-            {% if has_content %}
-              <a
-                href="#"
-                class="b-icon-text b-is-size-3-desktop b-is-size-5 b-block b-mt-6"
-                @click.prevent="showContent = !showContent"
-                :aria-expanded="showContent.toString()"
-              >
-                <div id="content-{{- section_id -}}">
-                  <span class="b-icon b-has-text-info">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
-                      <path x-bind:d="showContent ? fold_svg : unfold_svg"/>
-                    </svg></span
-                  ><span>Learn More</span>
-                </div>
-              </a>
-            {% endif %}
-          </div>
         </div>
-        <template x-if="true">
-          <div :class="{ 'visually-hidden': !showContent}" x-transition>
-            <!-- Expandable content -->
-            <div class="b-notification b-has-background-link-light">
-              <button class="b-delete b-is-large" @click="showContent = false"></button>
-              <div class="b-content b-my-6 b-is-normal">
-                {{ section.settings.expandable_content }}
-              </div>
-            </div>
-          </div>
-        </template>
       </div>
+      {% if has_content %}
+        {% capture hero_summary %}
+          <span class="mt-6 flex items-center gap-2 text-lg md:text-2xl link">
+            {% render '_plt-collapse-icons', fold_path: icon_fold_svg, unfold_path: icon_unfold_svg %}
+            <span>Learn More</span>
+          </span>
+        {% endcapture %}
+        {% capture hero_body %}
+          <div class="rte my-6">
+            {{ section.settings.expandable_content }}
+          </div>
+        {% endcapture %}
+        {% assign hero_panel_id = 'content-' | append: section_id %}
+        {% render '_plt-details-disclosure',
+          panel_id: hero_panel_id,
+          initial_open: section.settings.initial_expanded,
+          summary_markup: hero_summary,
+          content_markup: hero_body,
+          summary_class: 'plt-details-disclosure__summary mt-6 flex items-center gap-2 text-lg md:text-2xl link'
+        %}
+      {% endif %}
     </div>
   </div>
 </section>

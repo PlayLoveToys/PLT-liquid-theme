@@ -1,17 +1,17 @@
 <div
-  x-data
-  x-show="$store.cart.item_count > 0"
-  x-cloak
-  class="b-container b-is-max-tablet b-py-3 b-px-3"
+  data-cart-footer
+  class="page-width mx-auto max-w-3xl py-3 px-3"
+  {% if cart == empty %}
+    hidden
+  {% endif %}
 >
-  <!-- Cart note (si está habilitado) -->
   {% if settings.show_cart_note %}
-    <div class="b-mb-5">
-      <label for="Cart-note" class="b-label b-mb-2">
+    <div class="mb-5">
+      <label for="Cart-note" class="theme-label-bold mb-2 block">
         {{ 'sections.cart.note' | t }}
       </label>
       <textarea
-        class="b-textarea"
+        class="d-textarea w-full"
         name="note"
         form="cart"
         id="Cart-note"
@@ -20,16 +20,16 @@
     </div>
   {% endif %}
 
-  <div class="b-mb-5 b-box">
+  <div class="d-card mb-5 p-4">
     {% if cart.cart_level_discount_applications.size > 0 %}
-      <div class="b-mb-5">
-        <h3 class="b-is-size-6 b-has-text-weight-semibold b-mb-2">Discounts applied</h3>
+      <div class="mb-5">
+        <h3 class="theme-label-bold mb-2 text-base">Discounts applied</h3>
 
-        <ul class="b-pl-4">
+        <ul class="list-disc pl-5">
           {% for discount in cart.cart_level_discount_applications %}
-            <li class="b-is-flex b-is-align-items-center b-is-justify-content-space-between b-mb-1">
-              <span class="b-is-flex b-is-align-items-center">
-                <span class="b-icon">
+            <li class="mb-1 flex items-center justify-between">
+              <span class="flex items-center gap-2">
+                <span class="inline-flex shrink-0">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
@@ -45,56 +45,45 @@
                     <circle cx="7.5" cy="7.5" r="1.5" fill="currentColor"/>
                   </svg>
                 </span>
-                <span class="b-ml-2">{{ discount.title }}</span>
+                <span>{{ discount.title }}</span>
               </span>
-              <div>
-                <span class="b-has-text-weight-semibold b-mr-3">−{{ discount.total_allocated_amount | money }} </span>
-              </div>
+              <span class="font-semibold">−{{ discount.total_allocated_amount | money }}</span>
             </li>
           {% endfor %}
         </ul>
       </div>
     {% else %}
-      <!-- AGREGAR CÓDIGO DESCUENTO -->
-      <div class="b-mb-5">
-        <h3 class="b-is-size-6 b-has-text-weight-semibold b-mb-2">Discount code</h3>
+      <div class="mb-5">
+        <h3 class="theme-label-bold mb-2 text-base">Discount code</h3>
 
         <form action="{{ routes.cart_url }}" method="post">
-          <div class="b-field b-has-addons">
-            <div class="b-control b-is-expanded">
-              <input
-                type="text"
-                name="discount"
-                id="cart-discount-code"
-                class="b-input"
-                placeholder="Enter discount code"
-              >
-            </div>
-            <div class="b-control">
-              <button type="submit" name="checkout" class="b-button b-is-primary">Apply</button>
-            </div>
+          <div class="join flex w-full">
+            <input
+              type="text"
+              name="discount"
+              id="cart-discount-code"
+              class="d-input join-item w-full"
+              placeholder="Enter discount code"
+            >
+            <button type="submit" name="checkout" class="d-btn d-btn-primary join-item">Apply</button>
           </div>
         </form>
       </div>
     {% endif %}
   </div>
-  <!-- Totals Card -->
-  <div class="b-box b-p-4 b-mb-5">
-    <!-- Línea horizontal estilo ecuación -->
-    <div x-data class="b-is-flex b-is-align-items-center b-is-justify-content-space-between">
-      <span class="b-is-size-5 b-has-text-weight-semibold">
+
+  <div class="d-card mb-5 p-4">
+    <div class="flex items-center justify-between">
+      <span class="text-lg font-semibold">
         {{ 'sections.cart.estimated_total' | t }}
       </span>
 
-      <strong class="b-is-size-4">
-        <span>{{ cart.currency.symbol }}</span>
-        <span x-text="$store.cart.total_price / 100">{{ cart.total_price | money_with_currency }}</span>
-        <span> {{ cart.currency.iso_code }}</span>
+      <strong class="text-xl" data-cart-total>
+        {{ cart.total_price | money_with_currency }}
       </strong>
     </div>
 
-    <!-- Tax + Duties -->
-    <p class="b-is-size-7 b-has-text-grey-dark b-mt-2">
+    <p class="mt-2 text-sm text-base-content/70">
       {% if cart.duties_included and cart.taxes_included %}
         {% if shop.shipping_policy.body == blank %}
           {{ 'sections.cart.duties_and_taxes_included_shipping_at_checkout_without_policy' | t }}
@@ -132,23 +121,22 @@
     </p>
   </div>
 
-  <!-- Checkout Buttons -->
-  <div class="b-mt-4">
+  <div class="mt-4">
     <button
       type="submit"
       name="checkout"
       form="cart"
       id="checkout"
-      x-data
-      :class="$store.cart.item_count > 0? 'b-is-focused' : ''"
-      :disabled="$store.cart.item_count <= 0"
-      class="b-button b-is-link b-is-fullwidth b-is-medium"
+      class="d-btn d-btn-block d-btn-lg d-btn-link w-full{% if cart.item_count > 0 %} ring-2 ring-primary{% endif %}"
+      {% if cart.item_count <= 0 %}
+        disabled
+      {% endif %}
     >
       {{ 'sections.cart.checkout' | t }}
     </button>
 
     {% if additional_checkout_buttons %}
-      <div class="b-mt-3">
+      <div class="mt-3">
         {{ content_for_additional_checkout_buttons }}
       </div>
     {% endif %}

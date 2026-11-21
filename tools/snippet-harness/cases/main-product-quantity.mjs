@@ -2,6 +2,11 @@
  * JS-Q3: main-product quantity block markup (plt-quantity-selector + product-info data-*).
  * Scenarios: quantity rules (min/step/max) and cart_qty > 0 on the WC host.
  */
+import fs from 'node:fs';
+import path from 'node:path';
+import {pathToFileURL} from 'node:url';
+import {harnessOutPath} from '../lib/verify-carousel-slides.mjs';
+
 const buildHostQuantity = async ({ engine }, opts) => {
   const {
     sectionId = 'main',
@@ -45,7 +50,7 @@ const buildHostQuantity = async ({ engine }, opts) => {
     quantity_label: inputLabel,
   },
   );
-  let hostAttrs = ` data-cart-quantity="${cartQty}" data-min="${min}"`;
+  let hostAttrs = ` class="quantity" data-cart-quantity="${cartQty}" data-min="${min}"`;
   if (max != null) hostAttrs += ` data-max="${max}"`;
   hostAttrs += ` data-form="${productFormId}"`;
   html = html.replace('<plt-quantity-selector', `<plt-quantity-selector${hostAttrs}`);
@@ -69,6 +74,10 @@ const buildHostQuantity = async ({ engine }, opts) => {
 };
 
 export default async function build({ engine }) {
+  const sectionCss = fs.readFileSync(
+    path.join(process.cwd(), 'assets', 'section-main-product.css'),
+    'utf8',
+  );
   const rulesCase = await buildHostQuantity(
     { engine },
     { cartQty: 0, min: 6, max: 30, step: 6, sectionId: 'rules' },
@@ -78,7 +87,38 @@ export default async function build({ engine }) {
     { cartQty: 3, min: 1, max: 10, step: 1, sectionId: 'cart' },
   );
   return `
-    <section class="case"><h3>Quantity rules (min 6, step 6, max 30)</h3>${rulesCase}</section>
+    <style data-source="section-main-product.css">${sectionCss}</style>
+    <section class="case" id="zone-pdp-quantity"><h3>Quantity rules (min 6, step 6, max 30)</h3>${rulesCase}</section>
     <section class="case"><h3>Cart qty &gt; 0 (data-cart-quantity=3)</h3>${cartCase}</section>
   `;
+}
+
+export async function verify({root}) {
+  const htmlPath = harnessOutPath(root, 'main-product-quantity');
+  const {chromium} = await import('playwright');
+  const browser = await chromium.launch({headless: true});
+  try {
+    const page = await browser.newPage({viewport: {width: 1280, height: 900}});
+    await page.goto(pathToFileURL(path.resolve(htmlPath)).href, {waitUntil: 'load'});
+    const result = await page.evaluate(() => {
+      const host = document.querySelector('#zone-pdp-quantity plt-quantity-selector.quantity');
+      if (!host) return {ok: false, reason: 'missing plt-quantity-selector.quantity'};
+      const {width, height} = host.getBoundingClientRect();
+      const display = getComputedStyle(host).display;
+      return {ok: true, width, height, display};
+    });
+    if (!result.ok) throw new Error(result.reason);
+    if (result.display !== 'flex') {
+      throw new Error(`quantity host display ${result.display}, expected flex`);
+    }
+    const minW = 60;
+    const minH = 44;
+    if (result.width < minW || result.height < minH) {
+      throw new Error(
+        `quantity host ${result.width.toFixed(1)}×${result.height.toFixed(1)}px below ${minW}×${minH}px`,
+      );
+    }
+  } finally {
+    await browser.close();
+  }
 }

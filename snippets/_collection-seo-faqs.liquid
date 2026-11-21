@@ -13,8 +13,6 @@
     render '_sanity-value', items: faqs.title, locale: locale
   endcapture
   assign localized_faq_title = localized_faq_title | strip
-  assign icon_fold_svg = 'm356-160-56-56 180-180 180 180-56 56-124-124-124 124Zm124-404L300-744l56-56 124 124 124-124 56 56-180 180Z'
-  assign icon_unfold_svg = 'M480-120 300-300l58-58 122 122 122-122 58 58-180 180ZM358-598l-58-58 180-180 180 180-58 58-122-122-122 122Z'
 %}
 
 {% if localized_faq_title != blank or faqs.items.size > 0 %}
@@ -62,13 +60,13 @@
   {% endif %}
 
   {% if localized_faq_title != blank %}
-    <h2 class="b-title b-is-4 b-has-text-primary">
+    <h2 class="h2 text-primary">
       {{ localized_faq_title }}
     </h2>
   {% endif %}
 
   {% if faqs.items.size > 0 %}
-    <div class="b-content">
+    <div class="plt-faq rte mt-4">
       {% for faq_item in faqs.items %}
         {% liquid
           capture localized_question
@@ -83,25 +81,20 @@
         %}
 
         {% if localized_question != blank and localized_answer != blank %}
-          <div
-            x-data="
-              {
-                open: false,
-                fold_svg: '{{ icon_fold_svg }}',
-                unfold_svg: '{{ icon_unfold_svg }}'
-              }
-            "
-            class="b-box b-mb-4"
-          >
-            <div class="b-title b-is-5" @click="open = !open">
-              <span class="b-icon b-is-small b-has-text-link">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
-                  <path x-bind:d="open ? fold_svg : unfold_svg"/>
-                </svg>
-              </span>
-              <span>{{ localized_question }}</span>
+          <div class="d-collapse d-collapse-arrow border-base-300 bg-base-100 mb-2">
+            <input
+              type="checkbox"
+              name="collection-faq-{{ forloop.index }}"
+              id="collection-faq-{{ forloop.index }}"
+              aria-labelledby="collection-faq-title-{{ forloop.index }}"
+            >
+            <div
+              id="collection-faq-title-{{ forloop.index }}"
+              class="d-collapse-title py-3 text-lg font-semibold"
+            >
+              {{ localized_question }}
             </div>
-            <div class="b-content" x-show="open">
+            <div class="d-collapse-content">
               <p>{{ localized_answer }}</p>
             </div>
           </div>

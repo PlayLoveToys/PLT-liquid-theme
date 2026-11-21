@@ -71,8 +71,6 @@
             endif
           -%}
           <button
-            @click="$store.cart.add(selectedVariant)"
-            :disabled="$store.cart.isBusy"
             id="ProductSubmitButton-{{ section_id }}"
             type="submit"
             name="add"

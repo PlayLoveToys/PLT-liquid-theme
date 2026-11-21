@@ -1,9 +1,36 @@
 {%- comment -%}
-  Product card: DS ProductCard markup (plt-product-card) with Alpine productCard shell kept
-  for quick-add / cart error state. Does not edit DS renderers or plt-* adapters.
+  Product card: DS ProductCard markup (plt-product-card). Quick-add / ATC via
+  product-form + quick-add-modal (no Alpine productCard).
+  Collection-only (main-collection): collection_grid_free_badge, show_type, show_savings_percentage,
+  pad_color, media_aspect_ratio.
 {%- endcomment -%}
+{%- liquid
+  assign quick_add = quick_add | default: 'none'
+  assign card_section_id = section_id | default: section.id
+-%}
+{%- comment -%}
+  component-price.css is loaded by collection/search sections (Dawn legacy). Do not
+  load it here: Dawn `.price--on-sale` rules hide `.price__regular` and break DS
+  plt-product-card__price (sale/sold-out parity with main).
+{%- endcomment -%}
+{%- unless skip_styles -%}
+  {%- if show_rating -%}
+    {{ 'component-rating.css' | asset_url | stylesheet_tag }}
+  {%- endif -%}
+  {%- if quick_add != 'none' -%}
+    {{ 'component-volume-pricing.css' | asset_url | stylesheet_tag }}
+    {{ 'quick-order-list.css' | asset_url | stylesheet_tag }}
+    {{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
+  {%- endif -%}
+{%- endunless -%}
 {%- if card_product and card_product != empty -%}
   {%- liquid
+    assign image_pad_color = pad_color | default: '000'
+    assign show_collection_free_badge = false
+    if collection_grid_free_badge and card_product.price >= 7500
+      assign show_collection_free_badge = true
+    endif
+
     assign show_card_badge = false
     assign badge_label = ''
     assign badge_modifier = ''
@@ -16,30 +43,65 @@
       assign show_card_badge = true
     endif
   -%}
-  <div
-    class="card-wrapper product-card-wrapper"
-    x-data="
-      productCard({
-        productUrl: '{{ card_product.url }}',
-        sectionId: '{{ section.id }}',
-        productId: '{{ card_product.id }}'
-      })
-    "
-  >
-    <article class="d-card bg-base-100 theme-bordered theme-elevated plt-media-card plt-product-card">
+  <div class="card-wrapper product-card-wrapper">
+    <article
+      class="d-card bg-base-100 theme-bordered theme-elevated plt-media-card plt-product-card{% if horizontal_class %} card--horizontal{% endif %}"
+    >
       {%- if card_product.featured_media -%}
-        <a class="plt-media-card__media" href="{{ card_product.url }}" tabindex="-1">
+        <a
+          class="plt-media-card__media{% if collection_grid_free_badge %} plt-product-card__media-link{% endif %}"
+          href="{{ card_product.url }}"
+          tabindex="-1"
+        >
           {%- assign card_alt = card_product.featured_media.alt | default: card_product.title -%}
-          {{
-            card_product.featured_media
-            | image_url: width: 600, pad_color: '000'
-            | image_tag:
-              widths: '300, 350, 400, 450, 500, 550, 600',
-              preload: false,
-              loading: 'lazy',
-              style: 'object-fit: contain;',
-              alt: card_alt
-          }}
+          {%- if media_aspect_ratio == 'square' -%}
+            {{
+              card_product.featured_media
+              | image_url: width: 600, height: 600, pad_color: image_pad_color
+              | image_tag:
+                widths: '300, 350, 400, 450, 500, 550, 600',
+                preload: false,
+                loading: 'lazy',
+                style: 'object-fit: contain;',
+                alt: card_alt
+            }}
+          {%- else -%}
+            {{
+              card_product.featured_media
+              | image_url: width: 600, pad_color: image_pad_color
+              | image_tag:
+                widths: '300, 350, 400, 450, 500, 550, 600',
+                preload: false,
+                loading: 'lazy',
+                style: 'object-fit: contain;',
+                alt: card_alt
+            }}
+          {%- endif -%}
+          {%- if show_collection_free_badge -%}
+            <span class="d-badge plt-product-card__collection-free-badge theme-label-bold inline-flex items-center font-semibold">
+              <svg
+                class="plt-product-card__collection-free-icon shrink-0"
+                xmlns="http://www.w3.org/2000/svg"
+                transform="scale(-1,1)"
+                height="1em"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>
+                <path d="M15 18H9"/>
+                <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/>
+                <circle cx="7" cy="18" r="2"/>
+                <circle cx="17" cy="18" r="2"/>
+              </svg>
+              Free
+            </span>
+          {%- endif -%}
         </a>
       {%- endif -%}
 
@@ -50,12 +112,19 @@
           </span>
         {%- endif -%}
 
-        <h3 class="d-card-title theme-headline-sm plt-media-card__title">
+        <h3
+          id="title-{{ card_section_id }}-{{ card_product.id }}"
+          class="d-card-title theme-headline-sm plt-media-card__title"
+        >
           <a href="{{ card_product.url }}">{{ card_product.title | escape }}</a>
         </h3>
 
         {%- if show_vendor != false and card_product.vendor != blank -%}
           <p class="theme-meta plt-media-card__meta">{{ card_product.vendor | escape }}</p>
+        {%- endif -%}
+
+        {%- if show_type and card_product.type != blank -%}
+          <p class="theme-meta plt-media-card__meta plt-product-card__type">{{ card_product.type | escape }}</p>
         {%- endif -%}
 
         {%- if show_rating and card_product.metafields.reviews.rating.value != blank -%}
@@ -89,16 +158,94 @@
         {%- endif -%}
 
         <div class="d-card-actions plt-media-card__actions">
-          {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
+          {% render 'price',
+            product: card_product,
+            price_class: '',
+            show_compare_at_price: true,
+            show_savings_percentage: show_savings_percentage
+          %}
         </div>
 
         {%- if card_product.quantity_price_breaks_configured? -%}
-          <p class="theme-meta">{{ 'products.product.volume_pricing.note' | t }}</p>
+          {%- if card_product.variants_count == 1 and quick_add == 'bulk' -%}
+            {% liquid
+              assign quantity_rule = card_product.selected_or_first_available_variant.quantity_rule
+              assign has_qty_rules = false
+              if quantity_rule.increment > 1 or quantity_rule.min > 1 or quantity_rule.max != null
+                assign has_qty_rules = true
+              endif
+            %}
+            <quantity-popover>
+              <button class="card__information-volume-pricing-note card__information-volume-pricing-note--button quantity-popover__info-button--icon-only button button--tertiary medium-hide small-hide" type="button">
+                <span class="caption theme-meta">{{ 'products.product.volume_pricing.note' | t }}</span>
+              </button>
+              <button class="card__information-volume-pricing-note card__information-volume-pricing-note--button quantity-popover__info-button--icon-with-label button button--tertiary large-up-hide" type="button">
+                <span class="caption theme-meta">{{ 'products.product.volume_pricing.note' | t }}</span>
+              </button>
+              <div
+                class="global-settings-popup quantity-popover__info"
+                tabindex="-1"
+                hidden
+                id="quantity-popover-info-{{ card_product.selected_or_first_available_variant.id }}"
+              >
+                {%- if has_qty_rules -%}
+                  <div class="quantity__rules caption no-js-hidden">
+                    {%- if quantity_rule.increment > 1 -%}
+                      <span class="divider">
+                        {{- 'products.product.quantity.multiples_of' | t: quantity: quantity_rule.increment -}}
+                      </span>
+                    {%- endif -%}
+                    {%- if quantity_rule.min > 1 -%}
+                      <span class="divider">
+                        {{- 'products.product.quantity.min_of' | t: quantity: quantity_rule.min -}}
+                      </span>
+                    {%- endif -%}
+                    {%- if quantity_rule.max != null -%}
+                      <span class="divider">
+                        {{- 'products.product.quantity.max_of' | t: quantity: quantity_rule.max -}}
+                      </span>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+                <button
+                  class="button-close button button--tertiary large-up-hide"
+                  type="button"
+                  aria-label="{{ 'accessibility.close' | t }}"
+                >
+                  {{- 'icon-close.svg' | inline_asset_content -}}
+                </button>
+                {%- if card_product.selected_or_first_available_variant.quantity_price_breaks.size > 0 -%}
+                  <volume-pricing class="parent-display">
+                    <ul class="list-unstyled">
+                      <li>
+                        <span>{{ card_product.selected_or_first_available_variant.quantity_rule.min }}+</span>
+                        {%- assign price = card_product.selected_or_first_available_variant.price | money_with_currency -%}
+                        <span>{{ 'sections.quick_order_list.each' | t: money: price }}</span>
+                      </li>
+                      {%- for price_break in card_product.selected_or_first_available_variant.quantity_price_breaks -%}
+                        <li>
+                          <span>{{- price_break.minimum_quantity -}}+</span>
+                          {%- assign price = price_break.price | money_with_currency -%}
+                          <span>{{ 'sections.quick_order_list.each' | t: money: price }}</span>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  </volume-pricing>
+                {%- endif -%}
+              </div>
+            </quantity-popover>
+          {%- else -%}
+            <p class="theme-meta">{{ 'products.product.volume_pricing.note' | t }}</p>
+          {%- endif -%}
         {%- endif -%}
 
-        <div class="product-form__error-message-wrapper" x-show="errorMessage" x-cloak>
-          <span class="product-form__error-message" x-text="errorMessage"></span>
-        </div>
+        {% render 'card-product-quick-add',
+          card_product: card_product,
+          quick_add: quick_add,
+          card_section_id: card_section_id,
+          horizontal_quick_add: horizontal_quick_add,
+          lazy_load: lazy_load
+        %}
       </div>
     </article>
   </div>

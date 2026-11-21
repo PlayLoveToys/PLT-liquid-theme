@@ -7,30 +7,30 @@
   assign button_text = section.settings.button_text
 %}
 
-<div class="b-page-width">
-  <section class="b-section">
-    <b-block>
-      <{{ title_htag }} class="b-title">
+<div class="page-width">
+  <section class="py-8">
+    <div>
+      <{{ title_htag }} class="inline-richtext h1">
         {{ main_title }}
       </{{ title_htag }}>
       {% if subtitle %}
-        <{{ subtitle_htag }} class="b-subtitle b-mt-4">
+        <{{ subtitle_htag }} class="mt-4 text-lg">
           {{ subtitle }}
         </{{ subtitle_htag }}>
       {% endif %}
       {% if content %}
-        <div class="b-content b-mt-6">
+        <div class="rte mt-6">
           {{ content }}
         </div>
       {% endif %}
       {% if section.settings.button_link and section.settings.button_link != '/' %}
-        <div class="b-mt-6">
-          <a href="{{ section.settings.button_link }}" class="b-button b-is-primary">
+        <div class="mt-6">
+          <a href="{{ section.settings.button_link }}" class="d-btn d-btn-primary">
             {{ button_text }}
           </a>
         </div>
       {% endif %}
-    </b-block>
+    </div>
   </section>
 </div>
 

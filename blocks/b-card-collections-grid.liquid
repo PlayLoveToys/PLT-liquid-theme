@@ -1,22 +1,6 @@
-<div class="b-column b-is-3-desktop b-is-6-tablet" {{ block.shopify_attributes }}>
+<div class="plt-a-matrix-card-cell min-w-0 col-span-12 md:col-span-6 xl:col-span-3" {{ block.shopify_attributes }}>
   {% render 'c-card-collections-grid', block: block %}
 </div>
-
-<script>
-  if (window.matchMedia('(min-width: 769px)').matches) {
-    const images = document.getElementsByClassName('image-priority-desktop-{{- block.id -}}');
-    Array.from(images).forEach((img) => {
-      img.loading = 'eager';
-      img.fetchPriority = 'high';
-    });
-  } else {
-    const images = document.getElementsByClassName('image-priority-mobile-{{- block.id -}}');
-    Array.from(images).forEach((img) => {
-      img.loading = 'eager';
-      img.fetchPriority = 'high';
-    });
-  }
-</script>
 
 {% schema %}
 {

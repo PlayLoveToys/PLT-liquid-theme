@@ -1,46 +1,45 @@
 {{ 'section-blog-post.css' | asset_url | stylesheet_tag }}
 
-<article class="b-container b-is-max-desktop">
-  <div class="b-block ">
+<article class="page-width mx-auto max-w-5xl overflow-x-clip">
+  <div class="mb-6 max-w-full">
     {%- if article.image -%}
-      <figure class="b-image">
+      <figure class="w-full max-w-full">
         {{
           article.image
           | image_url: width: 1200
           | image_tag:
             widths: '300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200',
             preload: true,
-            loading: 'eager'
+            loading: 'eager',
+            class: 'w-full h-auto max-w-full'
         }}
       </figure>
     {% endif %}
-    <div class="b-has-text-centered b-my-6">
-      <h1 class="b-title b-is-size-1-tablet b-is-size-4-mobile">{{ article.title | escape }}</h1>
+    <div class="my-6 text-center">
+      <h1 class="h1 max-md:text-xl md:text-4xl">{{ article.title | escape }}</h1>
     </div>
     {%- if section.settings.show_date -%}
-      <div class="b-block">
-        <div class="b-content b-has-text-right-tablet b-has-text-left-mobile">
+      <div class="mb-4">
+        <div class="rte text-left md:text-right">
           {{ article.published_at | date: '%B %d, %Y' }}
         </div>
       </div>
     {%- endif -%}
-    <!-- TODO: add share button -->
-    <div class="b-content">
+    <div class="rte">
       {{ article.content }}
     </div>
-    <div class="b-block b-is-flex b-is-justify-content-flex-end-mobile">
-      <a href="{{ blog.url }}" class="b-button b-is-link b-is-rounded b-is-inverted b-has-text-link-light">
-        <span class="b-icon b-is-large">
-          {{- 'return-icon.svg' | inline_asset_content -}}</span
-        ><span>
+    <div class="mt-6 flex justify-start md:justify-end">
+      <a href="{{ blog.url }}" class="d-btn d-btn-link d-btn-outline gap-2">
+        <span class="inline-flex">
+          {{- 'return-icon.svg' | inline_asset_content -}}
+        </span>
+        <span>
           {{ 'blogs.article.back_to_blog' | t: title: blog.title | escape }}
-        </span></a
-      >
+        </span>
+      </a>
     </div>
-    <div
-      class="b-notification b-is-warning b-is-light"
-    >
-      <p class="b-title b-is-size-5-mobile b-is-size-4-tablet">Disclaimer:</p>
+    <div class="alert alert-warning mt-8">
+      <p class="font-semibold max-md:text-lg md:text-xl">Disclaimer:</p>
       <p>
         This article is for informational purposes only and does not constitute medical or psychological advice. Always
         consult with a qualified professional for personal health concerns. Learn more by reading our full
@@ -249,7 +248,7 @@
 {
   "name": "t:sections.main-article.name",
   "tag": "section",
-  "class": "b-section b-page-width",
+  "class": "section page-width",
   "settings": [
     {
       "type": "checkbox",
