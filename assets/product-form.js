@@ -14,9 +14,9 @@ if (!customElements.get('product-form')) {
         this.hideErrors = this.dataset.hideErrors === 'true';
       }
 
-      /** plt-cart-drawer host (Fase 3) or legacy cart-notification CE. */
+      /** plt-cart-drawer host (Fase 3). */
       getCartHost() {
-        return window.PltCartDrawerHost || document.querySelector('cart-notification') || null;
+        return window.PltCartDrawerHost || null;
       }
 
       onSubmitHandler(evt) {
