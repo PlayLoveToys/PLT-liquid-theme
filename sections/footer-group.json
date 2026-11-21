@@ -31,7 +31,7 @@
           "type": "link_list",
           "settings": {
             "heading": "Main Collections",
-            "menu": "footer-collections"
+            "menu": ""
           }
         }
       },
@@ -46,7 +46,7 @@
         "gradient_start": "#000000",
         "gradient_end": "#333333",
         "newsletter_enable": true,
-        "newsletter_heading": "Subscribe to our emails",
+        "newsletter_heading": "[PRUEBA QA] Suscríbete a nuestras novedades",
         "enable_follow_on_shop": true,
         "show_social": true,
         "enable_country_selector": true,
