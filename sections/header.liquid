@@ -1,14 +1,6 @@
 <link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{{ 'component-search.css' | asset_url }}" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{{ 'component-menu-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
-{% comment %}
-  <link
-    rel="stylesheet"
-    href="{{ 'component-cart-notification.css' | asset_url }}"
-    media="print"
-    onload="this.media='all'"
-  >
-{% endcomment %}
 
 {%- if settings.predictive_search_enabled -%}
   <link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}" media="print" onload="this.media='all'">
@@ -104,7 +96,6 @@
 
 {% render 'defer-stylesheet', asset: 'plt-header-nav-compat.css' %}
 
-{% comment %} <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script> {% endcomment %}
 <script src="{{ 'sticky-header.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'header-cart-bubble.js' | asset_url }}" defer="defer"></script>
 
@@ -336,15 +327,6 @@
     </div>
   </header>
 </{{ header_tag }}>
-
-{% comment %}
-  {%- if settings.cart_type == 'notification' -%}
-     {%- render 'cart-notification',
-      color_scheme: section.settings.color_scheme,
-      desktop_menu_type: section.settings.menu_type_desktop
-    -%}
-  {%- endif -%}
-{% endcomment %}
 
 <script type="application/ld+json">
   {
