@@ -1,23 +1,35 @@
-# Inventario Alpine residual (Fase 5)
+# Inventario Alpine residual (Fase 5) — Completado / Archivado
 
-Pin DS de referencia: `@playlovetoys/platform` → `c27304c` (producción en `main` desde [PR #17](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/17); trabajo nuevo vía `dev-ai`, ver [`CONTRIBUTING.md`](../CONTRIBUTING.md)).  
-Contexto: tras **JS-C** (facets sin Alpine), el plan maestro fija **9** archivos Liquid con `x-data` ([`docs/ds-port-plan.md`](./ds-port-plan.md) § Fase 5; [`docs/ds-port-2b-js-plan.md`](./ds-port-2b-js-plan.md) § JS-C). Antes de la higiene **(c)** eran **12**.
+> **Estado (2026-11-21): COMPLETADO Y ARCHIVADO en `dev-ai` @ `7e7891f`.**  
+> Todos los archivos Liquid con `x-data`, directivas Alpine y bundles de runtime (`assets/alpine-bundle.js`, `assets/cart-store.js`, `assets/alpine-product-card.js`) fueron **retirados** (integrado en `dev-ai` vía [PR #41](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/41) y PRs asociados #29, #30, #37, #38).  
+> La regresión queda bloqueada en CI por `npm run check:no-legacy` (con `LEGACY_ENFORCE_BULMA=1` en [`.github/workflows/ci.yml`](../.github/workflows/ci.yml)).
 
-**Alcance de este documento:** inventario y clasificación únicamente — **sin migración** de Liquid ni JS.
+Pin DS de referencia en `dev-ai`: `@playlovetoys/platform` → **`bad8290`** ([DS#18](https://github.com/PlayLoveToys/PLT-design-system/pull/18); tracker [DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4) **cerrado**). Referencia histórica en producción `main` @ `f6c4705` (PR #26); `stage` @ `1800d42` (PR #47). Ver plan maestro en [`docs/ds-port-plan.md`](./ds-port-plan.md).
+
+**Alcance de este documento:** registro histórico del inventario Alpine de Fase 5 y verificación de cierre (**0 hits de `x-data`** en `dev-ai`).
 
 ---
 
-## Verificación con `grep`
+## Verificación actual (`dev-ai` @ `7e7891f`, 2026-11-21)
 
-Comando: `rg 'x-data' --glob '*.liquid'` (excluyendo `docs/`).
+Comando: `grep -rn "x-data" sections/ snippets/ layout/ templates/ assets/ blocks/` (excluyendo `docs/`).
 
 | Resultado | Detalle |
 |---|---|
-| **Archivos con `x-data`** | **9** — coincide con la lista del plan |
-| **Faltantes** | Ninguno |
-| **Adicionales con `x-data`** | Ninguno en `.liquid` |
+| **Archivos con `x-data`** | **0** (eran 12 tras JS-C; 9 tras higiene **(c)** 2026-11-15) |
+| **Directivas Alpine en `.liquid`** | **0** — verificadas por `check:no-legacy` (`x-data`, `x-init`, `x-show`, `x-text`, `x-cloak`, `x-model`, `x-bind:`, `x-on:`, `Alpine.data`) |
+| **Store / runtime JS** | **0** — `Alpine.store`, `$store`, `alpine-bundle.js`, `cart-store.js`, `alpine-product-card.js` eliminados y bloqueados por `check:no-legacy` |
+| **Bulma asociado** | **0** — `b-style.css`, `b-style.source.css` y clases `b-*` eliminados y bloqueados por `check:no-legacy` (`LEGACY_ENFORCE_BULMA=1`) |
 
-### Código muerto retirado (2026-11-15)
+### Infraestructura Alpine retirada (no Liquid)
+
+Todos los artefactos de runtime fueron eliminados del repo y están en la lista `RETIRED_ASSET_FILENAMES` de `scripts/check-no-legacy.mjs` (además se bloquea cualquier carga de Alpine por CDN en `layout/theme.liquid`):
+
+- `assets/alpine-bundle.js` — **eliminado**
+- `assets/cart-store.js` — **eliminado**
+- `assets/alpine-product-card.js` — **eliminado**
+
+### Código muerto retirado en higiene **(c)** (2026-11-15)
 
 Verificación previa: `rg` en `templates/*.json`, `sections/*.json`, `layout/`, `render`, `asset_url` y `config/`.
 
@@ -27,88 +39,74 @@ Verificación previa: `rg` en `templates/*.json`, `sections/*.json`, `layout/`, 
 | `sections/main-collection-plt.liquid` | Sin template; entrada huérfana en `config/settings_data.json` → `current.sections` (eliminada en el mismo PR) |
 | `snippets/predictive-search.liquid` | Sin `render 'predictive-search'`; shell Alpine alternativo nunca cableado |
 
-**Conservado (predictive search activo, Dawn):** `sections/predictive-search.liquid` (Section Rendering vía `section_id=predictive-search`), `assets/predictive-search.js` (`<predictive-search>` CE), `assets/component-predictive-search.css`, `snippets/header-search.liquid` en `sections/header.liquid` y `layout/theme.liquid`.
+**Nota sobre predictive search (Dawn, no Alpine):** se conserva `sections/predictive-search.liquid` (Section Rendering vía `section_id=predictive-search`), `assets/predictive-search.js` (`<predictive-search>` CE), `assets/component-predictive-search.css` y `snippets/header-search.liquid` hasta que se implemente el contrato upstream en [DS#20](https://github.com/PlayLoveToys/PLT-design-system/issues/20).
 
-### Alpine sin `x-data` (residual, fuera de los 12)
+### Alpine sin `x-data` (residual, fuera de los 12) — Retirado
 
-Estos archivos usan directivas Alpine (`@click`, `x-show`, …) pero **no** declaran `x-data`; dependen de un ancestro o de `Alpine.store`:
-
-| Archivo | Evidencia | Notas |
+| Archivo | Estado | Notas |
 |---|---|---|
-| `snippets/c-carousel-buttons.liquid` | `@click="previous()"` / `next()` | Hijo de `carousel()` en `blocks/b-carousel.liquid` y `sections/collection-list.liquid` |
-
-`snippets/buy-buttons.liquid`: residual Alpine (`@click="$store.cart.add(selectedVariant)"` / `:disabled`) **retirado** (P0). El ATC del PDP queda en `<product-form>` / `assets/product-form.js` → `plt-cart-drawer`.
-
-No forman parte del conteo de 12; conviene incluir `c-carousel-buttons` en el **mismo programa Fase 5** o en un follow-up de higiene.
-
-### Infraestructura Alpine (no Liquid)
-
-Sigue cargándose en storefront y alimenta varias piezas: `assets/alpine-bundle.js` (plugin `carousel`, `productCard`, Ajax/morph), `assets/cart-store.js` (`Alpine.store('cart')` + `CartApi`), `assets/cart-fragment.js` (`Alpine.initTree` tras morph), `assets/alpine-product-card.js` (duplicado/registro de `productCard`). Retirar Alpine en Liquid **sin** plan para el bundle y el store rompe carrito / cards.
+| `snippets/c-carousel-buttons.liquid` | **Migrado / sin Alpine** | Migrado junto con los carruseles (`b-carousel` y `collection-list`) sin `@click="previous()"` / `next()` Alpine |
+| `snippets/buy-buttons.liquid` | **Retirado** ([PR #25](https://github.com/PlayLoveToys/PLT-liquid-theme/pull/25)) | Residual `@click="$store.cart.add(selectedVariant)"` / `:disabled` eliminado; ATC del PDP en `<product-form>` / `assets/product-form.js` → `plt-cart-drawer` |
 
 ---
 
-## Clasificación
+## Clasificación histórica y cierre
 
-Leyenda:
+Leyenda histórica:
 
 - **(a)** Chrome migrable a web component del DS o HTML nativo (`<details>`, `<dialog>`, CSS `matchMedia`, etc.).
-- **(b)** Lógica acoplada a Shopify Ajax / Cart API / Section Rendering — requiere plan JS propio (como `docs/ds-port-2b-js-plan.md`).
-- **(c)** Código muerto u huérfano en este repo: sin `render` / sin section en `templates/*.json` (puede seguir en presets del theme editor).
+- **(b)** Lógica acoplada a Shopify Ajax / Cart API / Section Rendering — plan JS propio (ver `docs/ds-port-2b-js-plan.md`).
+- **(c)** Código muerto u huérfano en este repo: sin `render` / sin section en `templates/*.json`.
 
-### Resumen por clase
+### Resumen de cierre por clase
 
-| Clase | Cantidad | Archivos |
-|---|---:|---|
-| **(a)** | 5 | `b-carousel`, `aa-hero-toggle-content`, `collection-list`, `_collection-hero-collapsable-content`, `_collection-seo-faqs` |
-| **(b)** | 4 | `header`, `main-cart-footer`, `card-product`, `cart-item-b` |
-| **(c)** | 0 | — (higiene 2026-11-15) |
-| **Total** | **9** | |
+| Clase | Inventario inicial | Restantes en `dev-ai` | Archivos cerrados |
+|---|---:|---:|---|
+| **(a)** | 5 | **0** | `b-carousel`, `aa-hero-toggle-content`, `collection-list`, `_collection-hero-collapsable-content`, `_collection-seo-faqs` |
+| **(b)** | 4 | **0** | `header`, `main-cart-footer`, `card-product`, `cart-item-b` |
+| **(c)** | 3 | **0** | `aa-banner-html-copy`, `main-collection-plt`, `snippets/predictive-search` (higiene 2026-11-15) |
+| **Total** | **12** | **0** | **100 % retirado** (enforced en CI) |
 
 ---
 
-## Tabla de inventario
+## Tabla histórica de inventario (todos cerrados en `dev-ai`)
 
-| archivo | rol Alpine | acción | dependencia | evidencia breve |
+| Archivo | Rol Alpine original | Clase | Estado en `dev-ai` (`7e7891f`) | Notas / seguimiento |
 |---|---|---|---|---|
-| `blocks/b-carousel.liquid` | Componente `carousel()` (autoplay, swipe, prev/next); `x-data` con array placeholder + hijos reales | **(a)** Sustituir por `Carousel` DS ([DS#4](https://github.com/PlayLoveToys/PLT-design-system/issues/4)) o carrusel nativo con scroll-snap; mantener `c-carousel-buttons` o equivalente | `Alpine.data('carousel')` en `assets/alpine-bundle.js`; botones en `snippets/c-carousel-buttons.liquid` | Block tipo `b-carousel` en `sections/a-matrix.liquid` y `blocks/b-cell.liquid`; usado en `templates/index.json` y metaobjects (`a-matrix`) |
-| `sections/aa-hero-toggle-content.liquid` | Estado `showContent` + iconos SVG + `x-transition` / `x-if` | **(a)** `d-collapse` / `<details>` + tokens; patrón duplicado en hero colección | Solo UI; contenido estático de settings | En `templates/collection*.json`, `metaobject/local_page.json`, etc. (`"type": "aa-hero-toggle-content"`) |
-| `sections/collection-list.liquid` | `carousel({ slides: '.slide-…', intervalTime: 3000 })` | **(a)** Mismo que `b-carousel` | Mismo plugin `carousel` + `c-carousel-buttons` | `collection-list` en home, colecciones, 404, list-collections, metaobjects |
-| `sections/header.liquid` | Burbuja contador: markup `data-header-cart-count`; `header-cart-bubble.js` escucha `plt:cart-updated` (bridge) + respaldo Dawn `cartUpdate` | **(b)** migrado (fase-5 header, apilado #32): sin Alpine en Liquid ni `bindAlpineFallback` | `plt-cart-drawer-bridge.js` emite `plt:cart-updated`; `cart-store.js` sigue para cards/PDP | Section global en `layout`; burbuja en `#cart-icon-bubble` |
-| `sections/main-cart-footer.liquid` | Contenedor `x-show` si hay ítems; total `x-text` del store; checkout `:disabled` | **(b)** Página `/cart`: reemplazar store por morph/`cart.js` o líneas WC Fase 3 | `$store.cart`, `CartApi`, `refreshCartFragment` | `templates/cart.json` → `main-cart-footer` |
-| `snippets/card-product.liquid` | `productCard({ productUrl, sectionId, productId })`; `x-show` errores quick-add | **(b)** Plan aparte: quick-add / `plt-quick-view` + errores en WC o `product-form` (explícitamente fuera de 2d/2b) | `Alpine.data('productCard')` en bundle + `alpine-product-card.js`; Cart Ajax + `PltCartDrawerHost` | `render 'card-product'` en colección, búsqueda, related-products, PDP, harness |
-| `snippets/cart-item-b.liquid` | Estado línea + `decrease`/`increase`/`remove` → `$store.cart.change` | **(b)** Sustituir por `plt-cart-line` / eventos `plt:cart-line-*` (Fase 3) o quantity WC en drawer | `$store.cart`, `CartApi.change`, `x-model` qty | `sections/main-cart-items.liquid` → `cart-item-b` |
-| `snippets/_collection-hero-collapsable-content.liquid` | Igual hero toggle: `showContent`, FAQs locales Sanity intro | **(a)** `d-collapse` / `<details>`; alinear con `aa-hero-toggle-content` en un solo snippet | Contenido Sanity vía `_sanity-value` | `main-collection-sanity.liquid` `render '_collection-hero-collapsable-content'` |
-| `snippets/_collection-seo-faqs.liquid` | Acordeón por ítem: `open`, iconos, `x-show` | **(a)** `Faq` DS (DS#4) conservando JSON-LD `FAQPage` | Metafields Sanity; sin Ajax | Mismo render desde `main-collection-sanity.liquid` |
+| `blocks/b-carousel.liquid` | Componente `carousel()` (autoplay, swipe, prev/next) | (a) | **Migrado** | Carrusel sin Alpine ni Bulma (PR #30 → #41); `DS#4` cerrado en `bad8290` |
+| `sections/aa-hero-toggle-content.liquid` | Estado `showContent` + iconos SVG + `x-transition` / `x-if` | (a) | **Migrado** | Disclosure nativo/Tailwind sin Alpine (PR #29 → #41) |
+| `sections/collection-list.liquid` | `carousel({ slides: '.slide-…', intervalTime: 3000 })` | (a) | **Migrado** | Carrusel sin Alpine ni Bulma (PR #30 → #41, ajustes móvil en #49/#53) |
+| `sections/header.liquid` | Burbuja contador con Alpine | (b) | **Migrado** | `data-header-cart-count` + `header-cart-bubble.js` escuchando `plt:cart-updated` (bridge) + respaldo Dawn `cartUpdate`; adopción futura `plt-navbar` (`1ad8166`) |
+| `sections/main-cart-footer.liquid` | Contenedor `x-show`, total `x-text`, checkout `:disabled` | (b) | **Migrado** | Retirado `$store.cart` / `CartApi` (PR #38 → #41) |
+| `snippets/card-product.liquid` | `productCard({ productUrl, sectionId, productId })` + `x-show` errores | (b) | **Migrado** | Quick-add sin Alpine (`alpine-product-card.js` eliminado; PR #37 → #41); `plt-quick-view` en [DS#22](https://github.com/PlayLoveToys/PLT-design-system/issues/22) |
+| `snippets/cart-item-b.liquid` | Estado línea + `decrease`/`increase`/`remove` → `$store.cart.change` | (b) | **Migrado** | Retirado `$store.cart` (PR #38 → #41); `plt-cart-line` futuro en [DS#22](https://github.com/PlayLoveToys/PLT-design-system/issues/22) |
+| `snippets/_collection-hero-collapsable-content.liquid` | Hero toggle `showContent` (Sanity intro) | (a) | **Migrado** | Disclosure nativo/Tailwind sin Alpine (PR #29 → #41) |
+| `snippets/_collection-seo-faqs.liquid` | Acordeón por ítem (`open`, `x-show`) | (a) | **Migrado** | Disclosure nativo/Tailwind sin Alpine conservando JSON-LD `FAQPage` (PR #29 → #41) |
 
 ---
 
-## Orden sugerido de migración (un PR por corte)
+## Cortes ejecutados (registro histórico)
 
-Prioridad: **bajo riesgo / alto reuse**, luego **carrito unificado**, luego **Ajax pesado** y **limpieza muerta**.
-
-| Orden | PR sugerido | Archivos | Clase | Motivo |
-|---:|---|---|---|---|
-| 1 | `fase-5-collapse-hero-faq` | `_collection-hero-collapsable-content`, `_collection-seo-faqs`, `aa-hero-toggle-content` | (a) | Misma interacción; sin Cart API; desbloquea Faq DS |
-| 2 | `fase-5-carousel` | `collection-list`, `blocks/b-carousel`, `c-carousel-buttons` | (a) | Un plugin Alpine (`carousel`); depende de Carousel DS |
-| 3 | `fase-5-cart-store-retire` | `header`, `main-cart-footer`, `cart-item-b` | (b) | Un solo eje: quitar `Alpine.store('cart')` cuando líneas/footer usen drawer/WC |
-| 4 | `fase-5-product-card-alpine` | `card-product` (+ `buy-buttons` / `alpine-product-card.js`) | (b) | Ajax add-to-cart + drawer; coordinar con quick-add WC |
-| — | ~~`fase-5-dead-sections`~~ | ~~`aa-banner-html-copy`, `main-collection-plt`, snippet Alpine `predictive-search`~~ | — | **Hecho** 2026-11-15 |
-| 5 | `fase-5-predictive-search-shell` | `header-search` + contrato DS Search (defer Fase 3) | (b) | Dawn `sections/predictive-search.liquid` + CE siguen activos; no confundir con el snippet Alpine borrado |
-
-**Dependencias cruzadas:**
-
-- No retirar `alpine-bundle.js` hasta que **(b)** cart y **(b)** `card-product` estén migrados.
-- `plt-section-nav.js` ya llama `Alpine.initTree` tras morph de colección; al quedar Alpine solo en cards/cart, revisar si ese hook puede eliminarse en un PR posterior.
+| Orden | Corte | Archivos | Estado |
+|---:|---|---|---|
+| — | `fase-5-dead-sections` | `aa-banner-html-copy`, `main-collection-plt`, snippet Alpine `predictive-search` | **Hecho** (2026-11-15) |
+| 1 | `fase-5-collapse-hero-faq` | `_collection-hero-collapsable-content`, `_collection-seo-faqs`, `aa-hero-toggle-content` | **Hecho** (PR #29 → #41) |
+| 2 | `fase-5-carousel` | `collection-list`, `blocks/b-carousel`, `c-carousel-buttons` | **Hecho** (PR #30 → #41) |
+| 3 | `fase-5-cart-store-retire` | `header`, `main-cart-footer`, `cart-item-b`, `cart-store.js`, `alpine-bundle.js` | **Hecho** (PR #38 → #41) |
+| 4 | `fase-5-product-card-alpine` | `card-product`, `buy-buttons` (#25), `alpine-product-card.js` | **Hecho** (PR #37 → #41) |
+| 5 | Predictive search DS (fuera de Alpine) | `header-search` + `sections/predictive-search.liquid` (Dawn) | **Seguimiento upstream** en [DS#20](https://github.com/PlayLoveToys/PLT-design-system/issues/20) |
 
 ---
 
-## Gates (baseline documentación, 2026-11-13)
+## Gates en CI (`.github/workflows/ci.yml`, 2026-11-21)
 
-Sin cambios en Liquid/JS/assets vendorizados; mismos resultados que el baseline del port:
+La no-regresión de Alpine y Bulma queda garantizada automáticamente en cada PR y push a `dev-ai`, `stage` y `main` (9 gates, 41 casos de harness):
 
-| Gate | Resultado |
+| Gate | Función relevante |
 |---|---|
-| `npm run check:plt` | OK — 10 artefactos PLT verificados |
-| `npm run check:theme-css` | OK |
-| `npm run test:templates` | **40 / 42** (fallan `templates/blog.json`, `templates/page.test.json`) |
-| `shopify theme check` (CLI 3.91.0) | **6 errores / 362 avisos** (≤ baseline) |
+| `npm run check:no-legacy` (`LEGACY_ENFORCE_BULMA=1`) | Bloquea `alpine-bundle.js`, `cart-store.js`, `alpine-product-card.js`, `b-style*.css`, cualquier `x-data`/directiva Alpine, `Alpine.store`/`$store`, CDN Alpine y clases Bulma `b-*` |
+| `npm run check:theme-check` | Techo ≤ **6 errores / 362 avisos** (Shopify CLI 3.91.0) |
+| `npm run check:plt` / `check:theme-css` / `check:theme-schemas` / `check:tailwind-arbitrary` | Integridad de artefactos DS, CSS, schemas y utilidades Tailwind |
+| `npm run test:templates:ci` | Allowlist baseline **40 / 42** |
+| `npm run test:harness` | **41 casos** de harness + checks Playwright |
+| `npm run check:branch-flow` | Flujo `dev-ai` → `stage` → `main` en PRs |
