@@ -1,0 +1,55 @@
+/**
+ * Header / navigation parity: Dawn component-menu-drawer + mega-menu assume a ~10px rem root.
+ * Theme settings font_scale_mobile (default 80%) shrinks html before 769px, so rem-based drawer
+ * typography and 40rem width read smaller than production. Unlayered (loads after theme.css layers).
+ */
+@media screen and (max-width: 989px) {
+  #Details-menu-drawer-container .menu-drawer__menu-item {
+    font-size: max(2.4rem, 24px);
+  }
+}
+
+@media screen and (min-width: 750px) {
+  #Details-menu-drawer-container .menu-drawer,
+  #menu-drawer.menu-drawer {
+    width: min(100vw, 640px);
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .mega-menu__content {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  .mega-menu__link {
+    font-size: max(1.4rem, 14px);
+    line-height: calc(1 + 0.3 / var(--font-body-scale, 1));
+  }
+
+  .mega-menu__link--level-2 {
+    font-size: max(1.6rem, 16px);
+  }
+
+  .header__menu-item {
+    font-size: max(1.4rem, 14px);
+  }
+}
+
+@media screen and (max-width: 989px) {
+  .section-header .header {
+    padding-top: 13px;
+    padding-bottom: 13px;
+  }
+
+  .header__icon .svg-wrapper {
+    width: 44px;
+    height: 44px;
+  }
+
+  .header__icon .icon,
+  .header__icon--cart .icon {
+    width: max(2rem, 20px);
+    height: max(2rem, 20px);
+  }
+}

@@ -24,3 +24,65 @@
 @source "../node_modules/@playlovetoys/platform/packages/web-components/adapters/liquid";
 
 @import "@playlovetoys/platform/packages/design-system/themes/cheesecake.css";
+
+/*
+ * Dawn base.css defines `.grid { display: flex }` in @layer legacy. The Tailwind
+ * utility `.grid { display: grid }` (utilities layer) overrides it and breaks
+ * collection/PDP/footer grids, while compat sheets that reset flex also broke
+ * slider nowrap. See docs/dawn-tailwind-class-collisions.md.
+ */
+@source not inline("{sm:,md:,lg:,xl:,2xl:,}grid");
+
+@layer utilities {
+  /* CSS grid only when Tailwind track utilities are present (not Dawn grid--*). */
+  .grid:where(
+    [class*='grid-cols'],
+    [class*='col-span'],
+    [class*='row-span'],
+    [class*='grid-rows'],
+    [class*='grid-flow'],
+    [class*='auto-rows'],
+    [class*='auto-cols'],
+    [class*='place-items'],
+    [class*='place-content'],
+    [class*='justify-items']
+  ) {
+    display: grid;
+  }
+
+  /* Dawn sliders: nowrap only at each slider breakpoint (parity with component-slider.css). */
+  .grid:where(.slider--everywhere) {
+    flex-wrap: nowrap;
+  }
+
+  @media screen and (max-width: 749px) {
+    .grid:where(.slider--mobile) {
+      flex-wrap: nowrap;
+    }
+  }
+
+  @media screen and (max-width: 989px) {
+    .grid:where(.slider--tablet) {
+      flex-wrap: nowrap;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .grid:where(.slider--desktop) {
+      flex-wrap: nowrap;
+    }
+  }
+
+  /* Helpers en markup de colección sanity; breakpoints alineados con Dawn small-hide (base.css L435–439). */
+  @media screen and (max-width: 749px) {
+    .c-small-screen-hide {
+      display: none !important;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .screen-hide {
+      display: none !important;
+    }
+  }
+}

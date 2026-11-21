@@ -1,4 +1,5 @@
 /** Real collection-list slide markup (card-collection + ds-carousel @ 1280px). */
+import {pathToFileURL} from 'node:url';
 import {harnessOutPath, verifyCarouselSlides} from '../lib/verify-carousel-slides.mjs';
 
 const SECTION_ID = 'harness-collection-list';
@@ -56,8 +57,37 @@ export default async ({engine}) => {
 };
 
 export async function verify({root}) {
-  await verifyCarouselSlides(harnessOutPath(root, 'collection-list-carousel'), {
+  const htmlPath = harnessOutPath(root, 'collection-list-carousel');
+  await verifyCarouselSlides(htmlPath, {
     track: '.plt-carousel__track.b-carousel',
     slide: '.b-carousel-item',
   });
+
+  const {chromium} = await import('playwright');
+  const browser = await chromium.launch({headless: true});
+  try {
+    const page = await browser.newPage({viewport: {width: 390, height: 844}});
+    await page.goto(pathToFileURL(htmlPath).href, {waitUntil: 'load'});
+    const result = await page.evaluate(() => {
+      const track = document.querySelector('.plt-carousel__track.b-carousel');
+      const items = [...(track?.querySelectorAll(':scope > .b-carousel-item') ?? [])].slice(0, 3);
+      return {
+        clientW: document.documentElement.clientWidth,
+        widths: items.map((el) => el.getBoundingClientRect().width),
+        flexes: items.map((el) => getComputedStyle(el).flex),
+      };
+    });
+
+    const maxItem = 360;
+    const minItem = 260;
+    for (const w of result.widths) {
+      if (w > maxItem || w < minItem) {
+        throw new Error(
+          `mobile carousel item ${w.toFixed(1)}px outside [${minItem}, ${maxItem}] (viewport ${result.clientW}px)`,
+        );
+      }
+    }
+  } finally {
+    await browser.close();
+  }
 }

@@ -1,16 +1,17 @@
 {{ 'section-blog-post.css' | asset_url | stylesheet_tag }}
 
-<article class="page-width mx-auto max-w-5xl">
-  <div class="mb-6">
+<article class="page-width mx-auto max-w-5xl overflow-x-clip">
+  <div class="mb-6 max-w-full">
     {%- if article.image -%}
-      <figure class="w-full">
+      <figure class="w-full max-w-full">
         {{
           article.image
           | image_url: width: 1200
           | image_tag:
             widths: '300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200',
             preload: true,
-            loading: 'eager'
+            loading: 'eager',
+            class: 'w-full h-auto max-w-full'
         }}
       </figure>
     {% endif %}

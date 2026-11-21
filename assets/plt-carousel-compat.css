@@ -42,10 +42,27 @@
   display: flex;
 }
 
-/* Bulma: .b-carousel > .b-carousel-item { max-width: 85vw }. DS track sets flex: 0 0 auto on
-   children, so slides need an explicit min-width on mobile (no Tailwind min-w-[85vw] in Liquid). */
-.plt-carousel__track.b-carousel > .b-carousel-item {
-  min-width: 85vw;
+/* Bulma: ~85% slide width on small screens. Use flex-basis + max-width (not min-width: 85vw) so
+   items stay within the viewport when the track gives children flex: 0 0 auto. */
+@media screen and (max-width: 1151px) {
+  .plt-carousel__track.b-carousel > .b-carousel-item {
+    flex: 0 0 85%;
+    max-width: 85vw;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .plt-carousel__track.b-carousel > .b-carousel-item .card-wrapper,
+  .plt-carousel__track.b-carousel > .b-carousel-item .d-card {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .plt-carousel__track.b-carousel > .b-carousel-item .theme-body,
+  .plt-carousel__track.b-carousel > .b-carousel-item p {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
 }
 
 @media screen and (min-width: 1152px) {
