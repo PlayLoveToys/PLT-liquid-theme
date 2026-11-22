@@ -30,7 +30,7 @@
           "name": "b-card-collections-grid",
           "settings": {
             "main_collection": "action-figures",
-            "collections_card_title": "[PRUEBA QA] Colección principal",
+            "collections_card_title": "Action Figures",
             "priority_desktop": true,
             "priority_mobile": true,
             "collection_1": "nerf",
@@ -41,12 +41,12 @@
             "collection_3_title": "{{ block.settings.collection_3.title }}",
             "collection_4": "dolls",
             "collection_4_title": "{{ block.settings.collection_4.title }}",
-            "collection_5": "",
-            "collection_5_title": "[PRUEBA QA] Colección 5 pendiente",
-            "collection_6": "",
-            "collection_6_title": "[PRUEBA QA] Colección 6 pendiente",
+            "collection_5": "lego",
+            "collection_5_title": "LEGO",
+            "collection_6": "hydrogen",
+            "collection_6_title": "Hydrogen",
             "cta_text": "Shop {{ block.settings.main_collection.title }}",
-            "cta_url": "shopify://collections/all"
+            "cta_url": "shopify://collections/action-figures"
           },
           "blocks": {}
         },
@@ -55,23 +55,23 @@
           "name": "b-card-collections-grid",
           "settings": {
             "main_collection": "nintendo",
-            "collections_card_title": "[PRUEBA QA] Colección principal",
+            "collections_card_title": "NINTENDO",
             "priority_desktop": true,
             "priority_mobile": false,
-            "collection_1": "",
-            "collection_1_title": "[PRUEBA QA] Colección 1 pendiente",
-            "collection_2": "",
-            "collection_2_title": "[PRUEBA QA] Colección 2 pendiente",
-            "collection_3": "",
-            "collection_3_title": "[PRUEBA QA] Colección 3 pendiente",
-            "collection_4": "",
-            "collection_4_title": "[PRUEBA QA] Colección 4 pendiente",
-            "collection_5": "",
-            "collection_5_title": "[PRUEBA QA] Colección 5 pendiente",
-            "collection_6": "",
-            "collection_6_title": "[PRUEBA QA] Colección 6 pendiente",
-            "cta_text": "[PRUEBA QA] Ver todas las colecciones",
-            "cta_url": "shopify://collections/all"
+            "collection_1": "dolls",
+            "collection_1_title": "Dolls",
+            "collection_2": "action-figures",
+            "collection_2_title": "Action Figures",
+            "collection_3": "mattel",
+            "collection_3_title": "MATTEL",
+            "collection_4": "nerf",
+            "collection_4_title": "Collection Nerf",
+            "collection_5": "nintendo",
+            "collection_5_title": "NINTENDO",
+            "collection_6": "hasbro",
+            "collection_6_title": "HASBRO",
+            "cta_text": "NINTENDO",
+            "cta_url": "shopify://collections/nintendo"
           },
           "blocks": {}
         },
@@ -80,23 +80,23 @@
           "name": "b-card-collections-grid",
           "settings": {
             "main_collection": "sex-toys-for-couples",
-            "collections_card_title": "[PRUEBA QA] Colección principal",
+            "collections_card_title": "Collection de parejas",
             "priority_desktop": true,
             "priority_mobile": false,
             "collection_1": "erotic-games",
-            "collection_1_title": "",
+            "collection_1_title": "Juegos eróticos",
             "collection_2": "sexy-handcuffs",
-            "collection_2_title": "",
+            "collection_2_title": "Accesorios y complementos",
             "collection_3": "strap-ons",
-            "collection_3_title": "",
+            "collection_3_title": "Productos de pareja",
             "collection_4": "playful-kinky-sex-toys",
-            "collection_4_title": "",
-            "collection_5": "",
-            "collection_5_title": "[PRUEBA QA] Colección 5 pendiente",
-            "collection_6": "",
-            "collection_6_title": "[PRUEBA QA] Colección 6 pendiente",
+            "collection_4_title": "Artículos divertidos",
+            "collection_5": "automated-collection",
+            "collection_5_title": "Automated Collection",
+            "collection_6": "frontpage",
+            "collection_6_title": "Home page",
             "cta_text": "View All",
-            "cta_url": "shopify://collections/all"
+            "cta_url": "shopify://collections/sex-toys-for-couples"
           },
           "blocks": {}
         }
@@ -130,7 +130,7 @@
           "type": "b-card-article",
           "name": "b-Card Article",
           "settings": {
-            "article": "",
+            "article": "news/california",
             "priority": false,
             "show_excerpt": true,
             "truncatewords": 20
@@ -145,7 +145,7 @@
             "priority": false,
             "show_description": true,
             "truncatewords": 23,
-            "cta_text": "[PRUEBA QA] Ver colección",
+            "cta_text": "For Beginners",
             "cta_url": "{{ closest.collection.url }}"
           },
           "blocks": {}
@@ -296,121 +296,132 @@
           "type": "column",
           "settings": {
             "image_source": "shopify",
+            "image": "shopify://shop_images/product_55_image1.jpg",
             "cloudinary_src": "",
-            "title": "[PRUEBA QA] Marca 1",
-            "text": "<p>[PRUEBA QA] Descripción de marca para verificar el contenido de esta tarjeta.</p>",
-            "link_label": "[PRUEBA QA] Ver marca",
-            "link": "shopify://collections/kiiroo-sex-toys-for-men-strokers"
+            "title": "HASBRO",
+            "text": "",
+            "link_label": "HASBRO",
+            "link": "shopify://collections/hasbro"
           }
         },
         "column2": {
           "type": "column",
           "settings": {
             "image_source": "shopify",
+            "image": "shopify://shop_images/product_66_image1.jpg",
             "cloudinary_src": "",
-            "title": "[PRUEBA QA] Marca 2",
-            "text": "<p>[PRUEBA QA] Descripción de marca para verificar el contenido de esta tarjeta.</p>",
-            "link_label": "[PRUEBA QA] Ver marca",
-            "link": "shopify://collections/womanizer"
+            "title": "NINTENDO",
+            "text": "",
+            "link_label": "NINTENDO",
+            "link": "shopify://collections/nintendo"
           }
         },
         "column_ERdMBw": {
           "type": "column",
           "settings": {
             "image_source": "shopify",
+            "image": "shopify://shop_images/product_41_image1.jpg",
             "cloudinary_src": "",
-            "title": "[PRUEBA QA] Marca 3",
-            "text": "<p>[PRUEBA QA] Descripción de marca para verificar el contenido de esta tarjeta.</p>",
-            "link_label": "[PRUEBA QA] Ver marca",
-            "link": "shopify://collections/dorcel"
+            "title": "LEGO",
+            "text": "",
+            "link_label": "LEGO",
+            "link": "shopify://collections/lego"
           }
         },
         "column4": {
           "type": "column",
           "settings": {
             "image_source": "shopify",
+            "image": "shopify://shop_images/product_55_image1.jpg",
             "cloudinary_src": "",
-            "title": "[PRUEBA QA] Marca 4",
-            "text": "<p>[PRUEBA QA] Descripción de marca para verificar el contenido de esta tarjeta.</p>",
-            "link_label": "[PRUEBA QA] Ver marca",
-            "link": "shopify://collections/satisfyer"
+            "title": "HASBRO",
+            "text": "",
+            "link_label": "HASBRO",
+            "link": "shopify://collections/hasbro"
           }
         },
         "column5": {
           "type": "column",
           "settings": {
             "image_source": "shopify",
+            "image": "shopify://shop_images/product_66_image1.jpg",
             "cloudinary_src": "",
-            "title": "[PRUEBA QA] Marca 5",
-            "text": "<p>[PRUEBA QA] Descripción de marca para verificar el contenido de esta tarjeta.</p>",
-            "link_label": "[PRUEBA QA] Ver marca",
-            "link": "shopify://collections/b-vibe"
+            "title": "NINTENDO",
+            "text": "",
+            "link_label": "NINTENDO",
+            "link": "shopify://collections/nintendo"
           }
         },
         "column6": {
           "type": "column",
           "settings": {
             "image_source": "shopify",
+            "image": "shopify://shop_images/product_41_image1.jpg",
             "cloudinary_src": "",
-            "title": "[PRUEBA QA] Marca 6",
-            "text": "<p>[PRUEBA QA] Descripción de marca para verificar el contenido de esta tarjeta.</p>",
-            "link_label": "[PRUEBA QA] Ver marca",
-            "link": "shopify://collections/sex-toys-love-to-love-toys"
+            "title": "LEGO",
+            "text": "",
+            "link_label": "LEGO",
+            "link": "shopify://collections/lego"
           }
         },
         "column_eWRKL9": {
           "type": "column",
           "settings": {
             "image_source": "shopify",
+            "image": "shopify://shop_images/product_55_image1.jpg",
             "cloudinary_src": "",
-            "title": "[PRUEBA QA] Marca 7",
-            "text": "<p>[PRUEBA QA] Descripción de marca para verificar el contenido de esta tarjeta.</p>",
-            "link_label": "[PRUEBA QA] Ver marca",
-            "link": "shopify://collections/tenga"
+            "title": "HASBRO",
+            "text": "",
+            "link_label": "HASBRO",
+            "link": "shopify://collections/hasbro"
           }
         },
         "column_EhwgVD": {
           "type": "column",
           "settings": {
             "image_source": "shopify",
+            "image": "shopify://shop_images/product_66_image1.jpg",
             "cloudinary_src": "",
-            "title": "[PRUEBA QA] Marca 8",
-            "text": "<p>[PRUEBA QA] Descripción de marca para verificar el contenido de esta tarjeta.</p>",
-            "link_label": "[PRUEBA QA] Ver marca",
-            "link": "shopify://collections/jo-lubricants"
+            "title": "NINTENDO",
+            "text": "",
+            "link_label": "NINTENDO",
+            "link": "shopify://collections/nintendo"
           }
         },
         "column_FGqXiG": {
           "type": "column",
           "settings": {
             "image_source": "shopify",
+            "image": "shopify://shop_images/product_41_image1.jpg",
             "cloudinary_src": "",
-            "title": "[PRUEBA QA] Marca 9",
-            "text": "<p>[PRUEBA QA] Descripción de marca para verificar el contenido de esta tarjeta.</p>",
-            "link_label": "[PRUEBA QA] Ver marca",
-            "link": "shopify://collections/je-joue-sex-toys-collection"
+            "title": "LEGO",
+            "text": "",
+            "link_label": "LEGO",
+            "link": "shopify://collections/lego"
           }
         },
         "column_j3HkVJ": {
           "type": "column",
           "settings": {
             "image_source": "shopify",
+            "image": "shopify://shop_images/product_55_image1.jpg",
             "cloudinary_src": "",
-            "title": "[PRUEBA QA] Marca 10",
-            "text": "<p>[PRUEBA QA] Descripción de marca para verificar el contenido de esta tarjeta.</p>",
-            "link_label": "[PRUEBA QA] Ver marca",
-            "link": "shopify://collections/emojibator"
+            "title": "HASBRO",
+            "text": "",
+            "link_label": "HASBRO",
+            "link": "shopify://collections/hasbro"
           }
         },
         "column_XL4QcY": {
           "type": "column",
           "settings": {
             "image_source": "shopify",
+            "image": "shopify://shop_images/product_66_image1.jpg",
             "cloudinary_src": "",
-            "title": "[PRUEBA QA] Marca 11",
-            "text": "<p>[PRUEBA QA] Descripción de marca para verificar el contenido de esta tarjeta.</p>",
-            "link_label": "[PRUEBA QA] Ver marca",
-            "link": "shopify://collections/shop-by-brand-lelo"
+            "title": "NINTENDO",
+            "text": "",
+            "link_label": "NINTENDO",
+            "link": "shopify://collections/nintendo"
           }
         },
         "column_zKrE7L": {
@@ -418,11 +429,12 @@
           "name": "wevibe",
           "settings": {
             "image_source": "shopify",
+            "image": "shopify://shop_images/product_41_image1.jpg",
             "cloudinary_src": "",
-            "title": "[PRUEBA QA] Marca 12",
-            "text": "<p>[PRUEBA QA] Descripción de marca para verificar el contenido de esta tarjeta.</p>",
-            "link_label": "[PRUEBA QA] Ver marca",
-            "link": "shopify://collections/we-vibe"
+            "title": "LEGO",
+            "text": "",
+            "link_label": "LEGO",
+            "link": "shopify://collections/lego"
           }
         },
         "column_GYEnrN": {
@@ -430,11 +442,12 @@
           "name": "lovense",
           "settings": {
             "image_source": "shopify",
+            "image": "shopify://shop_images/product_55_image1.jpg",
             "cloudinary_src": "",
-            "title": "[PRUEBA QA] Marca 13",
-            "text": "<p>[PRUEBA QA] Descripción de marca para verificar el contenido de esta tarjeta.</p>",
-            "link_label": "[PRUEBA QA] Ver marca",
-            "link": "shopify://collections/shop-by-brand-lovense"
+            "title": "HASBRO",
+            "text": "",
+            "link_label": "HASBRO",
+            "link": "shopify://collections/hasbro"
           }
         }
       },
@@ -458,11 +471,11 @@
       ],
       "name": "Brands",
       "settings": {
-        "title": "Adult Toys Luxury  Brands",
+        "title": "Adult Toys Luxury &nbsp;Brands",
         "heading_size": "h1",
         "image_width": "full",
         "image_ratio": "adapt",
-        "button_label": "[PRUEBA QA] Explorar marcas",
+        "button_label": "Colecciones",
         "button_link": "shopify://collections/all",
         "columns_desktop": 5,
         "column_alignment": "center",
@@ -488,33 +501,36 @@
           "type": "column",
           "settings": {
             "image_source": "shopify",
+            "image": "shopify://shop_images/product_41_image1.jpg",
             "cloudinary_src": "",
-            "title": "<strong>Quality and Safe Products</strong>",
-            "text": "<p>We carefully select products that are safe, high-quality, and ethically sourced.</p>",
-            "link_label": "[PRUEBA QA] Más información",
-            "link": "shopify://pages/about"
+            "title": "Quality and Safe Products",
+            "text": "",
+            "link_label": "",
+            "link": ""
           }
         },
         "column_EicGVg": {
           "type": "column",
           "settings": {
             "image_source": "shopify",
+            "image": "shopify://shop_images/product_55_image1.jpg",
             "cloudinary_src": "",
-            "title": "<strong>Inclusivity & Respect</strong>",
-            "text": "<p>We believe in pleasure for all, regardless of gender, orientation, or relationship status.</p>",
-            "link_label": "[PRUEBA QA] Más información",
-            "link": "shopify://pages/about"
+            "title": "Inclusivity & Respect",
+            "text": "",
+            "link_label": "",
+            "link": ""
           }
         },
         "column_mfb8rc": {
           "type": "column",
           "settings": {
             "image_source": "shopify",
+            "image": "shopify://shop_images/product_66_image1.jpg",
             "cloudinary_src": "",
             "title": "Privacy & Discretion",
-            "text": "<p>Your privacy is our priority. We ensure discreet packaging and secure transactions.</p>",
-            "link_label": "[PRUEBA QA] Más información",
-            "link": "shopify://pages/about"
+            "text": "",
+            "link_label": "",
+            "link": ""
           }
         }
       },
@@ -529,8 +545,8 @@
         "heading_size": "h1",
         "image_width": "third",
         "image_ratio": "adapt",
-        "button_label": "[PRUEBA QA] Conoce nuestros valores",
-        "button_link": "shopify://pages/about",
+        "button_label": "",
+        "button_link": "",
         "columns_desktop": 3,
         "column_alignment": "center",
         "background_style": "primary",
@@ -591,7 +607,7 @@
         "products_to_show": 8,
         "title": "{{ section.settings.collection.title }}",
         "heading_size": "h1",
-        "description": "<p>[PRUEBA QA] Texto de descripción temporal para comprobar el diseño y el espaciado de esta sección.</p>",
+        "description": "",
         "show_description": true,
         "description_style": "body",
         "columns_desktop": 4,
@@ -620,7 +636,7 @@
           "type": "blog_post_display",
           "name": "Blog Post Display",
           "settings": {
-            "article": "",
+            "article": "news/nuevo-articulo",
             "article_handle": "",
             "show_image": true,
             "show_meta": true,
@@ -628,7 +644,7 @@
             "show_author": false,
             "show_content": true,
             "show_button": false,
-            "button_text": "[PRUEBA QA] Leer artículo",
+            "button_text": "Leer artículo",
             "date_format": "%B %d, %Y",
             "width": 100,
             "padding": 0,
@@ -699,7 +715,7 @@
             "show_excerpt": true,
             "excerpt_length": 200,
             "show_link": true,
-            "link_text": "[PRUEBA QA] Leer artículo",
+            "link_text": "Leer artículo",
             "desktop_width_percent": 100,
             "padding": 32,
             "spacing": 16,

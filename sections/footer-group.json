@@ -46,7 +46,7 @@
         "gradient_start": "#000000",
         "gradient_end": "#333333",
         "newsletter_enable": true,
-        "newsletter_heading": "[PRUEBA QA] Suscríbete a nuestras novedades",
+        "newsletter_heading": "Suscríbete a nuestras novedades",
         "enable_follow_on_shop": true,
         "show_social": true,
         "enable_country_selector": true,
