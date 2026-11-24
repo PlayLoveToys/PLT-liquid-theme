@@ -12,37 +12,37 @@
 %}
 
 <div
-  class="b-columns slice-{{ block.id }}"
+  class="slice-{{ block.id }} grid grid-cols-1 items-center gap-6 md:grid-cols-12"
   {% if style_attr != '' %}
     style="{{ style_attr }}"
   {% endif %}
   {{ block.shopify_attributes }}
 >
   {% if block.settings.slice_image != blank %}
-    <div class="b-column b-is-3">
-      <div class="b-image b-is-fullwidth">
+    <div class="md:col-span-3">
+      <figure class="w-full">
         {{
           block.settings.slice_image
           | image_url: width: 350, crop: 'center', pad_color: 'white'
-          | image_tag: widths: '200, 300, 400, 500, 600, 700, 800, 1000, 1200, 1400, 1600, 1800, 2000'
+          | image_tag: widths: '200, 300, 400, 500, 600, 700, 800, 1000, 1200, 1400, 1600, 1800, 2000', class: 'h-auto w-full'
         }}
-      </div>
+      </figure>
     </div>
   {% endif %}
-  <div class="b-column b-is-align-content-space-evenly b-px-6-tablet b-mx-6-tablet">
+  <div class="flex flex-col justify-evenly gap-4 px-0 md:col-span-9 md:px-6">
     {% if block.settings.slice_title != blank %}
-      <div class="b-block">
+      <div>
         <{{ title_htag }}
-          class="b-title b-is-size-1-desktop b-is-size-4 banner-title-{{- block.id -}}"
+          class="banner-title-{{- block.id -}} h1 max-md:text-xl md:text-4xl"
         >
           {{ block.settings.slice_title }}
         </{{ title_htag }}>
       </div>
     {% endif %}
     {% if block.settings.slice_subtitle != blank %}
-      <div class="b-block">
+      <div>
         <{{ subtitle_htag }}
-          class="b-subtitle b-mt-6 b-is-size-3-desktop b-is-size-5 banner-subtitle-{{- block.id -}}"
+          class="banner-subtitle-{{- block.id -}} mt-6 text-lg md:text-2xl"
         >
           {{- block.settings.slice_subtitle -}}
         </{{ subtitle_htag }}>
@@ -55,14 +55,14 @@
       endif
     %}
     {% if show_cta %}
-      <div class="b-block">
+      <div>
         {% if block.settings.slice_cta_type == 'button' %}
           <a
             href="{{ block.settings.slice_cta_url }}"
             {% if block.settings.slice_cta_new_tab %}
               target="_blank" rel="noopener"
             {% endif %}
-            class="b-button b-is-large {% if block.settings.slice_cta_style == 'link' %}b-is-link{% else %}b-is-primary{% endif %}"
+            class="d-btn d-btn-lg {% if block.settings.slice_cta_style == 'link' %}d-btn-link{% else %}d-btn-primary{% endif %}"
           >
             <strong>{{ block.settings.slice_cta_text }}</strong>
           </a>
@@ -72,7 +72,7 @@
             {% if block.settings.slice_cta_new_tab %}
               target="_blank" rel="noopener"
             {% endif %}
-            class="b-is-underlined"
+            class="link underline"
           >
             {{ block.settings.slice_cta_text }}
           </a>
@@ -82,10 +82,6 @@
   </div>
 </div>
 
-{%- comment -%}
-  Per-slice typography and color CSS moved into the snippet.
-  Generates fonts and color modes targeting this block's unique classes.
-{%- endcomment -%}
 <style>
   {{ block.settings.slice_title_font | font_face }}
   {{ block.settings.slice_subtitle_font | font_face }}

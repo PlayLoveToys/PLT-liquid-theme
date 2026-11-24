@@ -1,6 +1,15 @@
-{%- assign section_size = section.settings.section_size -%}
+{%- liquid
+  assign section_size = section.settings.section_size
+  assign section_padding = 'py-12 px-0.5 md:py-12 md:px-12'
+  case section_size
+    when 'theme-section-padding-medium', 'b-is-medium'
+      assign section_padding = 'py-36 px-[4.5rem]'
+    when 'theme-section-padding-large', 'b-is-large'
+      assign section_padding = 'py-[18rem] px-24'
+  endcase
+-%}
 
-<section class="b-section {{ section_size }}">
+<section class="{{ section_padding }}">
   {% content_for 'blocks' %}
 </section>
 
@@ -18,11 +27,11 @@
           "label": "Small"
         },
         {
-          "value": "b-is-medium",
+          "value": "theme-section-padding-medium",
           "label": "Medium"
         },
         {
-          "value": "b-is-large",
+          "value": "theme-section-padding-large",
           "label": "Large"
         }
       ],

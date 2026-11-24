@@ -1,28 +1,30 @@
-<div
-  class="b-card b-has-background-info-light"
->
-  <header class="b-card-header">
-    <p class="b-card-header-title b-is-capitalized b-title b-is-5">
+<article class="d-card plt-legacy-bulma-info-light-card h-full theme-bordered theme-elevated plt-media-card border-0">
+  <header class="px-3 py-2 md:px-4 md:py-3">
+    <h3
+      class="m-0 text-base font-semibold capitalize md:text-lg"
+      style="font-family: var(--font-body-family)"
+    >
       {{ block.settings.article.title }}
-    </p>
+    </h3>
   </header>
   {% if block.settings.article.image %}
-    <div class="b-card-image">
-      <figure class="b-image b-is-square">
+    <div class="plt-media-card__media aspect-square overflow-hidden">
+      <figure class="m-0 h-full w-full">
         {{
           block.settings.article.image
           | image_url: width: 400
           | image_tag:
             widths: '50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600',
             loading: 'lazy',
-            preload: block.settings.priority
+            preload: block.settings.priority,
+            class: 'h-full w-full object-cover'
         }}
       </figure>
     </div>
   {% endif %}
   {% if block.settings.show_excerpt %}
-    <div class="b-card-content b-p-2">
-      <div class="b-content">
+    <div class="plt-media-card__body p-2 md:p-4 text-sm md:text-base" style="font-family: var(--font-body-family)">
+      <div>
         {{
           block.settings.article.excerpt
           | default: block.settings.article.content
@@ -32,12 +34,13 @@
       </div>
     </div>
   {% endif %}
-  <footer class="b-card-footer">
+  <footer class="p-2 pb-3 md:px-4 md:pb-4">
     <a
       href="{{ block.settings.article.url }}"
-      class="b-card-footer-item b-button b-is-info b-is-outlined b-is-light b-is-size-5"
+      class="d-btn d-btn-outline d-btn-info d-btn-sm theme-label-bold w-full md:w-auto"
+      style="font-family: var(--font-body-family)"
     >
       {{ 'general.read_more' | t }}
     </a>
   </footer>
-</div>
+</article>

@@ -173,3 +173,16 @@
 .article-template__back:last-child {
   margin-bottom: 3.2rem;
 }
+
+@media screen and (max-width: 749px) {
+  article.page-width.overflow-x-clip {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  article.page-width.overflow-x-clip figure.w-full {
+    margin-inline: 0;
+    max-width: 100%;
+  }
+}

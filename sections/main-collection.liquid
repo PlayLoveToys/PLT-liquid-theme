@@ -1,3 +1,8 @@
+{{ 'template-collection.css' | asset_url | stylesheet_tag }}
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-facets.css' | asset_url | stylesheet_tag }}
+
 {%- paginate collection.products by 20 -%}
   {%- liquid
     assign collection_sort_by = collection.sort_by | default: collection.default_sort_by
@@ -9,7 +14,7 @@
   {% endcomment %}
   <div
     id="product-grid-container"
-    class="b-container"
+    class="facets-vertical page-width"
     data-plt-section-nav
     data-plt-section-id="{{ section.id }}"
     data-plt-morph-target="#product-grid-container"
@@ -34,158 +39,67 @@
       {% render 'facets', results: collection, paginate: paginate %}
     </aside>
 
-    <section class="b-section">
-      <div
-        class="b-container"
-        id="ProductGridContainer"
-      >
-        {%- if collection.products.size == 0 -%}
-          <div class="b-container b-section b-has-text-centered" id="product-grid" data-id="{{ section.id }}">
-            <div class="loading-overlay gradient" style="display: none;"></div>
-            <div class="b-block">
-              <h2 class="b-title b-is-2">
-                {{ 'sections.collection_template.empty' | t -}}
-                <br>
-                {{
-                  'sections.collection_template.use_fewer_filters_html'
-                  | t: link: collection.url, class: 'underlined-link link'
-                }}
-              </h2>
-            </div>
+    <div class="product-grid-container" id="ProductGridContainer">
+      {%- if collection.products.size == 0 -%}
+        <div
+          class="collection collection--empty page-width"
+          id="product-grid"
+          data-id="{{ section.id }}"
+        >
+          <div class="loading-overlay gradient" style="display: none;"></div>
+          <div class="title-wrapper center">
+            <h2 class="title title--primary theme-headline-sm">
+              {{ 'sections.collection_template.empty' | t -}}
+              <br>
+              {{
+                'sections.collection_template.use_fewer_filters_html'
+                | t: link: collection.url, class: 'underlined-link link'
+              }}
+            </h2>
           </div>
-        {%- else -%}
-          <!-- PRODUCT GRID -->
-
-          <div
-            id="product-grid"
-            data-id="{{ section.id }}"
-            class="b-columns b-is-multiline c-columns b-is-0-mobile"
+        </div>
+      {%- else -%}
+        <div class="collection page-width" id="product-grid" data-id="{{ section.id }}">
+          <div class="loading-overlay gradient" style="display: none;"></div>
+          <ul
+            class="grid product-grid contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} grid--2-col-tablet-down grid--4-col-desktop grid--5-col-widescreen"
+            role="list"
           >
-            <!-- FORLOOP -->
-            <!-- Web Component: Cargar la colección -->
+            {%- assign skip_card_product_styles = false -%}
             {%- for product in collection.products -%}
-              {% if product.available %}
-                {% liquid
-                  assign target = product.selected_or_first_available_variant
-                  assign compare_at_price = target.compare_at_price
-                  assign price = target.price | default: 1999
-                  assign money_price = price | money_with_currency
-                  assign free_shipping = false
-                  if product.price >= 7500
-                    assign free_shipping = true
-                  endif
-                %}
-
-                <div class="b-column b-card-column b-is-half-tablet b-is-one-quarter-desktop b-is-one-fifth-widescreen">
-                  <!-- CARD -->
-                  <div class="b-box b-p-2 b-align-items-stretch-tablet">
-                    <div class="b-columns b-is-mobile b-row-to-col-tablet">
-                      <div class="b-column b-is-half-mobile b-is-full-tablet b-card-image-wrapper">
-                        <a href="{{ product.url }}">
-                          <figure class="b-image{% if free_shipping %} b-has-image-overlay{% endif %}">
-                            {{
-                              product.featured_media
-                              | image_url: width: 600, height: 600, pad_color: 'ffffff'
-                              | image_tag:
-                                widths: '100,125,150,200,250,300, 350, 400, 450, 500, 550, 600',
-                                preload: false,
-                                ratio: '1',
-                                loading: 'lazy',
-                                style: 'object-fit: contain;',
-                                class: 'b-has-rounded-corners'
-                            }}
-                            {% if free_shipping %}
-                              <span class="b-tag-top-left b-badge-primary b-badge-custom">
-                                <span class="b-icon-text b-is-size-6 b-is-family-secondary">
-                                  <i class="b-icon">
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      transform="scale(-1,1)"
-                                      height="1em"
-                                      viewBox="0 0 24 24"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      stroke-width="2"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                    >
-                                      <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>
-                                      <path d="M15 18H9"/>
-                                      <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/>
-                                      <circle cx="17" cy="18" r="2"/>
-                                      <circle cx="7" cy="18" r="2"/>
-                                    </svg></i
-                                  >Free
-                                </span>
-                              </span>
-                            {%- endif %}
-                          </figure>
-                        </a>
-                      </div>
-                      <!-- MOBILE -->
-                      <div class="b-column b-is-half-mobile b-card-content-wrapper">
-                        <div class="b-block" style="margin-bottom: 0;">
-                          <p class="b-is-size-6-mobile b-is-size-6-tablet b-mb-2 b-has-text-black b-is-capitalized b-is-family-secondary">
-                            <a href="{{ product.url }}" class="full-unstyled-link">
-                              <strong>{{ product.title | escape }}</strong>
-                            </a>
-                          </p>
-                          <p class="b-is-uppercase b-is-size-5 b-mb-2 b-has-text-gray-light">
-                            <a href="{{ product.url }}" class="full-unstyled-link">
-                              <strong>{{ product.vendor | escape }}</strong>
-                            </a>
-                          </p>
-                          <p class="b-is-size-6 b-is-capitalized">
-                            {{ product.type | default: '' }}
-                          </p>
-                        </div>
-
-                        <div class="b-block">
-                          <span class="b-is-sr-only">
-                            {{- 'products.product.price.regular_price' | t -}}
-                          </span>
-
-                          {% if compare_at_price > price %}
-                            {%- unless product.price_varies == false and product.compare_at_price_varies %}
-                              <p class="b-has-text-weight-normal b-is-size-6 b-subtitle b-has-text-gray-dark">
-                                <s>{{ compare_at_price | money -}}</s>
-                                {% assign saved_amount = compare_at_price | minus: price %}
-                                {% assign saved_percentage = saved_amount
-                                  | times: 100
-                                  | divided_by: compare_at_price
-                                  | round
-                                %}
-                                {% if saved_amount > 0 %}
-                                  <span class="b-tag b-is-link b-has-text-white b-is-size-6 b-is-size-7-tablet b-has-text-weight-bold">
-                                    {{- saved_percentage }}% OFF</span
-                                  >
-                                {% endif %}
-                              </p>
-                            {%- endunless -%}
-                          {% endif %}
-
-                          <p class="b-has-text-weight-bold b-is-size-5 b-title">
-                            {{ money_price }}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- END CARD -->
-                </div>
-              {% endif %}
+              {%- if product.available -%}
+                {%- assign lazy_load = false -%}
+                {%- if forloop.index > 2 -%}
+                  {%- assign lazy_load = true -%}
+                {%- endif -%}
+                <li class="grid__item">
+                  {%- comment -%}
+                    Colección: flags de paridad con legacy sanity solo aquí. Precios vía snippet
+                    price.liquid (money vs money_with_currency según settings.currency_code_enabled).
+                  {%- endcomment -%}
+                  {% render 'card-product',
+                    card_product: product,
+                    show_vendor: true,
+                    show_type: true,
+                    collection_grid_free_badge: true,
+                    show_savings_percentage: true,
+                    media_aspect_ratio: 'square',
+                    pad_color: 'ffffff',
+                    lazy_load: lazy_load,
+                    skip_styles: skip_card_product_styles
+                  %}
+                  {%- assign skip_card_product_styles = true -%}
+                </li>
+              {%- endif -%}
             {%- endfor -%}
-            <!-- END FORLOOP -->
-          </div>
-
-          <!-- END PRODUCT GRID -->
+          </ul>
 
           {%- if paginate.pages > 1 -%}
             {% render 'pagination', paginate: paginate, anchor: '' %}
           {%- endif -%}
-        {%- endif -%}
-      </div>
-    </section>
+        </div>
+      {%- endif -%}
+    </div>
   </div>
 {%- endpaginate -%}
 

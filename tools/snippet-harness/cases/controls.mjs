@@ -64,9 +64,9 @@ export default async ({engine}) => {
       <div class="row"><div>${quantity}</div><div>${quantityRule}</div></div></section>
     <section class="case"><h3>Filter bar, vertical + collapsible</h3><div style="max-width:320px">${filterBar}</div></section>
     <section class="case"><h3>Filter bar, horizontal</h3>${filterBarHorizontal}</section>
-    <section class="case" data-legacy><h3>Legacy Bulma markup (must stay styled)</h3>
-      <button class="b-button b-is-primary">Primary</button>
-      <button class="b-button b-is-light">Light</button>
-      <input class="b-input" type="text" placeholder="b-input" style="max-width:200px">
-      <label class="b-checkbox"><input type="checkbox" checked> b-checkbox</label></section>`;
+    <section class="case"><h3>DS controls chrome</h3>
+      <button class="d-btn d-btn-primary">Primary</button>
+      <button class="d-btn d-btn-ghost">Ghost</button>
+      <input class="d-input" type="text" placeholder="d-input" style="max-width:200px">
+      <label class="d-label"><input type="checkbox" class="d-checkbox" checked> checkbox</label></section>`;
 };

@@ -1,0 +1,96 @@
+/* Bulma collection-list / b-carousel parity for DS Carousel overlay nav */
+.plt-carousel--overlay-nav {
+  position: relative;
+  display: block;
+}
+
+.plt-carousel--overlay-nav .plt-carousel__nav {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: block;
+}
+
+.plt-carousel--overlay-nav .plt-carousel__btn {
+  pointer-events: auto;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+}
+
+.plt-carousel--overlay-nav .plt-carousel__btn--prev {
+  left: 0.25rem;
+}
+
+.plt-carousel--overlay-nav .plt-carousel__btn--next {
+  right: 0.25rem;
+}
+
+@media screen and (min-width: 1152px) {
+  .plt-carousel--overlay-nav .plt-carousel__nav {
+    display: none;
+  }
+}
+
+/* Track carries legacy b-carousel scroll + desktop grid rules */
+.plt-carousel--overlay-nav .plt-carousel__viewport {
+  overflow: visible;
+}
+
+.plt-carousel--overlay-nav .plt-carousel__track.b-carousel {
+  display: flex;
+}
+
+/* Bulma: ~85% slide width on small screens. Use flex-basis + max-width (not min-width: 85vw) so
+   items stay within the viewport when the track gives children flex: 0 0 auto. */
+@media screen and (max-width: 1151px) {
+  .plt-carousel__track.b-carousel > .b-carousel-item {
+    flex: 0 0 85%;
+    max-width: 85vw;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .plt-carousel__track.b-carousel > .b-carousel-item .card-wrapper,
+  .plt-carousel__track.b-carousel > .b-carousel-item .d-card {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .plt-carousel__track.b-carousel > .b-carousel-item .theme-body,
+  .plt-carousel__track.b-carousel > .b-carousel-item p {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media screen and (min-width: 1152px) {
+  .plt-carousel__track.b-carousel {
+    flex-wrap: wrap;
+    overflow: visible;
+    scroll-snap-type: none;
+    gap: 1rem;
+  }
+
+  .plt-carousel__track.b-carousel > .b-carousel-item {
+    min-width: auto;
+    flex: 1 0 calc(25% - 0.75rem);
+    max-width: calc(25% - 0.75rem);
+    width: auto;
+  }
+
+  .plt-carousel__track.plt-carousel-track {
+    flex-wrap: wrap;
+    overflow: visible;
+    scroll-snap-type: none;
+    gap: 1rem;
+  }
+
+  .plt-carousel__track.plt-carousel-track > .carousel-item {
+    min-width: auto;
+    flex: 1 0 calc(25% - 0.75rem);
+    max-width: calc(25% - 0.75rem);
+    width: auto;
+  }
+}
