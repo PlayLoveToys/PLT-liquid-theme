@@ -12,15 +12,27 @@
     "a_matrix_KPxFQ3": {
       "type": "a-matrix",
       "blocks": {
-        "b_card_collection_VxJGjr": {
-          "type": "b-card-collection",
-          "name": "b-Card Collection",
+        "b_card_collections_grid_Pm44xH": {
+          "type": "b-card-collections-grid",
+          "name": "b-card-collections-grid",
           "settings": {
-            "collection": "action-figures",
-            "priority": false,
-            "show_description": false,
-            "truncatewords": 20,
-            "cta_text": "View Collection",
+            "main_collection": "best-sex-toys",
+            "collections_card_title": "",
+            "priority_desktop": false,
+            "priority_mobile": false,
+            "collection_1": "sex-toys-for-women",
+            "collection_1_title": "Women",
+            "collection_2": "sex-toys-for-men",
+            "collection_2_title": "Men",
+            "collection_3": "sex-toys-for-couples",
+            "collection_3_title": "Couples",
+            "collection_4": "sexy-lingerie",
+            "collection_4_title": "Lingerie",
+            "collection_5": "",
+            "collection_5_title": "",
+            "collection_6": "",
+            "collection_6_title": "",
+            "cta_text": "View All",
             "cta_url": ""
           },
           "blocks": {}
@@ -29,7 +41,7 @@
           "type": "b-card-collections-grid",
           "name": "b-card-collections-grid",
           "settings": {
-            "main_collection": "",
+            "main_collection": "sex-toys-for-women",
             "collections_card_title": "",
             "priority_desktop": true,
             "priority_mobile": true,
@@ -102,7 +114,7 @@
         }
       },
       "block_order": [
-        "b_card_collection_VxJGjr",
+        "b_card_collections_grid_Pm44xH",
         "b_card_collections_grid_HA36Vz",
         "b_card_collections_grid_fRnH7P",
         "b_card_collections_grid_EqRJpQ"
