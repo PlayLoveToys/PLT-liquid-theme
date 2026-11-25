@@ -16,7 +16,7 @@
           "type": "b-card-collections-grid",
           "name": "b-card-collections-grid",
           "settings": {
-            "main_collection": "",
+            "main_collection": "best-sex-toys",
             "collections_card_title": "",
             "priority_desktop": false,
             "priority_mobile": false,
@@ -41,7 +41,7 @@
           "type": "b-card-collections-grid",
           "name": "b-card-collections-grid",
           "settings": {
-            "main_collection": "",
+            "main_collection": "sex-toys-for-women",
             "collections_card_title": "",
             "priority_desktop": true,
             "priority_mobile": true,
