@@ -1,7 +1,4 @@
 {
   "totalFiles": 42,
-  "allowedParseFailures": [
-    "templates/blog.json",
-    "templates/page.test.json"
-  ]
+  "allowedParseFailures": []
 }
